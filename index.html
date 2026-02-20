@@ -1,0 +1,1235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>No Filter</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    :root{
+      --bg:#f6f7f9;
+      --card:#ffffff;
+      --text:#0f1115;
+      --muted:#667085;
+      --border:#e6e8ee;
+      --shadow:0 6px 22px rgba(15,17,21,0.08);
+      --shadow2:0 2px 10px rgba(15,17,21,0.08);
+      --black:#0b0b0b;
+      --chip:#f0f2f6;
+      --sidebar:#0b0b0b;
+      --sidebarText:#fff;
+      --sidebarMuted:rgba(255,255,255,0.72);
+      --radius:18px;
+      --radius2:14px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      background:var(--bg);
+      color:var(--text);
+    }
+    a{color:inherit}
+
+    .sidebar{
+      width:290px;
+      background:var(--sidebar);
+      color:var(--sidebarText);
+      padding:18px 14px;
+      position:fixed;
+      top:0; left:0; bottom:0;
+      transform:translateX(-100%);
+      transition:transform .22s ease;
+      z-index:999;
+      overflow:auto;
+    }
+    .sidebar.open{ transform:translateX(0); }
+    .overlay{
+      display:none;
+      position:fixed; inset:0;
+      background:rgba(0,0,0,0.46);
+      z-index:998;
+    }
+    .overlay.show{ display:block; }
+    .main{
+      max-width:980px;
+      margin:0 auto;
+      padding:18px 16px 28px;
+    }
+
+    .topbar{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      margin-bottom:14px;
+    }
+    .hamburger{
+      width:44px; height:44px;
+      border-radius:14px;
+      border:1px solid var(--border);
+      background:var(--card);
+      box-shadow:var(--shadow2);
+      cursor:pointer;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:18px;
+    }
+    .brand{ display:flex; flex-direction:column; gap:2px; }
+    .brand h1{
+      font-size:20px;
+      margin:0;
+      letter-spacing:-0.3px;
+      line-height:1.1;
+    }
+    .subtitle{
+      color:var(--muted);
+      font-size:12px;
+      margin-top:2px;
+    }
+
+    .card{
+      background:var(--card);
+      border:1px solid var(--border);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      padding:14px;
+      margin-top:12px;
+    }
+
+    button{
+      border:none;
+      cursor:pointer;
+      border-radius:14px;
+      padding:12px 14px;
+      font-weight:700;
+      background:var(--black);
+      color:#fff;
+    }
+    button:hover{ opacity:.92; }
+    button:disabled{opacity:.55; cursor:not-allowed;}
+    .btn-outline{
+      background:var(--card);
+      border:1px solid var(--border);
+      color:var(--text);
+      box-shadow:var(--shadow2);
+    }
+
+    textarea,input,select{
+      width:100%;
+      border:1px solid var(--border);
+      border-radius:14px;
+      padding:12px 12px;
+      font-size:14px;
+      background:#fff;
+      outline:none;
+    }
+    textarea{ min-height:110px; resize:none; }
+
+    .sb-title{ display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:12px; }
+    .sb-title strong{ font-size:16px; }
+    .sb-close{
+      width:40px; height:40px;
+      border-radius:14px;
+      background:rgba(255,255,255,0.08);
+      color:#fff;
+      display:flex; align-items:center; justify-content:center;
+      cursor:pointer;
+      border:1px solid rgba(255,255,255,0.12);
+    }
+    .sb-section{ margin-top:14px; padding-top:12px; border-top:1px solid rgba(255,255,255,0.1); }
+    .sb-label{ font-size:12px; color:var(--sidebarMuted); margin-bottom:10px; }
+    .sb-nav{ display:flex; flex-direction:column; gap:10px; }
+    .sb-item{
+      padding:10px 10px;
+      border-radius:14px;
+      background:rgba(255,255,255,0.06);
+      border:1px solid rgba(255,255,255,0.10);
+      color:#fff;
+      cursor:pointer;
+      display:flex; align-items:center; justify-content:space-between; gap:10px;
+      font-size:14px;
+    }
+    .sb-item.active{ background:rgba(255,255,255,0.14); border-color:rgba(255,255,255,0.20); }
+    .sb-chips{ display:flex; gap:8px; flex-wrap:wrap; }
+    .chip{
+      padding:8px 10px;
+      border-radius:999px;
+      background:rgba(255,255,255,0.08);
+      border:1px solid rgba(255,255,255,0.12);
+      color:#fff;
+      cursor:pointer;
+      font-size:12px;
+      user-select:none;
+    }
+    .chip.active{ background:#fff; color:#000; border-color:#fff; }
+
+    .landing{
+      display:flex; flex-direction:column; align-items:center; justify-content:center;
+      text-align:center;
+      min-height:70vh;
+      gap:12px;
+    }
+    .landing h2{ margin:0; font-size:34px; letter-spacing:-0.7px; }
+    .landing .tagline{ margin:0; color:var(--muted); max-width:560px; line-height:1.45; }
+    .landing .actions{ display:flex; gap:10px; flex-wrap:wrap; justify-content:center; margin-top:6px; }
+    .pill{
+      display:inline-block;
+      padding:6px 10px;
+      border-radius:999px;
+      background:var(--chip);
+      font-size:12px;
+      color:#111;
+    }
+    .feed-header{
+      display:flex; gap:10px; flex-wrap:wrap;
+      align-items:center; justify-content:space-between;
+      margin-top:12px;
+    }
+    .feed-header .left{ display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
+    .small{ color:var(--muted); font-size:12px; }
+
+    .post{
+      background:var(--card);
+      border:1px solid var(--border);
+      border-radius:22px;
+      box-shadow:var(--shadow);
+      padding:16px;
+      margin-top:14px;
+    }
+    .author{
+      display:flex; align-items:center; gap:10px;
+      font-weight:900; font-size:18px;
+    }
+    .badge{
+      font-size:12px;
+      background:var(--chip);
+      padding:5px 10px;
+      border-radius:999px;
+      font-weight:800;
+    }
+    .context{
+      margin-top:10px;
+      font-weight:900;
+      font-size:26px;
+      letter-spacing:-0.6px;
+      line-height:1.05;
+    }
+    .text{
+      margin-top:10px;
+      font-size:20px;
+      line-height:1.32;
+      word-break:break-word;
+      white-space:pre-wrap;
+    }
+    .reactions{ display:flex; gap:10px; flex-wrap:wrap; margin-top:14px; }
+    .react-btn{
+      width:auto;
+      padding:10px 14px;
+      border-radius:999px;
+      background:#0d0d0d;
+      color:#fff;
+      font-weight:900;
+      display:flex; align-items:center; gap:8px;
+      box-shadow:0 10px 20px rgba(0,0,0,0.12) inset;
+    }
+    .react-btn.active{ outline:2px solid rgba(0,0,0,0.25); background:#000; }
+    .row-actions{ margin-top:12px; }
+    .row-actions .hide{
+      width:auto;
+      padding:10px 16px;
+      border-radius:999px;
+      background:#1a1a1a;
+      color:#fff;
+      font-weight:800;
+    }
+    .comments-area{ margin-top:14px; border-top:1px solid var(--border); padding-top:12px; }
+    .comment-row{ font-size:14px; margin-top:8px; color:#222; }
+    .comment-row strong{ color:#000; }
+    .view-more{ margin-top:8px; color:#2a2a2a; font-weight:800; cursor:pointer; user-select:none; }
+    .reply-box{ margin-top:14px; }
+    .reply-input{ margin-top:10px; border-radius:14px; height:52px; padding:14px 14px; font-size:16px; }
+    .reply-btn{ margin-top:10px; width:100%; height:58px; font-size:18px; border-radius:16px; }
+
+    .modal-backdrop{
+      display:none;
+      position:fixed;
+      inset:0;
+      background:rgba(0,0,0,0.45);
+      z-index:1000;
+      align-items:center;
+      justify-content:center;
+      padding:18px;
+    }
+    .modal-backdrop.show{ display:flex; }
+    .modal{
+      width:100%;
+      max-width:560px;
+      background:var(--card);
+      border:1px solid var(--border);
+      border-radius:22px;
+      box-shadow:0 20px 60px rgba(0,0,0,0.35);
+      padding:16px;
+    }
+    .modal h3{ margin:0 0 6px; letter-spacing:-0.2px; }
+    .modal .modal-row{ margin-top:10px; }
+    .modal .btn-row{ display:flex; gap:10px; margin-top:12px; flex-wrap:wrap; }
+    .modal .btn-row button{ flex:1; }
+
+    .poll-title{ display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap; margin:0 0 8px; }
+    .poll-q{ font-weight:900; font-size:16px; color:#111; }
+    .poll-option{ display:flex; align-items:center; gap:10px; margin-top:10px; }
+    .poll-btn{ width:auto; padding:10px 12px; border-radius:999px; font-weight:900; background:#111; color:#fff; white-space:nowrap; }
+    .poll-btn:disabled{opacity:.6}
+    .poll-bar-wrap{ flex:1; height:10px; background:#eee; border-radius:999px; overflow:hidden; }
+    .poll-bar{ height:100%; width:0%; background:#111; transition:width .25s ease; }
+    .poll-meta{ font-size:12px; color:var(--muted); white-space:nowrap; min-width:80px; text-align:right; }
+
+    .warn{
+      background:#fff3cd;
+      border:1px solid #ffe69c;
+      color:#664d03;
+      border-radius:14px;
+      padding:10px 12px;
+      font-size:12px;
+      box-shadow:var(--shadow2);
+      margin-top:10px;
+    }
+
+    @media (max-width: 540px){
+      .context{ font-size:22px; }
+      .text{ font-size:18px; }
+      .author{ font-size:16px; }
+      .reply-btn{ font-size:17px; height:56px; }
+      .sidebar{ width:84vw; }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="overlay" id="overlay" onclick="closeSidebar()"></div>
+
+  <aside class="sidebar" id="sidebar">
+    <div class="sb-title">
+      <strong>No Filter</strong>
+      <div class="sb-close" onclick="closeSidebar()">✕</div>
+    </div>
+
+    <div class="small" style="color:var(--sidebarMuted); line-height:1.4;">
+      Global · Live · 24h
+      <div style="margin-top:6px;">Say what you can't say anywhere else.</div>
+    </div>
+
+    <div class="sb-section">
+      <div class="sb-label">Navigation</div>
+      <div class="sb-nav">
+        <div class="sb-item" id="nav-home" onclick="setPage('home')">🏠 Home <span style="opacity:.7;">›</span></div>
+        <div class="sb-item" id="nav-feed" onclick="setPage('feed')">📰 Feed <span style="opacity:.7;">›</span></div>
+        <div class="sb-item" id="nav-polls" onclick="setPage('polls')">📊 Polls <span style="opacity:.7;">›</span></div>
+      </div>
+    </div>
+
+    <div class="sb-section">
+      <div class="sb-label">Quick actions</div>
+      <div class="sb-nav">
+        <div class="sb-item" onclick="openPostModal()">✍️ Create post <span style="opacity:.7;">+</span></div>
+        <div class="sb-item" onclick="openPollModal()">🗳️ Create poll <span style="opacity:.7;">+</span></div>
+      </div>
+    </div>
+
+    <div class="sb-section">
+      <div class="sb-label">Language</div>
+      <select id="language" onchange="onLanguageChange()" style="background:#111; color:#fff; border:1px solid rgba(255,255,255,0.15);"></select>
+    </div>
+
+    <div class="sb-section">
+      <div class="sb-label">Categories</div>
+      <div class="sb-chips" id="catChips"></div>
+    </div>
+
+    <div class="sb-section">
+      <div class="sb-label">Mood</div>
+      <select id="mood" onchange="onMoodChange()" style="background:#111; color:#fff; border:1px solid rgba(255,255,255,0.15);"></select>
+    </div>
+
+    <div class="sb-section">
+      <div class="sb-label">Notes</div>
+      <div class="small" style="color:var(--sidebarMuted); line-height:1.4;">
+        If you open this as a local file (<b>file://</b>) on mobile, posting/realtime may fail. Use an <b>https</b> link.
+      </div>
+    </div>
+  </aside>
+
+  <main class="main">
+    <div class="topbar">
+      <div style="display:flex; gap:10px; align-items:center;">
+        <div class="hamburger" onclick="openSidebar()">☰</div>
+        <div class="brand">
+          <h1 id="pageTitle">No Filter</h1>
+          <div class="subtitle">Say what you can't say anywhere else.</div>
+        </div>
+      </div>
+      <button class="btn-outline" onclick="reloadAll(true)">↻ Refresh</button>
+    </div>
+
+    <div id="fileWarn" class="warn" style="display:none;">
+      You opened this as <b>file://</b>. On many phones this blocks Supabase requests. Publish on <b>https</b> (Netlify/Vercel) and it will work.
+    </div>
+
+    <section id="homePage" class="card" style="display:none;">
+      <div class="landing">
+        <h2>No Filter</h2>
+        <p class="tagline">
+          Anonymous thoughts, real conversations.<br/>
+          <span class="pill">Global</span> <span class="pill">Live</span> <span class="pill">24h</span>
+        </p>
+        <div class="actions">
+          <button onclick="openPostModal()">✍️ Create post</button>
+          <button class="btn-outline" onclick="setPage('feed')">📰 Open feed</button>
+          <button class="btn-outline" onclick="openPollModal()">🗳️ Create poll</button>
+        </div>
+        <p class="small" style="max-width:640px;">
+          Categories are in the left sidebar. Posts/comments/reactions/polls stay visible for <b>24 hours</b>.
+        </p>
+      </div>
+    </section>
+
+    <section id="pollsPage" style="display:none;">
+      <div class="card">
+        <div class="poll-title">
+          <div>
+            <div style="font-weight:950; font-size:18px; letter-spacing:-0.2px;">Polls</div>
+            <div class="small">Latest active poll for this category (24h).</div>
+          </div>
+          <button onclick="openPollModal()">➕ Create poll</button>
+        </div>
+        <div id="pollBox"></div>
+      </div>
+    </section>
+
+    <section id="feedPage" style="display:none;">
+      <div class="feed-header">
+        <div class="left">
+          <div class="pill" id="scopePill">Scope</div>
+          <div class="small">Global · Live · Last 24h</div>
+        </div>
+        <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+          <select id="sortMode" onchange="renderPosts()" style="max-width:220px;">
+            <option value="new">Newest</option>
+            <option value="hot">Hot</option>
+          </select>
+          <button onclick="openPostModal()">✍️ Create post</button>
+        </div>
+      </div>
+      <div id="feed"></div>
+    </section>
+
+    <div id="statusOk" class="card" style="display:none; border-left:6px solid #14a44d;">✅ Done</div>
+    <div id="statusErr" class="card" style="display:none; border-left:6px solid #b00020;">❌ Error</div>
+  </main>
+
+  <div class="modal-backdrop" id="postModalBg" onclick="modalBackdropClose(event, 'postModalBg')">
+    <div class="modal">
+      <h3>Create post</h3>
+      <div class="small">Anonymous · Global · Visible for 24h</div>
+
+      <div class="modal-row">
+        <label style="font-weight:900;">Category</label>
+        <select id="postCategory"></select>
+      </div>
+
+      <div class="modal-row">
+        <label style="font-weight:900;">Mood</label>
+        <select id="postMood"></select>
+      </div>
+
+      <div class="modal-row">
+        <label style="font-weight:900;">Text</label>
+        <textarea id="postText" maxlength="300" placeholder="Write your unfiltered thought..."></textarea>
+        <div class="small" id="postPrompt"></div>
+      </div>
+
+      <div class="btn-row">
+        <button id="postSubmitBtn" onclick="createPost()">Post</button>
+        <button class="btn-outline" onclick="closeModal('postModalBg')">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-backdrop" id="pollModalBg" onclick="modalBackdropClose(event, 'pollModalBg')">
+    <div class="modal">
+      <h3>Create poll</h3>
+      <div class="small">Global · Active for 24h · Visible in this category</div>
+
+      <div class="modal-row">
+        <label style="font-weight:900;">Category</label>
+        <select id="pollCategory"></select>
+      </div>
+
+      <div class="modal-row">
+        <label style="font-weight:900;">Question</label>
+        <input id="pollQuestion" placeholder="Write the poll question..." />
+      </div>
+
+      <div class="modal-row">
+        <label style="font-weight:900;">Options (2–5)</label>
+        <input id="pollOpt1" placeholder="Option 1" />
+        <input id="pollOpt2" placeholder="Option 2" style="margin-top:8px;" />
+        <input id="pollOpt3" placeholder="Option 3 (optional)" style="margin-top:8px;" />
+        <input id="pollOpt4" placeholder="Option 4 (optional)" style="margin-top:8px;" />
+        <input id="pollOpt5" placeholder="Option 5 (optional)" style="margin-top:8px;" />
+      </div>
+
+      <div class="btn-row">
+        <button id="pollSubmitBtn" onclick="createPoll()">Create</button>
+        <button class="btn-outline" onclick="closeModal('pollModalBg')">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+<script>
+const SUPABASE_URL = "https://wgzyqzilzxqlpuamxxrr.supabase.co";
+const SUPABASE_KEY = "sb_publishable_-WlIpnkALrWZFGCUfn2y5w_Gk_vh30i";
+const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+function escapeHtml(str){
+  return String(str)
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;");
+}
+const blockedWords = ["spamword1","spamword2"];
+function containsBlockedWords(text){
+  const t = (text||"").toLowerCase();
+  return blockedWords.some(w => w && t.includes(w.toLowerCase()));
+}
+function iso24hAgo(){ return new Date(Date.now() - 24*60*60*1000).toISOString(); }
+function within24h(ts){ return new Date(ts).getTime() >= Date.now() - 24*60*60*1000; }
+
+function showOk(msg){
+  const el=document.getElementById("statusOk");
+  el.style.display="block";
+  el.innerHTML = "✅ " + escapeHtml(msg || "Done");
+  setTimeout(()=>el.style.display="none", 1400);
+}
+function showErr(msg){
+  const el=document.getElementById("statusErr");
+  el.style.display="block";
+  el.innerHTML = "❌ " + escapeHtml(msg || "Error");
+  setTimeout(()=>el.style.display="none", 5200);
+}
+
+let deviceId = localStorage.getItem("nofilter_deviceId");
+if(!deviceId){
+  deviceId = (crypto?.randomUUID?.() || ("dev_" + Math.random().toString(16).slice(2) + Date.now()));
+  localStorage.setItem("nofilter_deviceId", deviceId);
+}
+let userName = localStorage.getItem("nofilter_name");
+if(!userName){
+  const adjectives=["Silent","Hidden","Blue","Dark","Quiet","Lost","Golden","Soft","Wild","Mysterious"];
+  const nouns=["Fox","Cloud","Wave","Mind","Shadow","Star","River","Flame","Echo"];
+  userName = adjectives[Math.floor(Math.random()*adjectives.length)] +
+             nouns[Math.floor(Math.random()*nouns.length)] +
+             Math.floor(Math.random()*100);
+  localStorage.setItem("nofilter_name", userName);
+}
+
+const categories = {
+  en:["Confession","Opinion","Idea","Relationship","Work","Study","Life","Fun","Health"],
+  it:["Confessione","Opinione","Idea","Relazioni","Lavoro","Studio","Vita","Divertimento","Salute"],
+  es:["Confesión","Opinión","Idea","Relaciones","Trabajo","Estudio","Vida","Diversión","Salud"],
+  fr:["Confession","Opinion","Idée","Relation","Travail","Étude","Vie","Amusement","Santé"],
+  de:["Geständnis","Meinung","Idee","Beziehung","Arbeit","Studium","Leben","Spaß","Gesundheit"]
+};
+const moods = {
+  en:["Neutral","Happy","Sad","Reflective"],
+  it:["Neutro","Felice","Triste","Riflessivo"],
+  es:["Neutro","Feliz","Triste","Reflexivo"],
+  fr:["Neutre","Heureux","Triste","Réfléchi"],
+  de:["Neutral","Glücklich","Traurig","Nachdenklich"]
+};
+const prompts = {
+  en:["What keeps you awake at night?","What’s something you’ve never said out loud?","What are you afraid of right now?","What made you smile today?"],
+  it:["Cosa ti tiene sveglio la notte?","Una cosa che non hai mai detto ad alta voce?","Di cosa hai paura adesso?","Cosa ti ha fatto sorridere oggi?"],
+  es:["¿Qué te quita el sueño?","¿Qué nunca has dicho en voz alta?","¿De qué tienes miedo ahora?","¿Qué te hizo sonreír hoy?"],
+  fr:["Qu’est-ce qui t’empêche de dormir ?","Qu’as-tu jamais dit à voix haute ?","De quoi as-tu peur maintenant ?","Qu’est-ce qui t’a fait sourire aujourd’hui ?"],
+  de:["Was hält dich nachts wach?","Was hast du nie laut gesagt?","Wovor hast du gerade Angst?","Was hat dich heute zum Lächeln gebracht?"]
+};
+const EMOJIS = ["💭","🔥","🖤","😂","😮","😢"];
+
+let currentLang = "it";
+let currentCategory = categories[currentLang][0];
+let currentMood = moods[currentLang][0];
+
+let page = "home";
+
+let posts = [];
+let commentsByPost = new Map();
+let reactionsAgg = new Map();
+let myReactions = new Map();
+
+let activePoll = null;
+let pollAgg = null;
+
+let hiddenPosts = JSON.parse(localStorage.getItem("nofilter_hiddenPosts")||"[]") || [];
+let commentsExpanded = new Set();
+
+function openSidebar(){
+  document.getElementById("sidebar").classList.add("open");
+  document.getElementById("overlay").classList.add("show");
+}
+function closeSidebar(){
+  document.getElementById("sidebar").classList.remove("open");
+  document.getElementById("overlay").classList.remove("show");
+}
+function setPage(next){
+  page = next;
+  document.getElementById("homePage").style.display = (page==="home") ? "block" : "none";
+  document.getElementById("feedPage").style.display = (page==="feed") ? "block" : "none";
+  document.getElementById("pollsPage").style.display = (page==="polls") ? "block" : "none";
+
+  document.getElementById("nav-home").classList.toggle("active", page==="home");
+  document.getElementById("nav-feed").classList.toggle("active", page==="feed");
+  document.getElementById("nav-polls").classList.toggle("active", page==="polls");
+
+  document.getElementById("pageTitle").textContent =
+    page==="home" ? "No Filter" : (page==="feed" ? "Feed" : "Polls");
+
+  closeSidebar();
+  if(page==="feed" || page==="polls") reloadAll(false);
+}
+
+function modalBackdropClose(e, id){
+  if(e.target && e.target.id === id) closeModal(id);
+}
+function openModal(id){ document.getElementById(id).classList.add("show"); }
+function closeModal(id){ document.getElementById(id).classList.remove("show"); }
+
+function fillSelect(id, items, value){
+  const sel = document.getElementById(id);
+  sel.innerHTML = "";
+  items.forEach(v=>{
+    const opt=document.createElement("option");
+    opt.value=v; opt.textContent=v;
+    sel.appendChild(opt);
+  });
+  sel.value = value || items[0];
+}
+function setPrompt(){
+  const list = prompts[currentLang] || prompts.en;
+  document.getElementById("postPrompt").textContent = list[Math.floor(Math.random()*list.length)];
+}
+function openPostModal(){
+  fillSelect("postCategory", categories[currentLang], currentCategory);
+  fillSelect("postMood", moods[currentLang], currentMood);
+  document.getElementById("postText").value = "";
+  setPrompt();
+  openModal("postModalBg");
+  closeSidebar();
+}
+function openPollModal(){
+  fillSelect("pollCategory", categories[currentLang], currentCategory);
+  document.getElementById("pollQuestion").value="";
+  ["pollOpt1","pollOpt2","pollOpt3","pollOpt4","pollOpt5"].forEach(id=>document.getElementById(id).value="");
+  openModal("pollModalBg");
+  closeSidebar();
+}
+
+function updateScopePill(){
+  document.getElementById("scopePill").textContent =
+    `${currentLang.toUpperCase()} • ${currentCategory} • ${currentMood} • 24h`;
+}
+function renderCategoryChips(){
+  const wrap = document.getElementById("catChips");
+  wrap.innerHTML="";
+  categories[currentLang].forEach(cat=>{
+    const chip=document.createElement("div");
+    chip.className = "chip" + (cat===currentCategory ? " active" : "");
+    chip.textContent = cat;
+    chip.onclick = async ()=>{
+      currentCategory = cat;
+      renderCategoryChips();
+      updateScopePill();
+      await reloadAll(true);
+      setPage("feed");
+    };
+    wrap.appendChild(chip);
+  });
+}
+function buildSidebar(){
+  const langSel = document.getElementById("language");
+  langSel.innerHTML = "";
+  Object.keys(categories).forEach(l=>{
+    const opt=document.createElement("option");
+    opt.value=l; opt.textContent=l.toUpperCase();
+    langSel.appendChild(opt);
+  });
+  langSel.value = currentLang;
+
+  fillSelect("mood", moods[currentLang], currentMood);
+  renderCategoryChips();
+  updateScopePill();
+
+  document.getElementById("nav-home").classList.toggle("active", page==="home");
+  document.getElementById("nav-feed").classList.toggle("active", page==="feed");
+  document.getElementById("nav-polls").classList.toggle("active", page==="polls");
+}
+async function onLanguageChange(){
+  currentLang = document.getElementById("language").value;
+  currentCategory = categories[currentLang][0];
+  currentMood = moods[currentLang][0];
+
+  fillSelect("mood", moods[currentLang], currentMood);
+  renderCategoryChips();
+  updateScopePill();
+  setPrompt();
+  await reloadAll(true);
+}
+async function onMoodChange(){
+  currentMood = document.getElementById("mood").value;
+  updateScopePill();
+  await reloadAll(true);
+}
+
+async function loadPosts(){
+  const since = iso24hAgo();
+  const { data, error } = await supabaseClient
+    .from("posts")
+    .select("id,created_at,language,category,mood,author,text")
+    .gte("created_at", since)
+    .eq("language", currentLang)
+    .eq("category", currentCategory)
+    .eq("mood", currentMood)
+    .order("created_at", { ascending:false })
+    .limit(200);
+
+  if(error) throw error;
+  posts = (data||[]).filter(p => !hiddenPosts.includes(p.id));
+}
+async function loadCommentsFor(postIds){
+  commentsByPost = new Map();
+  if(!postIds.length) return;
+
+  const since = iso24hAgo();
+  const { data, error } = await supabaseClient
+    .from("comments")
+    .select("id,created_at,post_id,author,text,commenter_id")
+    .gte("created_at", since)
+    .in("post_id", postIds)
+    .order("created_at", { ascending:true });
+
+  if(error) throw error;
+
+  (data||[]).forEach(c=>{
+    if(!commentsByPost.has(c.post_id)) commentsByPost.set(c.post_id, []);
+    commentsByPost.get(c.post_id).push(c);
+  });
+}
+async function loadReactionsFor(postIds){
+  reactionsAgg = new Map();
+  myReactions = new Map();
+  if(!postIds.length) return;
+
+  const since = iso24hAgo();
+  const { data, error } = await supabaseClient
+    .from("reactions")
+    .select("id,created_at,post_id,emoji,reactor_id")
+    .gte("created_at", since)
+    .in("post_id", postIds);
+
+  if(error) throw error;
+
+  (data||[]).forEach(r=>{
+    if(!reactionsAgg.has(r.post_id)) reactionsAgg.set(r.post_id, {});
+    const agg = reactionsAgg.get(r.post_id);
+    agg[r.emoji] = (agg[r.emoji] || 0) + 1;
+
+    if(r.reactor_id === deviceId){
+      if(!myReactions.has(r.post_id)) myReactions.set(r.post_id, new Set());
+      myReactions.get(r.post_id).add(r.emoji);
+    }
+  });
+}
+async function loadActivePoll(){
+  const { data, error } = await supabaseClient
+    .from("polls")
+    .select("id,created_at,expires_at,language,category,question,options,creator_id")
+    .eq("language", currentLang)
+    .eq("category", currentCategory)
+    .gt("expires_at", new Date().toISOString())
+    .order("created_at", { ascending:false })
+    .limit(1);
+
+  if(error) throw error;
+
+  activePoll = (data && data[0]) ? data[0] : null;
+  pollAgg = null;
+
+  if(!activePoll) return;
+
+  const { data: votes, error: e2 } = await supabaseClient
+    .from("poll_votes")
+    .select("id,option_index,voter_id")
+    .eq("poll_id", activePoll.id);
+
+  if(e2) throw e2;
+
+  const opts = Array.isArray(activePoll.options) ? activePoll.options : [];
+  const counts = new Array(opts.length).fill(0);
+  let myVotedIndex = null;
+
+  (votes||[]).forEach(v=>{
+    if(counts[v.option_index] != null) counts[v.option_index] += 1;
+    if(v.voter_id === deviceId) myVotedIndex = v.option_index;
+  });
+
+  const total = counts.reduce((a,b)=>a+b,0);
+  pollAgg = { counts, total, myVotedIndex };
+}
+
+function renderPoll(){
+  const box = document.getElementById("pollBox");
+  box.innerHTML = "";
+
+  if(!activePoll){
+    box.innerHTML = `<div class="small">No active poll for this category (last 24h).</div>`;
+    return;
+  }
+
+  const opts = Array.isArray(activePoll.options) ? activePoll.options : [];
+  const q = activePoll.question;
+  const mins = Math.max(0, Math.round((new Date(activePoll.expires_at).getTime() - Date.now())/60000));
+
+  const header = document.createElement("div");
+  header.className = "poll-q";
+  header.textContent = `${q} · expires in ~${mins} min`;
+  box.appendChild(header);
+
+  const voted = (pollAgg?.myVotedIndex != null);
+  const counts = pollAgg?.counts || new Array(opts.length).fill(0);
+  const total = pollAgg?.total || 0;
+
+  opts.forEach((opt,i)=>{
+    const row = document.createElement("div");
+    row.className = "poll-option";
+
+    const btn = document.createElement("button");
+    btn.className = "poll-btn";
+    btn.textContent = voted ? opt : `Vote: ${opt}`;
+    btn.disabled = voted;
+    btn.onclick = ()=>votePoll(i);
+
+    const wrap = document.createElement("div");
+    wrap.className = "poll-bar-wrap";
+    const bar = document.createElement("div");
+    bar.className = "poll-bar";
+    const pct = total===0 ? 0 : Math.round((counts[i]/total)*100);
+    bar.style.width = voted ? `${pct}%` : "0%";
+    wrap.appendChild(bar);
+
+    const meta = document.createElement("div");
+    meta.className = "poll-meta";
+    meta.textContent = voted ? `${pct}% (${counts[i]})` : "";
+
+    row.appendChild(btn);
+    row.appendChild(wrap);
+    row.appendChild(meta);
+    box.appendChild(row);
+  });
+
+  const foot = document.createElement("div");
+  foot.className = "small";
+  foot.style.marginTop="10px";
+  foot.textContent = `Total votes: ${total}`;
+  box.appendChild(foot);
+}
+
+function getUserBadge(author){
+  const n = posts.filter(p=>p.author===author).length;
+  if(n>=20) return "Deep Thinker";
+  if(n>=10) return "Active Voice";
+  return "New Soul";
+}
+function getHotScore(post){
+  const cs = (commentsByPost.get(post.id)||[]).length;
+  const agg = reactionsAgg.get(post.id) || {};
+  const rs = Object.values(agg).reduce((a,b)=>a+b,0);
+  const age = Date.now() - new Date(post.created_at).getTime();
+  const recency = Math.max(0, 1e9 - age);
+  return cs*50 + rs*10 + recency/1e6;
+}
+function renderCommentsBlock(container, postId, comments){
+  const expanded = commentsExpanded.has(postId);
+  container.innerHTML = "";
+  if(comments.length === 0) return;
+
+  const first = comments[0];
+  const firstEl = document.createElement("div");
+  firstEl.className="comment-row";
+  firstEl.innerHTML = `<strong>${first.author}</strong>: ${first.text}`;
+  container.appendChild(firstEl);
+
+  if(comments.length > 1){
+    const toggle = document.createElement("div");
+    toggle.className="view-more";
+    toggle.textContent = expanded ? "Hide comments" : `View all ${comments.length} comments`;
+    toggle.onclick = ()=>{
+      if(expanded) commentsExpanded.delete(postId);
+      else commentsExpanded.add(postId);
+      renderPosts();
+    };
+    container.appendChild(toggle);
+
+    if(expanded){
+      for(let i=1;i<comments.length;i++){
+        const c = comments[i];
+        const el = document.createElement("div");
+        el.className="comment-row";
+        el.innerHTML = `<strong>${c.author}</strong>: ${c.text}`;
+        container.appendChild(el);
+      }
+    }
+  }
+}
+function renderPosts(){
+  const feed = document.getElementById("feed");
+  feed.innerHTML = "";
+
+  const sortMode = document.getElementById("sortMode").value;
+  let list = posts.slice();
+  if(sortMode==="hot") list.sort((a,b)=>getHotScore(b)-getHotScore(a));
+  else list.sort((a,b)=> new Date(b.created_at) - new Date(a.created_at));
+
+  list.forEach(post=>{
+    const div=document.createElement("div");
+    div.className="post";
+
+    const agg = reactionsAgg.get(post.id) || {};
+    const mine = myReactions.get(post.id) || new Set();
+    const comments = commentsByPost.get(post.id) || [];
+
+    div.innerHTML = `
+      <div class="author">
+        ${post.author} <span class="badge">${getUserBadge(post.author)}</span>
+      </div>
+      <div class="context">${post.category} • ${post.mood}</div>
+      <div class="text">${post.text}</div>
+      <div class="reactions" id="react-${post.id}"></div>
+      <div class="row-actions">
+        <button class="hide" onclick="hidePost(${post.id})">Report / Hide</button>
+      </div>
+      <div class="comments-area" id="comments-${post.id}"></div>
+      <div class="reply-box">
+        <input class="reply-input" id="reply-${post.id}" placeholder="Write your unfiltered thought..." />
+        <button class="reply-btn" onclick="addComment(${post.id})">Reply</button>
+      </div>
+    `;
+    feed.appendChild(div);
+
+    const rWrap = div.querySelector(`#react-${post.id}`);
+    EMOJIS.forEach(emoji=>{
+      const btn=document.createElement("button");
+      btn.className = "react-btn" + (mine.has(emoji) ? " active" : "");
+      btn.textContent = `${emoji} ${agg[emoji] || 0}`;
+      btn.onclick = ()=>toggleReaction(post.id, emoji);
+      rWrap.appendChild(btn);
+    });
+
+    const cWrap = div.querySelector(`#comments-${post.id}`);
+    renderCommentsBlock(cWrap, post.id, comments);
+  });
+}
+
+function hidePost(postId){
+  if(!hiddenPosts.includes(postId)) hiddenPosts.push(postId);
+  localStorage.setItem("nofilter_hiddenPosts", JSON.stringify(hiddenPosts));
+  posts = posts.filter(p=>p.id!==postId);
+  renderPosts();
+}
+
+function canPostNow(){
+  const key="nofilter_lastPostTs";
+  const last=Number(localStorage.getItem(key)||0);
+  const now=Date.now();
+  const cooldown=8*1000;
+  if(now-last < cooldown) return false;
+  localStorage.setItem(key, String(now));
+  return true;
+}
+
+async function createPost(){
+  const btn = document.getElementById("postSubmitBtn");
+  btn.disabled = true;
+  btn.textContent = "Posting...";
+  try{
+    if(location.protocol === "file:"){
+      showErr("You're on file://. Publish on https (Netlify/Vercel) or Supabase may be blocked on mobile.");
+      return;
+    }
+    if(!canPostNow()){ showErr("Wait a few seconds 🙂"); return; }
+
+    const cat = document.getElementById("postCategory").value;
+    const mood = document.getElementById("postMood").value;
+    const raw = (document.getElementById("postText").value || "").trim();
+
+    if(raw.length < 5){ showErr("Write at least 5 characters."); return; }
+    if(containsBlockedWords(raw)){ showErr("Blocked content."); return; }
+
+    const payload = { language: currentLang, category: cat, mood, author: userName, text: escapeHtml(raw) };
+    const { error } = await supabaseClient.from("posts").insert(payload);
+    if(error){ console.error(error); showErr("Post failed: " + (error.message || "check RLS/policies")); return; }
+
+    // FIX: move scope to where you posted so you SEE it
+    currentCategory = cat;
+    currentMood = mood;
+    document.getElementById("mood").value = currentMood;
+    renderCategoryChips();
+    updateScopePill();
+
+    closeModal("postModalBg");
+    showOk("Posted!");
+    setPage("feed");
+    await reloadAll(false);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = "Post";
+  }
+}
+
+async function addComment(postId){
+  if(location.protocol === "file:"){ showErr("file:// blocks network on many phones. Use https."); return; }
+  const input = document.getElementById(`reply-${postId}`);
+  const raw = (input?.value || "").trim();
+  if(raw.length < 2) return;
+  if(containsBlockedWords(raw)){ showErr("Blocked comment."); return; }
+
+  const p = posts.find(x=>x.id===postId);
+  if(!p) return;
+
+  const payload = {
+    post_id: postId,
+    language: p.language,
+    category: p.category,
+    mood: p.mood,
+    author: userName,
+    text: escapeHtml(raw),
+    commenter_id: deviceId
+  };
+
+  const { error } = await supabaseClient.from("comments").insert(payload);
+  if(error){ console.error(error); showErr("Comment failed: " + (error.message || "check RLS/policies")); return; }
+
+  input.value = "";
+  showOk("Replied!");
+}
+
+async function toggleReaction(postId, emoji){
+  if(location.protocol === "file:"){ showErr("file:// blocks network on many phones. Use https."); return; }
+  const mine = myReactions.get(postId) || new Set();
+
+  if(mine.has(emoji)){
+    const { error } = await supabaseClient
+      .from("reactions")
+      .delete()
+      .eq("post_id", postId)
+      .eq("emoji", emoji)
+      .eq("reactor_id", deviceId);
+
+    if(error){ console.error(error); showErr("Reaction delete failed: " + (error.message || "")); return; }
+  }else{
+    const { error } = await supabaseClient
+      .from("reactions")
+      .insert({ post_id: postId, emoji, reactor_id: deviceId });
+
+    if(error){ console.error(error); showErr("Reaction failed: " + (error.message || "")); return; }
+  }
+}
+
+async function createPoll(){
+  const btn = document.getElementById("pollSubmitBtn");
+  btn.disabled = true;
+  btn.textContent = "Creating...";
+  try{
+    if(location.protocol === "file:"){ showErr("file:// blocks network on many phones. Use https."); return; }
+
+    const cat = document.getElementById("pollCategory").value;
+    const q = (document.getElementById("pollQuestion").value||"").trim();
+    const opts = [
+      document.getElementById("pollOpt1").value.trim(),
+      document.getElementById("pollOpt2").value.trim(),
+      document.getElementById("pollOpt3").value.trim(),
+      document.getElementById("pollOpt4").value.trim(),
+      document.getElementById("pollOpt5").value.trim()
+    ].filter(Boolean);
+
+    if(!q || opts.length < 2){ showErr("Poll needs question + 2 options."); return; }
+    if(containsBlockedWords(q) || opts.some(o=>containsBlockedWords(o))){ showErr("Blocked poll content."); return; }
+
+    const payload = { language: currentLang, category: cat, question: escapeHtml(q), options: opts.map(escapeHtml), creator_id: deviceId };
+    const { error } = await supabaseClient.from("polls").insert(payload);
+    if(error){ console.error(error); showErr("Poll create failed: " + (error.message || "")); return; }
+
+    currentCategory = cat;
+    renderCategoryChips();
+    updateScopePill();
+
+    closeModal("pollModalBg");
+    showOk("Poll created!");
+    setPage("polls");
+    await reloadAll(false);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = "Create";
+  }
+}
+
+async function votePoll(optionIndex){
+  if(!activePoll) return;
+  if(pollAgg?.myVotedIndex != null) return;
+
+  const { error } = await supabaseClient
+    .from("poll_votes")
+    .insert({ poll_id: activePoll.id, option_index: optionIndex, voter_id: deviceId });
+
+  if(error){ console.error(error); showErr("Vote failed: " + (error.message || "maybe already voted")); return; }
+  showOk("Voted!");
+}
+
+let chPosts=null, chComments=null, chReactions=null, chPolls=null, chPollVotes=null;
+function clearChannels(){
+  if(chPosts) supabaseClient.removeChannel(chPosts);
+  if(chComments) supabaseClient.removeChannel(chComments);
+  if(chReactions) supabaseClient.removeChannel(chReactions);
+  if(chPolls) supabaseClient.removeChannel(chPolls);
+  if(chPollVotes) supabaseClient.removeChannel(chPollVotes);
+  chPosts=chComments=chReactions=chPolls=chPollVotes=null;
+}
+function subscribeRealtime(){
+  clearChannels();
+
+  chPosts = supabaseClient
+    .channel("rt-posts")
+    .on("postgres_changes",{event:"INSERT",schema:"public",table:"posts"}, (payload)=>{
+      const p = payload.new;
+      if(!within24h(p.created_at)) return;
+      if(p.language!==currentLang || p.category!==currentCategory || p.mood!==currentMood) return;
+      if(hiddenPosts.includes(p.id)) return;
+      if(posts.some(x=>x.id===p.id)) return;
+
+      posts.unshift(p);
+      if(!commentsByPost.has(p.id)) commentsByPost.set(p.id, []);
+      if(!reactionsAgg.has(p.id)) reactionsAgg.set(p.id, {});
+      renderPosts();
+    })
+    .subscribe();
+
+  chComments = supabaseClient
+    .channel("rt-comments")
+    .on("postgres_changes",{event:"INSERT",schema:"public",table:"comments"}, (payload)=>{
+      const c = payload.new;
+      if(!within24h(c.created_at)) return;
+      if(!posts.some(p=>p.id===c.post_id)) return;
+
+      if(!commentsByPost.has(c.post_id)) commentsByPost.set(c.post_id, []);
+      commentsByPost.get(c.post_id).push(c);
+      renderPosts();
+    })
+    .subscribe();
+
+  chReactions = supabaseClient
+    .channel("rt-reactions")
+    .on("postgres_changes",{event:"INSERT",schema:"public",table:"reactions"}, (payload)=>{
+      const r=payload.new;
+      if(!within24h(r.created_at)) return;
+      if(!posts.some(p=>p.id===r.post_id)) return;
+
+      if(!reactionsAgg.has(r.post_id)) reactionsAgg.set(r.post_id, {});
+      const agg = reactionsAgg.get(r.post_id);
+      agg[r.emoji] = (agg[r.emoji]||0) + 1;
+
+      if(r.reactor_id===deviceId){
+        if(!myReactions.has(r.post_id)) myReactions.set(r.post_id, new Set());
+        myReactions.get(r.post_id).add(r.emoji);
+      }
+      renderPosts();
+    })
+    .on("postgres_changes",{event:"DELETE",schema:"public",table:"reactions"}, (payload)=>{
+      const r=payload.old;
+      if(!r) return;
+      if(!posts.some(p=>p.id===r.post_id)) return;
+
+      const agg = reactionsAgg.get(r.post_id) || {};
+      agg[r.emoji] = Math.max(0, (agg[r.emoji]||0) - 1);
+      reactionsAgg.set(r.post_id, agg);
+
+      if(r.reactor_id===deviceId){
+        const s = myReactions.get(r.post_id);
+        if(s) s.delete(r.emoji);
+      }
+      renderPosts();
+    })
+    .subscribe();
+
+  chPolls = supabaseClient
+    .channel("rt-polls")
+    .on("postgres_changes",{event:"INSERT",schema:"public",table:"polls"}, async (payload)=>{
+      const p=payload.new;
+      if(p.language!==currentLang || p.category!==currentCategory) return;
+      await loadActivePoll();
+      renderPoll();
+    })
+    .subscribe();
+
+  chPollVotes = supabaseClient
+    .channel("rt-pollvotes")
+    .on("postgres_changes",{event:"INSERT",schema:"public",table:"poll_votes"}, async (payload)=>{
+      const v=payload.new;
+      if(!activePoll) return;
+      if(v.poll_id!==activePoll.id) return;
+      await loadActivePoll();
+      renderPoll();
+    })
+    .subscribe();
+}
+
+async function reloadAll(showToast){
+  try{
+    updateScopePill();
+    await loadPosts();
+    const ids = posts.map(p=>p.id);
+    await loadCommentsFor(ids);
+    await loadReactionsFor(ids);
+    await loadActivePoll();
+
+    renderPosts();
+    renderPoll();
+    subscribeRealtime();
+
+    if(showToast) showOk("Updated");
+  }catch(e){
+    console.error(e);
+    showErr("Load failed: " + (e?.message || "check Supabase tables/policies"));
+  }
+}
+
+(function boot(){
+  if(location.protocol === "file:"){
+    document.getElementById("fileWarn").style.display = "block";
+  }
+  buildSidebar();
+  setPage("home");
+  setPrompt();
+
+  fillSelect("postCategory", categories[currentLang], currentCategory);
+  fillSelect("postMood", moods[currentLang], currentMood);
+  fillSelect("pollCategory", categories[currentLang], currentCategory);
+
+  reloadAll(false);
+})();
+</script>
+</body>
+</html>
