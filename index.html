@@ -925,7 +925,7 @@ function renderPosts(){
       <div class="comments-area" id="comments-${post.id}"></div>
       <div class="reply-box">
         <input class="reply-input" id="reply-${post.id}" placeholder="Write your unfiltered thought..." />
-        <button class="reply-btn" onclick="addComment('${post.id}')">Reply</button>
+       <button class="reply-btn" onclick="addComment(${post.id})">Reply</button>
       </div>
     `;
     feed.appendChild(div);
@@ -1007,11 +1007,11 @@ async function addComment(postId){
   if(raw.length < 2) return;
   if(containsBlockedWords(raw)){ showErr("Blocked comment."); return; }
 
-  const p = posts.find(x=>x.id===postId);
+  const p = posts.find(x => String(x.id) === String(postId));
   if(!p) return;
 
   const payload = {
-    post_id: postId,
+    post_id: parseInt(postId), // Converte l'ID in numero intero per il database
     language: p.language,
     category: p.category,
     mood: p.mood,
@@ -1021,12 +1021,17 @@ async function addComment(postId){
   };
 
   const { error } = await supabaseClient.from("comments").insert(payload);
-  if(error){ console.error(error); showErr("Comment failed: " + (error.message || "check RLS/policies")); return; }
+  if(error){ 
+    console.error("Errore Supabase:", error); 
+    showErr("Comment failed: " + error.message); 
+    return; 
+  }
 
   input.value = "";
   showOk("Replied!");
+  // Opzionale: ricarica per vedere il commento immediatamente se il realtime è lento
+  await reloadAll(false);
 }
-
 async function toggleReaction(postId, emoji){
   if(location.protocol === "file:"){ showErr("file:// blocks network on many phones. Use https."); return; }
   const mine = myReactions.get(postId) || new Set();
