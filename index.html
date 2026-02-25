@@ -368,7 +368,7 @@
         <div class="hamburger" onclick="openSidebar()">☰</div>
         <div class="brand">
           <h1 id="pageTitle">No Filter</h1>
-          <div class="subtitle">Say what you can't say anywhere else. <span style="opacity:.65;font-size:11px;">v1.0.4</span></div>
+          <div class="subtitle">Say what you can't say anywhere else.</div>
         </div>
       </div>
       <button class="btn-outline" onclick="reloadAll(true)">↻ Refresh</button>
@@ -920,12 +920,12 @@ function renderPosts(){
       <div class="text">${post.text}</div>
       <div class="reactions" id="react-${post.id}"></div>
       <div class="row-actions">
-        <button class="hide" onclick="hidePost('${post.id}')">Report / Hide</button>
+        <button class="hide" onclick="hidePost(${post.id})">Report / Hide</button>
       </div>
       <div class="comments-area" id="comments-${post.id}"></div>
       <div class="reply-box">
         <input class="reply-input" id="reply-${post.id}" placeholder="Write your unfiltered thought..." />
-       <button class="reply-btn" onclick="addComment(${post.id})">Reply</button>
+        <button class="reply-btn" onclick="addComment('${post.id}')">Reply</button>
       </div>
     `;
     feed.appendChild(div);
@@ -1007,11 +1007,11 @@ async function addComment(postId){
   if(raw.length < 2) return;
   if(containsBlockedWords(raw)){ showErr("Blocked comment."); return; }
 
-  const p = posts.find(x => String(x.id) === String(postId));
+  const p = posts.find(x=>x.id===postId);
   if(!p) return;
 
   const payload = {
-    post_id: parseInt(postId), // Converte l'ID in numero intero per il database
+    post_id: postId,
     language: p.language,
     category: p.category,
     mood: p.mood,
@@ -1021,17 +1021,13 @@ async function addComment(postId){
   };
 
   const { error } = await supabaseClient.from("comments").insert(payload);
-  if(error){ 
-    console.error("Errore Supabase:", error); 
-    showErr("Comment failed: " + error.message); 
-    return; 
-  }
+  if(error){ console.error(error); showErr("Comment failed: " + (error.message || "check RLS/policies")); return; }
 
   input.value = "";
   showOk("Replied!");
-  // Opzionale: ricarica per vedere il commento immediatamente se il realtime è lento
   await reloadAll(false);
 }
+
 async function toggleReaction(postId, emoji){
   if(location.protocol === "file:"){ showErr("file:// blocks network on many phones. Use https."); return; }
   const mine = myReactions.get(postId) || new Set();
@@ -1052,6 +1048,8 @@ async function toggleReaction(postId, emoji){
 
     if(error){ console.error(error); showErr("Reaction failed: " + (error.message || "")); return; }
   }
+
+  await reloadAll(false);
 }
 
 async function createPoll(){
@@ -1074,8 +1072,8 @@ async function createPoll(){
     if(!q || opts.length < 2){ showErr("Poll needs question + 2 options."); return; }
     if(containsBlockedWords(q) || opts.some(o=>containsBlockedWords(o))){ showErr("Blocked poll content."); return; }
 
-    const expires_at = new Date(Date.now() + 24*60*60*1000).toISOString();
-    const payload = { language: currentLang, category: cat, question: escapeHtml(q), options: opts.map(escapeHtml), creator_id: deviceId, expires_at };
+    const expiresAt = new Date(Date.now() + 24*60*60*1000).toISOString();
+    const payload = { language: currentLang, category: cat, question: escapeHtml(q), options: opts.map(escapeHtml), creator_id: deviceId, expires_at: expiresAt };
     const { error } = await supabaseClient.from("polls").insert(payload);
     if(error){ console.error(error); showErr("Poll create failed: " + (error.message || "")); return; }
 
@@ -1103,6 +1101,8 @@ async function votePoll(optionIndex){
 
   if(error){ console.error(error); showErr("Vote failed: " + (error.message || "maybe already voted")); return; }
   showOk("Voted!");
+  await loadActivePoll();
+  renderPoll();
 }
 
 let chPosts=null, chComments=null, chReactions=null, chPolls=null, chPollVotes=null;
