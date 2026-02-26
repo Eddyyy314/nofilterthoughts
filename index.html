@@ -322,6 +322,11 @@
       <div style="margin-top:6px;">Say what you can't say anywhere else.</div>
     </div>
 
+<div class="sb-section">
+      <div class="sb-label">Language</div>
+      <select id="language" onchange="onLanguageChange()" style="background:#111; color:#fff; border:1px solid rgba(255,255,255,0.15);"></select>
+    </div>
+
     <div class="sb-section">
       <div class="sb-label">Navigation</div>
       <div class="sb-nav">
@@ -339,10 +344,17 @@
       </div>
     </div>
 
-    <div class="sb-section">
-      <div class="sb-label">Language</div>
-      <select id="language" onchange="onLanguageChange()" style="background:#111; color:#fff; border:1px solid rgba(255,255,255,0.15);"></select>
+<div class="sb-nav">
+  <div class="sb-item" onclick="createPrivateGroup()" style="background:rgba(255,255,255,0.15); border:1px dashed #fff; margin-top: 10px;">
+  ➕ Create Private Group
+</div>
+  </div>
+
+<div class="sb-section">
+  <div class="sb-label">I miei Gruppi</div>
+  <div id="myGroupsList" class="sb-nav">
     </div>
+</div>
 
     <div class="sb-section">
       <div class="sb-label">Categories</div>
@@ -363,6 +375,7 @@
   </aside>
 
   <main class="main">
+<div id="groupInfo"></div>
     <div class="topbar">
       <div style="display:flex; gap:10px; align-items:center;">
         <div class="hamburger" onclick="openSidebar()">☰</div>
@@ -493,6 +506,47 @@
 const SUPABASE_URL = "https://wgzyqzilzxqlpuamxxrr.supabase.co";
 const SUPABASE_KEY = "sb_publishable_-WlIpnkALrWZFGCUfn2y5w_Gk_vh30i";
 const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+// LOGICA GRUPPI E URL
+const urlParams = new URLSearchParams(window.location.search);
+let currentGroupId = urlParams.get('join') || 'public';
+
+if (currentGroupId !== 'public') {
+  document.getElementById('groupInfo').innerHTML = `
+    <div class="group-banner">
+      <span>Stanza: ${currentGroupId}</span>
+      <button onclick="window.location.href='index copia 3.html'" style="background:#fff; color:#000; padding:5px 10px; font-size:12px;">Esci</button>
+    </div>`;
+}
+
+function createPrivateGroup() {
+  const gName = prompt("Che nome vuoi dare al gruppo?");
+  if (!gName) return;
+
+  const id = "room-" + Math.random().toString(36).substring(2, 8);
+  const url = new URL(window.location.href);
+  url.searchParams.set('join', id);
+  
+  // Salva nella lista locale per il menu
+  let myGroups = JSON.parse(localStorage.getItem("nofilter_myGroups") || "[]");
+  myGroups.push({ id, name: gName });
+  localStorage.setItem("nofilter_myGroups", JSON.stringify(myGroups));
+  
+  alert("Gruppo '" + gName + "' creato! Link copiato.");
+  window.location.href = url.toString();
+}
+
+function updateGroupsMenu() {
+  const list = document.getElementById("myGroupsList");
+  const myGroups = JSON.parse(localStorage.getItem("nofilter_myGroups") || "[]");
+  if (myGroups.length === 0) {
+    list.innerHTML = '<div style="padding:10px; opacity:0.5; font-size:12px;">Nessun gruppo</div>';
+    return;
+  }
+  list.innerHTML = myGroups.map(g => `
+    <div class="sb-item" onclick="window.location.href='?join=${g.id}'">👥 ${g.name}</div>
+  `).join('');
+}
 
 function escapeHtml(str){
   return String(str)
@@ -679,20 +733,38 @@ function buildSidebar(){
   document.getElementById("nav-polls").classList.toggle("active", page==="polls");
 }
 async function onLanguageChange(){
+  // 1. Prendi il valore della nuova lingua selezionata
   currentLang = document.getElementById("language").value;
+  
+  // 2. Resetta la categoria iniziale alla prima della nuova lingua
   currentCategory = categories[currentLang][0];
-  currentMood = moods[currentLang][0];
-
-  fillSelect("mood", moods[currentLang], currentMood);
+  
+  // 3. Aggiorna i selettori e i suggerimenti grafici
+  fillSelect("mood", moods[currentLang], moods[currentLang][0]);
   renderCategoryChips();
   updateScopePill();
   setPrompt();
+  
+  // 4. Forza il ricaricamento dei post filtrati per la nuova lingua
   await reloadAll(true);
 }
-async function onMoodChange(){
-  currentMood = document.getElementById("mood").value;
-  updateScopePill();
-  await reloadAll(true);
+
+function updateGroupsMenu() {
+  const list = document.getElementById("myGroupsList");
+  if (!list) return; // Carica solo se l'elemento esiste nell'HTML
+
+  const myGroups = JSON.parse(localStorage.getItem("nofilter_myGroups") || "[]");
+  
+  if (myGroups.length === 0) {
+    list.innerHTML = '<div style="padding:10px; opacity:0.5; font-size:12px;">Nessun gruppo salvato</div>';
+    return;
+  }
+
+  list.innerHTML = myGroups.map(g => `
+    <div class="sb-item" onclick="window.location.href='?join=${g.id}'" style="cursor:pointer; margin-bottom:5px;">
+      👥 ${g.name}
+    </div>
+  `).join('');
 }
 
 async function loadPosts(){
@@ -702,6 +774,7 @@ async function loadPosts(){
     .select("id,created_at,language,category,mood,author,text")
     .gte("created_at", since)
     .eq("language", currentLang)
+    .eq("group_id", currentGroupId)
     .eq("category", currentCategory)
     .eq("mood", currentMood)
     .order("created_at", { ascending:false })
@@ -979,7 +1052,16 @@ async function createPost(){
     if(raw.length < 5){ showErr("Write at least 5 characters."); return; }
     if(containsBlockedWords(raw)){ showErr("Blocked content."); return; }
 
-    const payload = { language: currentLang, category: cat, mood, author: userName, text: escapeHtml(raw) };
+    // MODIFICA QUI: Aggiunto group_id al payload
+    const payload = { 
+      language: currentLang, 
+      category: cat, 
+      mood, 
+      author: userName, 
+      text: escapeHtml(raw),
+      group_id: currentGroupId 
+    };
+
     const { error } = await supabaseClient.from("posts").insert(payload);
     if(error){ console.error(error); showErr("Post failed: " + (error.message || "check RLS/policies")); return; }
 
@@ -999,7 +1081,6 @@ async function createPost(){
     btn.textContent = "Post";
   }
 }
-
 async function addComment(postId){
   if(location.protocol === "file:"){ showErr("file:// blocks network on many phones. Use https."); return; }
   const input = document.getElementById(`reply-${postId}`);
@@ -1012,6 +1093,7 @@ async function addComment(postId){
 
   const payload = {
     post_id: postId,
+    group_id: currentGroupId,
     language: p.language,
     category: p.category,
     mood: p.mood,
@@ -1122,7 +1204,7 @@ function subscribeRealtime(){
     .on("postgres_changes",{event:"INSERT",schema:"public",table:"posts"}, (payload)=>{
       const p = payload.new;
       if(!within24h(p.created_at)) return;
-      if(p.language!==currentLang || p.category!==currentCategory || p.mood!==currentMood) return;
+      if(p.language !== currentLang || p.category !== currentCategory || p.mood !== currentMood) return;
       if(hiddenPosts.includes(p.id)) return;
       if(posts.some(x=>x.id===p.id)) return;
 
@@ -1235,6 +1317,7 @@ async function reloadAll(showToast){
   fillSelect("pollCategory", categories[currentLang], currentCategory);
 
   reloadAll(false);
+  updateGroupsMenu();
 })();
 </script>
 </body>
