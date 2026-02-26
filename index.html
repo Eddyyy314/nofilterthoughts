@@ -925,7 +925,7 @@ function renderPosts(){
       <div class="comments-area" id="comments-${post.id}"></div>
       <div class="reply-box">
         <input class="reply-input" id="reply-${post.id}" placeholder="Write your unfiltered thought..." />
-        <button class="reply-btn" onclick="addComment('${post.id}')">Reply</button>
+        <button class="reply-btn" onclick="addComment(${post.id})">Reply</button>
       </div>
     `;
     feed.appendChild(div);
@@ -1007,7 +1007,7 @@ async function addComment(postId){
   if(raw.length < 2) return;
   if(containsBlockedWords(raw)){ showErr("Blocked comment."); return; }
 
-  const p = posts.find(x=>x.id===postId);
+  const p = posts.find(x => x.id == postId);
   if(!p) return;
 
   const payload = {
