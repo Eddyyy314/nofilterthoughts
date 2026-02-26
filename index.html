@@ -771,10 +771,10 @@ async function loadPosts(){
   const since = iso24hAgo();
   const { data, error } = await supabaseClient
     .from("posts")
-    .select("id,created_at,language,category,mood,author,text")
+    .select("id,created_at,language,category,mood,author,text,group_id") // Aggiungi group_id qui
     .gte("created_at", since)
     .eq("language", currentLang)
-    .eq("group_id", currentGroupId)
+    .eq("group_id", currentGroupId) // <--- QUESTO È IL FILTRO CRUCIALE
     .eq("category", currentCategory)
     .eq("mood", currentMood)
     .order("created_at", { ascending:false })
@@ -783,6 +783,7 @@ async function loadPosts(){
   if(error) throw error;
   posts = (data||[]).filter(p => !hiddenPosts.includes(p.id));
 }
+
 async function loadCommentsFor(postIds){
   commentsByPost = new Map();
   if(!postIds.length) return;
@@ -1203,6 +1204,10 @@ function subscribeRealtime(){
     .channel("rt-posts")
     .on("postgres_changes",{event:"INSERT",schema:"public",table:"posts"}, (payload)=>{
       const p = payload.new;
+      
+      // FILTRO GRUPPI: Se il post appartiene a un altro gruppo, ignoralo
+      if(p.group_id !== currentGroupId) return; 
+
       if(!within24h(p.created_at)) return;
       if(p.language !== currentLang || p.category !== currentCategory || p.mood !== currentMood) return;
       if(hiddenPosts.includes(p.id)) return;
@@ -1219,6 +1224,11 @@ function subscribeRealtime(){
     .channel("rt-comments")
     .on("postgres_changes",{event:"INSERT",schema:"public",table:"comments"}, (payload)=>{
       const c = payload.new;
+      
+      // FILTRO GRUPPI: Carica il commento solo se il post appartiene al gruppo attuale
+      // Nota: aggiungiamo il controllo sul group_id anche qui per sicurezza
+      if(c.group_id !== currentGroupId) return;
+
       if(!within24h(c.created_at)) return;
       if(!posts.some(p=>p.id===c.post_id)) return;
 
@@ -1228,6 +1238,9 @@ function subscribeRealtime(){
     })
     .subscribe();
 
+  // Il resto della funzione (Reactions, Polls) rimane invariato 
+  // perché si basano sulla lista 'posts' che è già stata filtrata sopra.
+  
   chReactions = supabaseClient
     .channel("rt-reactions")
     .on("postgres_changes",{event:"INSERT",schema:"public",table:"reactions"}, (payload)=>{
@@ -1266,6 +1279,8 @@ function subscribeRealtime(){
     .channel("rt-polls")
     .on("postgres_changes",{event:"INSERT",schema:"public",table:"polls"}, async (payload)=>{
       const p=payload.new;
+      // Anche per i sondaggi, se hai aggiunto group_id, filtrali:
+      if(p.group_id !== currentGroupId) return;
       if(p.language!==currentLang || p.category!==currentCategory) return;
       await loadActivePoll();
       renderPoll();
