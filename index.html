@@ -1634,8 +1634,7 @@
             device ID anonimo per salvare reazioni e preferenze sul tuo dispositivo. <strong>Non raccogliamo dati
                 personali</strong>, non usiamo cookie di tracciamento o profilazione. Tutti i contenuti si
             autodistruggono dopo
-            24h. <a onclick="document.getElementById('gdpr-modal').style.display='flex'">Maggiori info</a> · <a
-                href="mailto:privacy@nofilterthoughts.it">privacy@nofilterthoughts.it</a>
+            24h. <a onclick="document.getElementById('gdpr-modal').style.display='flex'">Maggiori info</a> · <a href="/cdn-cgi/l/email-protection#d6a6a4bfa0b7b5af96b8b9b0bfbaa2b3a4a2beb9a3b1bea2a5f8bfa2"><span class="__cf_email__" data-cfemail="8dfdffe4fbeceef4cde3e2ebe4e1f9e8fff9e5e2f8eae5f9fea3e4f9">[email&#160;protected]</span></a>
         </div>
         <div class="gdpr-actions">
             <button class="btn-o" style="font-size:12px;padding:9px 14px;" onclick="gdprReject()">Solo
@@ -1656,7 +1655,7 @@
             <div style="font-size:13px;line-height:1.75;color:#444;">
                 <p style="margin-bottom:12px;"><strong>Chi siamo:</strong> NO FILTER è una piattaforma di pensieri
                     anonimi.
-                    Titolare del trattamento: NO FILTER (privacy@nofilterthoughts.it).</p>
+                    Titolare del trattamento: NO FILTER (<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="9eeeecf7e8fffde7def0f1f8f7f2eafbeceaf6f1ebf9f6eaedb0f7ea">[email&#160;protected]</a>).</p>
                 <p style="margin-bottom:12px;"><strong>Dati raccolti:</strong> Un device ID casuale generato localmente
                     sul tuo
                     dispositivo (mai associato a dati personali). I post, commenti e reazioni che pubblichi sono anonimi
@@ -1673,7 +1672,7 @@
                 </p>
                 <p style="margin-bottom:12px;"><strong>I tuoi diritti:</strong> Accesso, rettifica, cancellazione,
                     portabilità e
-                    opposizione al trattamento. Puoi esercitarli scrivendo a privacy@nofilterthoughts.it. Hai il diritto
+                    opposizione al trattamento. Puoi esercitarli scrivendo a <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="6d1d1f041b0c0e142d03020b040119081f190502180a05191e430419">[email&#160;protected]</a>. Hai il diritto
                     di
                     presentare reclamo al Garante per la Protezione dei Dati Personali (www.garanteprivacy.it).</p>
                 <p style="margin-bottom:12px;"><strong>Conservazione dati:</strong> I contenuti vengono eliminati
@@ -1693,7 +1692,7 @@
         </div>
     </div>
 
-    <script>
+    <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
         const { createClient } = supabase;
         const SUPABASE_URL = "https://wgzyqzilzxqlpuamxxrr.supabase.co";
         const SUPABASE_ANON_KEY = "sb_publishable_-WlIpnkALrWZFGCUfn2y5w_Gk_vh30i";
@@ -2901,21 +2900,33 @@
                 el.classList.remove("title-glitching");
                 void el.offsetWidth;
                 el.classList.add("title-glitching");
-                setTimeout(() => el.classList.remove("title-glitching"), 450);
+                setTimeout(() => el.classList.remove("title-glitching"), 500);
             });
         }
 
-        /* ── Init ── */
-        (async function init() {
-            initGDPR();
+        /* ── Attach events (called after render) ── */
+        function attachEvents() {
+            initInteractiveTitle();
+        }
+
+        /* ── Boot ── */
+        async function init() {
             npStart();
-            state.loading = true; render();
-            await Promise.all([loadPosts(), loadPolls(), loadDuels(), loadKingPost()]);
-            state.loading = false; npDone(); render();
-            setTimeout(initInteractiveTitle, 150);
-            setupRealtime(state.currentGroupId);
-        })();
+            render();
+            await Promise.all([
+                loadPosts("public"),
+                loadPolls(),
+                loadDuels(),
+                loadKingPost()
+            ]);
+            state.loading = false;
+            render();
+            setupRealtime("public");
+            npDone();
+            initGDPR();
+        }
+
+        init();
     </script>
 </body>
-
 </html>
