@@ -1,1339 +1,2921 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="it">
+
 <head>
-  <meta charset="UTF-8" />
-  <title>No Filter</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>NO FILTER</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:wght@300;400;500&display=swap"
+        rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
 
-  <style>
-    :root{
-      --bg:#f6f7f9;
-      --card:#ffffff;
-      --text:#0f1115;
-      --muted:#667085;
-      --border:#e6e8ee;
-      --shadow:0 6px 22px rgba(15,17,21,0.08);
-      --shadow2:0 2px 10px rgba(15,17,21,0.08);
-      --black:#0b0b0b;
-      --chip:#f0f2f6;
-      --sidebar:#0b0b0b;
-      --sidebarText:#fff;
-      --sidebarMuted:rgba(255,255,255,0.72);
-      --radius:18px;
-      --radius2:14px;
-    }
-    *{box-sizing:border-box}
-    body{
-      margin:0;
-      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-      background:var(--bg);
-      color:var(--text);
-    }
-    a{color:inherit}
+        :root {
+            --bg: #fff;
+            --fg: #0a0a0a;
+            --border: #eee;
+            --muted: #bbb;
+            --surface: #f5f5f5;
+            --sidebar-w: 260px;
+            --content-max: 680px;
+            --nav-h: 56px;
+            --header-h: 56px;
+            --transition: 0.28s cubic-bezier(.22, 1, .36, 1);
+        }
 
-    .sidebar{
-      width:290px;
-      background:var(--sidebar);
-      color:var(--sidebarText);
-      padding:18px 14px;
-      position:fixed;
-      top:0; left:0; bottom:0;
-      transform:translateX(-100%);
-      transition:transform .22s ease;
-      z-index:999;
-      overflow:auto;
-    }
-    .sidebar.open{ transform:translateX(0); }
-    .overlay{
-      display:none;
-      position:fixed; inset:0;
-      background:rgba(0,0,0,0.46);
-      z-index:998;
-    }
-    .overlay.show{ display:block; }
-    .main{
-      max-width:980px;
-      margin:0 auto;
-      padding:18px 16px 28px;
-    }
+        html {
+            scroll-behavior: smooth;
+        }
 
-    .topbar{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:10px;
-      margin-bottom:14px;
-    }
-    .hamburger{
-      width:44px; height:44px;
-      border-radius:14px;
-      border:1px solid var(--border);
-      background:var(--card);
-      box-shadow:var(--shadow2);
-      cursor:pointer;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      font-size:18px;
-    }
-    .brand{ display:flex; flex-direction:column; gap:2px; }
-    .brand h1{
-      font-size:20px;
-      margin:0;
-      letter-spacing:-0.3px;
-      line-height:1.1;
-    }
-    .subtitle{
-      color:var(--muted);
-      font-size:12px;
-      margin-top:2px;
-    }
+        body {
+            background: #f8f8f8;
+            color: var(--fg);
+            font-family: 'DM Mono', monospace;
+            -webkit-tap-highlight-color: transparent;
+            overscroll-behavior: none;
+            min-height: 100vh;
+        }
 
-    .card{
-      background:var(--card);
-      border:1px solid var(--border);
-      border-radius:var(--radius);
-      box-shadow:var(--shadow);
-      padding:14px;
-      margin-top:12px;
-    }
+        /* ── Scrollbar ── */
+        ::-webkit-scrollbar {
+            width: 3px;
+            height: 3px;
+        }
 
-    button{
-      border:none;
-      cursor:pointer;
-      border-radius:14px;
-      padding:12px 14px;
-      font-weight:700;
-      background:var(--black);
-      color:#fff;
-    }
-    button:hover{ opacity:.92; }
-    button:disabled{opacity:.55; cursor:not-allowed;}
-    .btn-outline{
-      background:var(--card);
-      border:1px solid var(--border);
-      color:var(--text);
-      box-shadow:var(--shadow2);
-    }
+        ::-webkit-scrollbar-thumb {
+            background: #ddd;
+            border-radius: 2px;
+        }
 
-    textarea,input,select{
-      width:100%;
-      border:1px solid var(--border);
-      border-radius:14px;
-      padding:12px 12px;
-      font-size:14px;
-      background:#fff;
-      outline:none;
-    }
-    textarea{ min-height:110px; resize:none; }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
 
-    .sb-title{ display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:12px; }
-    .sb-title strong{ font-size:16px; }
-    .sb-close{
-      width:40px; height:40px;
-      border-radius:14px;
-      background:rgba(255,255,255,0.08);
-      color:#fff;
-      display:flex; align-items:center; justify-content:center;
-      cursor:pointer;
-      border:1px solid rgba(255,255,255,0.12);
-    }
-    .sb-section{ margin-top:14px; padding-top:12px; border-top:1px solid rgba(255,255,255,0.1); }
-    .sb-label{ font-size:12px; color:var(--sidebarMuted); margin-bottom:10px; }
-    .sb-nav{ display:flex; flex-direction:column; gap:10px; }
-    .sb-item{
-      padding:10px 10px;
-      border-radius:14px;
-      background:rgba(255,255,255,0.06);
-      border:1px solid rgba(255,255,255,0.10);
-      color:#fff;
-      cursor:pointer;
-      display:flex; align-items:center; justify-content:space-between; gap:10px;
-      font-size:14px;
-    }
-    .sb-item.active{ background:rgba(255,255,255,0.14); border-color:rgba(255,255,255,0.20); }
-    .sb-chips{ display:flex; gap:8px; flex-wrap:wrap; }
-    .chip{
-      padding:8px 10px;
-      border-radius:999px;
-      background:rgba(255,255,255,0.08);
-      border:1px solid rgba(255,255,255,0.12);
-      color:#fff;
-      cursor:pointer;
-      font-size:12px;
-      user-select:none;
-    }
-    .chip.active{ background:#fff; color:#000; border-color:#fff; }
+        /* ── Base elements ── */
+        input,
+        textarea,
+        select {
+            font-family: 'DM Mono', monospace;
+            background: var(--surface);
+            color: var(--fg);
+            border: 1px solid #d8d8d8;
+            border-radius: 7px;
+            padding: 10px 12px;
+            width: 100%;
+            font-size: 13px;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
 
-    .landing{
-      display:flex; flex-direction:column; align-items:center; justify-content:center;
-      text-align:center;
-      min-height:70vh;
-      gap:12px;
-    }
-    .landing h2{ margin:0; font-size:34px; letter-spacing:-0.7px; }
-    .landing .tagline{ margin:0; color:var(--muted); max-width:560px; line-height:1.45; }
-    .landing .actions{ display:flex; gap:10px; flex-wrap:wrap; justify-content:center; margin-top:6px; }
-    .pill{
-      display:inline-block;
-      padding:6px 10px;
-      border-radius:999px;
-      background:var(--chip);
-      font-size:12px;
-      color:#111;
-    }
-    .feed-header{
-      display:flex; gap:10px; flex-wrap:wrap;
-      align-items:center; justify-content:space-between;
-      margin-top:12px;
-    }
-    .feed-header .left{ display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
-    .small{ color:var(--muted); font-size:12px; }
+        input:focus,
+        textarea:focus,
+        select:focus {
+            border-color: var(--fg);
+            box-shadow: 0 0 0 3px rgba(10, 10, 10, 0.06);
+        }
 
-    .post{
-      background:var(--card);
-      border:1px solid var(--border);
-      border-radius:22px;
-      box-shadow:var(--shadow);
-      padding:16px;
-      margin-top:14px;
-    }
-    .author{
-      display:flex; align-items:center; gap:10px;
-      font-weight:900; font-size:18px;
-    }
-    .badge{
-      font-size:12px;
-      background:var(--chip);
-      padding:5px 10px;
-      border-radius:999px;
-      font-weight:800;
-    }
-    .context{
-      margin-top:10px;
-      font-weight:900;
-      font-size:26px;
-      letter-spacing:-0.6px;
-      line-height:1.05;
-    }
-    .text{
-      margin-top:10px;
-      font-size:20px;
-      line-height:1.32;
-      word-break:break-word;
-      white-space:pre-wrap;
-    }
-    .reactions{ display:flex; gap:10px; flex-wrap:wrap; margin-top:14px; }
-    .react-btn{
-      width:auto;
-      padding:10px 14px;
-      border-radius:999px;
-      background:#0d0d0d;
-      color:#fff;
-      font-weight:900;
-      display:flex; align-items:center; gap:8px;
-      box-shadow:0 10px 20px rgba(0,0,0,0.12) inset;
-    }
-    .react-btn.active{ outline:2px solid rgba(0,0,0,0.25); background:#000; }
-    .row-actions{ margin-top:12px; }
-    .row-actions .hide{
-      width:auto;
-      padding:10px 16px;
-      border-radius:999px;
-      background:#1a1a1a;
-      color:#fff;
-      font-weight:800;
-    }
-    .comments-area{ margin-top:14px; border-top:1px solid var(--border); padding-top:12px; }
-    .comment-row{ font-size:14px; margin-top:8px; color:#222; }
-    .comment-row strong{ color:#000; }
-    .view-more{ margin-top:8px; color:#2a2a2a; font-weight:800; cursor:pointer; user-select:none; }
-    .reply-box{ margin-top:14px; }
-    .reply-input{ margin-top:10px; border-radius:14px; height:52px; padding:14px 14px; font-size:16px; }
-    .reply-btn{ margin-top:10px; width:100%; height:58px; font-size:18px; border-radius:16px; }
+        select option {
+            background: var(--surface);
+        }
 
-    .modal-backdrop{
-      display:none;
-      position:fixed;
-      inset:0;
-      background:rgba(0,0,0,0.45);
-      z-index:1000;
-      align-items:center;
-      justify-content:center;
-      padding:18px;
-    }
-    .modal-backdrop.show{ display:flex; }
-    .modal{
-      width:100%;
-      max-width:560px;
-      background:var(--card);
-      border:1px solid var(--border);
-      border-radius:22px;
-      box-shadow:0 20px 60px rgba(0,0,0,0.35);
-      padding:16px;
-    }
-    .modal h3{ margin:0 0 6px; letter-spacing:-0.2px; }
-    .modal .modal-row{ margin-top:10px; }
-    .modal .btn-row{ display:flex; gap:10px; margin-top:12px; flex-wrap:wrap; }
-    .modal .btn-row button{ flex:1; }
+        .btn {
+            background: #0a0a0a;
+            color: #fff;
+            border: none;
+            padding: 11px 18px;
+            border-radius: 7px;
+            font-family: 'DM Mono', monospace;
+            font-size: 13px;
+            cursor: pointer;
+            transition: opacity 0.2s, transform 0.15s;
+        }
 
-    .poll-title{ display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap; margin:0 0 8px; }
-    .poll-q{ font-weight:900; font-size:16px; color:#111; }
-    .poll-option{ display:flex; align-items:center; gap:10px; margin-top:10px; }
-    .poll-btn{ width:auto; padding:10px 12px; border-radius:999px; font-weight:900; background:#111; color:#fff; white-space:nowrap; }
-    .poll-btn:disabled{opacity:.6}
-    .poll-bar-wrap{ flex:1; height:10px; background:#eee; border-radius:999px; overflow:hidden; }
-    .poll-bar{ height:100%; width:0%; background:#111; transition:width .25s ease; }
-    .poll-meta{ font-size:12px; color:var(--muted); white-space:nowrap; min-width:80px; text-align:right; }
+        .btn:hover {
+            opacity: 0.82;
+        }
 
-    .warn{
-      background:#fff3cd;
-      border:1px solid #ffe69c;
-      color:#664d03;
-      border-radius:14px;
-      padding:10px 12px;
-      font-size:12px;
-      box-shadow:var(--shadow2);
-      margin-top:10px;
-    }
+        .btn:active {
+            transform: scale(0.97);
+        }
 
-    @media (max-width: 540px){
-      .context{ font-size:22px; }
-      .text{ font-size:18px; }
-      .author{ font-size:16px; }
-      .reply-btn{ font-size:17px; height:56px; }
-      .sidebar{ width:84vw; }
-    }
-  </style>
+        .btn:disabled {
+            opacity: 0.35;
+            cursor: default;
+        }
+
+        .btn-o {
+            background: transparent;
+            color: #555;
+            border: 1px solid #d8d8d8;
+            padding: 10px 16px;
+            border-radius: 7px;
+            font-family: 'DM Mono', monospace;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-o:hover {
+            border-color: #0a0a0a;
+            color: #0a0a0a;
+        }
+
+        .btn-o:active {
+            transform: scale(0.97);
+        }
+
+        .btn-sm {
+            background: #0a0a0a;
+            color: #fff;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-family: 'DM Mono', monospace;
+            font-size: 12px;
+            cursor: pointer;
+            transition: opacity 0.2s, transform 0.15s;
+        }
+
+        .btn-sm:hover {
+            opacity: 0.75;
+        }
+
+        .btn-sm:active {
+            transform: scale(0.95);
+        }
+
+        .card {
+            background: #fff;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 10px;
+            transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
+        }
+
+        .card.click {
+            cursor: pointer;
+        }
+
+        .card.click:hover {
+            border-color: #d0d0d0;
+            box-shadow: 0 3px 16px rgba(0, 0, 0, 0.05);
+        }
+
+        .card.click:active {
+            transform: scale(0.995);
+        }
+
+        .chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 3px;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            border: 1px solid #e0e0e0;
+            color: #666;
+            background: #f5f5f5;
+        }
+
+        .rx {
+            background: #f5f5f5;
+            border: 1px solid #eee;
+            color: #555;
+            padding: 4px 9px;
+            border-radius: 18px;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.18s;
+            display: inline-flex;
+            align-items: center;
+            gap: 3px;
+        }
+
+        .rx:hover {
+            border-color: #bbb;
+            background: #ebebeb;
+            transform: scale(1.05);
+        }
+
+        .rx:active {
+            transform: scale(0.95);
+        }
+
+        .rx.on {
+            border-color: #0a0a0a;
+            background: #0a0a0a;
+            color: #fff;
+        }
+
+        .fchip {
+            white-space: nowrap;
+            padding: 5px 11px;
+            border-radius: 18px;
+            font-size: 11px;
+            font-family: 'DM Mono', monospace;
+            cursor: pointer;
+            border: 1px solid #eee;
+            background: transparent;
+            color: #bbb;
+            transition: all 0.18s;
+        }
+
+        .fchip:hover {
+            border-color: #ccc;
+            color: #555;
+        }
+
+        .fchip.on {
+            background: #0a0a0a;
+            color: #fff;
+            border-color: #0a0a0a;
+        }
+
+        .si {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 9px 12px;
+            border-radius: 8px;
+            color: #444;
+            font-size: 13px;
+            font-family: 'DM Mono', monospace;
+            cursor: pointer;
+            transition: all 0.15s;
+            border: none;
+            background: none;
+            width: 100%;
+            text-align: left;
+            margin-bottom: 1px;
+        }
+
+        .si:hover {
+            background: var(--surface);
+            color: #0a0a0a;
+        }
+
+        .si.on {
+            background: #ebebeb;
+            color: #0a0a0a;
+            font-weight: 500;
+        }
+
+        .si:active {
+            background: #e0e0e0;
+        }
+
+        .section-label {
+            font-size: 10px;
+            color: var(--muted);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-bottom: 6px;
+        }
+
+        .divider {
+            height: 1px;
+            background: #f0f0f0;
+            margin: 12px 0;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 3px;
+            font-size: 10px;
+            color: #999;
+            padding: 2px 6px;
+            border-radius: 3px;
+            border: 1px solid #eee;
+            background: #fafafa;
+        }
+
+        .toggle {
+            width: 38px;
+            height: 22px;
+            background: #ddd;
+            border-radius: 11px;
+            cursor: pointer;
+            position: relative;
+            transition: background 0.25s;
+            flex-shrink: 0;
+            border: none;
+        }
+
+        .toggle.on {
+            background: #0a0a0a;
+        }
+
+        .toggle::after {
+            content: '';
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            width: 16px;
+            height: 16px;
+            background: #fff;
+            border-radius: 50%;
+            transition: left 0.22s cubic-bezier(.34, 1.56, .64, 1);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+        }
+
+        .toggle.on::after {
+            left: 19px;
+        }
+
+        .lucky-btn {
+            width: 100%;
+            background: #0a0a0a;
+            color: #fff;
+            border: none;
+            border-radius: 9px;
+            padding: 12px;
+            font-family: 'DM Mono', monospace;
+            font-size: 13px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.2s;
+            letter-spacing: .5px;
+            margin-bottom: 8px;
+        }
+
+        .lucky-btn:hover {
+            opacity: 0.85;
+            transform: scale(1.01);
+        }
+
+        .lucky-btn:active {
+            transform: scale(0.98);
+        }
+
+        .sbar {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            background: #fff;
+            border: 1px solid #d8d8d8;
+            border-radius: 9px;
+            padding: 0 11px;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .sbar:focus-within {
+            border-color: #0a0a0a;
+            box-shadow: 0 0 0 3px rgba(10, 10, 10, 0.05);
+        }
+
+        .sbar input {
+            border: none;
+            background: transparent;
+            padding: 10px 0;
+            font-size: 13px;
+            box-shadow: none;
+        }
+
+        .sbar input:focus {
+            border: none;
+            box-shadow: none;
+        }
+
+        .comment-row {
+            padding: 8px 0;
+            border-bottom: 1px solid #f8f8f8;
+            animation: su 0.2s ease;
+        }
+
+        .comment-row:last-child {
+            border-bottom: none;
+        }
+
+        .group-card {
+            background: #fff;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 13px 16px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .group-card:hover {
+            border-color: #d0d0d0;
+            box-shadow: 0 3px 14px rgba(0, 0, 0, 0.05);
+        }
+
+        .group-card:active {
+            transform: scale(0.995);
+        }
+
+        .react-picker {
+            position: absolute;
+            bottom: calc(100% + 8px);
+            left: 0;
+            background: #fff;
+            border: 1px solid #e0e0e0;
+            border-radius: 12px;
+            padding: 8px 10px;
+            display: flex;
+            gap: 4px;
+            z-index: 20;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+            white-space: nowrap;
+            animation: picker-in 0.18s cubic-bezier(.34, 1.56, .64, 1);
+        }
+
+        @keyframes picker-in {
+            from {
+                transform: scale(0.7) translateY(6px);
+                opacity: 0;
+            }
+
+            to {
+                transform: scale(1) translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .react-emoji {
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            font-size: 18px;
+            padding: 3px 4px;
+            border-radius: 7px;
+            transition: transform 0.15s;
+            line-height: 1;
+        }
+
+        .react-emoji:hover {
+            transform: scale(1.35);
+        }
+
+        .react-emoji.on {
+            background: #f0f0f0;
+        }
+
+        .rank-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 12px;
+            border-radius: 8px;
+            margin-bottom: 5px;
+            animation: su 0.25s ease both;
+            transition: background 0.2s;
+        }
+
+        .rank-row:hover {
+            background: #f8f8f8;
+        }
+
+        .rank-num {
+            font-size: 18px;
+            font-family: 'Bebas Neue', cursive;
+            letter-spacing: 1px;
+            width: 28px;
+            text-align: center;
+            flex-shrink: 0;
+        }
+
+        .king-card {
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
+            border: 1px solid #333;
+            border-radius: 14px;
+            padding: 18px;
+            margin-bottom: 12px;
+            position: relative;
+        }
+
+        .king-card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.06) 0%, transparent 60%);
+            pointer-events: none;
+        }
+
+        .king-shimmer {
+            animation: shimmer 3s ease-in-out infinite;
+        }
+
+        @keyframes shimmer {
+
+            0%,
+            100% {
+                opacity: 0.6;
+            }
+
+            50% {
+                opacity: 1;
+            }
+        }
+
+        .duel-card {
+            border-radius: 14px;
+            overflow: hidden;
+            margin-bottom: 12px;
+            border: 1px solid var(--border);
+            background: #fff;
+            animation: su 0.3s cubic-bezier(.22, 1, .36, 1);
+        }
+
+        .duel-side {
+            padding: 16px;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+        }
+
+        .duel-side:hover {
+            opacity: 0.9;
+        }
+
+        .duel-side:active {
+            transform: scale(0.99);
+        }
+
+        .live-dot {
+            width: 5px;
+            height: 5px;
+            background: #0a0a0a;
+            border-radius: 50%;
+            display: inline-block;
+            animation: lp-anim 1.8s infinite;
+            flex-shrink: 0;
+        }
+
+        @keyframes lp-anim {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.2;
+            }
+        }
+
+        /* ── Animations ── */
+        @keyframes su {
+            from {
+                transform: translateY(14px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes sd {
+            from {
+                transform: translateY(-14px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes fade-in {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        .slide-up {
+            animation: su 0.3s cubic-bezier(.22, 1, .36, 1);
+        }
+
+        .view-enter {
+            animation: page-enter 0.32s cubic-bezier(.22, 1, .36, 1);
+        }
+
+        @keyframes page-enter {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes lp-anim {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.2;
+            }
+        }
+
+        /* ── LAYOUT ── */
+
+        /* Mobile first */
+        #layout {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Left sidebar - hidden on mobile */
+        #left-sidebar {
+            display: none;
+        }
+
+        /* Main content */
+        #main-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+            min-height: 100vh;
+        }
+
+        /* Header */
+        #topbar {
+            position: sticky;
+            top: 0;
+            z-index: 30;
+            background: rgba(255, 255, 255, 0.97);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border);
+            height: var(--header-h);
+            display: flex;
+            align-items: center;
+            padding: 0 14px;
+            gap: 10px;
+            transition: box-shadow 0.2s;
+        }
+
+        #content-wrap {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+        }
+
+        #content-col {
+            width: 100%;
+            max-width: var(--content-max);
+            padding: 14px 14px calc(var(--nav-h) + 14px);
+        }
+
+        /* Bottom nav - mobile only */
+        #bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: var(--nav-h);
+            background: rgba(255, 255, 255, 0.97);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-top: 1px solid var(--border);
+            display: flex;
+            align-items: stretch;
+            z-index: 30;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 8px 4px;
+            background: transparent;
+            border: none;
+            border-top: 2px solid transparent;
+            color: #bbb;
+            font-family: 'DM Mono', monospace;
+            font-size: 9px;
+            letter-spacing: .7px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            text-transform: uppercase;
+        }
+
+        .tab.on {
+            color: #0a0a0a;
+            border-top-color: #0a0a0a;
+        }
+
+        .tab:active {
+            opacity: 0.6;
+        }
+
+        /* Mobile overlay sidebar */
+        .mob-sidebar-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 40;
+            background: rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(4px);
+            animation: fade-in 0.22s ease;
+        }
+
+        .mob-sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            width: 280px;
+            background: #fff;
+            border-right: 1px solid var(--border);
+            z-index: 41;
+            padding: 60px 14px 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            animation: sb-in 0.3s cubic-bezier(.22, 1, .36, 1);
+        }
+
+        @keyframes sb-in {
+            from {
+                transform: translateX(-100%)
+            }
+
+            to {
+                transform: translateX(0)
+            }
+        }
+
+        /* Overlay / Sheet */
+        .overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.3);
+            z-index: 50;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            animation: ov-in 0.22s ease;
+        }
+
+        @keyframes ov-in {
+            from {
+                background: rgba(0, 0, 0, 0);
+            }
+
+            to {
+                background: rgba(0, 0, 0, 0.3);
+            }
+        }
+
+        .sheet {
+            background: #fff;
+            width: 100%;
+            max-width: 520px;
+            padding: 22px;
+            max-height: 92vh;
+            overflow-y: auto;
+            border: 1px solid var(--border);
+            animation: sheet-in 0.32s cubic-bezier(.22, 1, .36, 1);
+        }
+
+        .sheet-mobile {
+            border-radius: 18px 18px 0 0;
+            border-bottom: none;
+        }
+
+        .sheet-desktop {
+            border-radius: 16px;
+            margin-bottom: 40px;
+        }
+
+        @keyframes sheet-in {
+            from {
+                transform: translateY(100%);
+            }
+
+            to {
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes sheet-in-center {
+            from {
+                transform: translateY(20px) scale(0.97);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0) scale(1);
+                opacity: 1;
+            }
+        }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 72px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 10px 18px;
+            border-radius: 9px;
+            font-size: 13px;
+            z-index: 200;
+            white-space: nowrap;
+            pointer-events: none;
+            animation: toast-in 0.22s cubic-bezier(.34, 1.56, .64, 1);
+        }
+
+        @keyframes toast-in {
+            from {
+                transform: translateX(-50%) translateY(10px) scale(0.9);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateX(-50%) translateY(0) scale(1);
+                opacity: 1;
+            }
+        }
+
+        /* TikTok view */
+        .tiktok-view {
+            position: fixed;
+            inset: 0;
+            background: #000;
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .tiktok-post {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            padding: 0 0 90px;
+            transition: transform 0.38s cubic-bezier(.22, 1, .36, 1), opacity 0.28s ease;
+        }
+
+        .tiktok-post.exit-up {
+            transform: translateY(-100%);
+            opacity: 0;
+        }
+
+        /* ── TABLET (>= 640px) ── */
+        @media (min-width:640px) {
+            #content-col {
+                padding: 20px 20px calc(var(--nav-h) + 20px);
+            }
+
+            .sheet {
+                border-radius: 18px 18px 0 0;
+            }
+        }
+
+        /* ── DESKTOP (>= 900px) ── */
+        @media (min-width:900px) {
+            body {
+                background: #f0f0f0;
+            }
+
+            #left-sidebar {
+                display: flex;
+                flex-direction: column;
+                width: var(--sidebar-w);
+                flex-shrink: 0;
+                background: #fff;
+                border-right: 1px solid var(--border);
+                position: sticky;
+                top: 0;
+                height: 100vh;
+                overflow-y: auto;
+                padding: 20px 14px;
+                gap: 2px;
+            }
+
+            /* Hide mobile hamburger on desktop */
+            #hamburger-btn {
+                display: none !important;
+            }
+
+            #topbar {
+                padding: 0 24px;
+            }
+
+            #main-area {
+                background: #f0f0f0;
+            }
+
+            #content-col {
+                padding: 24px 24px 40px;
+                max-width: 680px;
+            }
+
+            /* No bottom nav on desktop */
+            #bottom-nav {
+                display: none;
+            }
+
+            /* Toast position */
+            .toast {
+                bottom: 30px;
+            }
+
+            /* Sheet appears centered, not from bottom */
+            .overlay {
+                align-items: center;
+            }
+
+            .sheet {
+                border-radius: 16px !important;
+                margin-bottom: 0 !important;
+                max-height: 88vh;
+                animation: sheet-in-center 0.3s cubic-bezier(.22, 1, .36, 1) !important;
+            }
+
+            /* Right panel for desktop - future usage */
+            #right-panel {
+                display: block;
+                width: 300px;
+                flex-shrink: 0;
+            }
+        }
+
+        /* ── WIDE DESKTOP (>= 1200px) ── */
+        @media (min-width:1200px) {
+            :root {
+                --sidebar-w: 280px;
+            }
+
+            #content-col {
+                max-width: 700px;
+            }
+        }
+
+        /* ── Nav item for desktop sidebar ── */
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            padding: 10px 13px;
+            border-radius: 9px;
+            color: #444;
+            font-size: 13px;
+            font-family: 'DM Mono', monospace;
+            cursor: pointer;
+            transition: all 0.18s;
+            border: none;
+            background: none;
+            width: 100%;
+            text-align: left;
+            margin-bottom: 1px;
+            text-decoration: none;
+        }
+
+        .nav-item:hover {
+            background: var(--surface);
+            color: #0a0a0a;
+        }
+
+        .nav-item.on {
+            background: #ebebeb;
+            color: #0a0a0a;
+            font-weight: 500;
+        }
+
+        .nav-item:active {
+            background: #e0e0e0;
+        }
+
+        /* Right panel content */
+        #right-panel {
+            display: none;
+        }
+
+        @media (min-width:900px) {
+            #right-panel {
+                display: block;
+                width: 280px;
+                flex-shrink: 0;
+                padding: 24px 16px 24px 0;
+            }
+
+            .right-widget {
+                background: #fff;
+                border: 1px solid var(--border);
+                border-radius: 14px;
+                padding: 16px;
+                margin-bottom: 12px;
+            }
+        }
+
+        @media (min-width:1280px) {
+            #right-panel {
+                width: 300px;
+            }
+        }
+
+        /* ── ENHANCED ANIMATIONS ── */
+        @keyframes float-up {
+            0% {
+                transform: translateY(0) scale(1);
+                opacity: 1;
+            }
+
+            100% {
+                transform: translateY(-80px) scale(0.6);
+                opacity: 0;
+            }
+        }
+
+        @keyframes pulse-ring {
+            0% {
+                transform: scale(0.8);
+                opacity: 1;
+            }
+
+            100% {
+                transform: scale(2.4);
+                opacity: 0;
+            }
+        }
+
+        @keyframes stagger-in {
+            from {
+                opacity: 0;
+                transform: translateY(22px) scale(0.96);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        @keyframes glow-pulse {
+
+            0%,
+            100% {
+                box-shadow: 0 0 0 0 rgba(10, 10, 10, 0);
+            }
+
+            50% {
+                box-shadow: 0 0 20px 4px rgba(10, 10, 10, 0.08);
+            }
+        }
+
+        @keyframes slide-right {
+            from {
+                transform: translateX(-100%);
+            }
+
+            to {
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes count-up {
+            0% {
+                transform: translateY(8px);
+                opacity: 0;
+            }
+
+            100% {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes wobble {
+
+            0%,
+            100% {
+                transform: rotate(0deg);
+            }
+
+            25% {
+                transform: rotate(-8deg);
+            }
+
+            75% {
+                transform: rotate(8deg);
+            }
+        }
+
+        @keyframes bounce-in {
+            0% {
+                transform: scale(0.3);
+                opacity: 0;
+            }
+
+            50% {
+                transform: scale(1.08);
+            }
+
+            70% {
+                transform: scale(0.95);
+            }
+
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        @keyframes king-glow {
+
+            0%,
+            100% {
+                box-shadow: 0 0 0 0 rgba(255, 215, 0, 0);
+            }
+
+            50% {
+                box-shadow: 0 0 30px 8px rgba(255, 215, 0, 0.12);
+            }
+        }
+
+        @keyframes nf-marquee {
+            0% {
+                transform: translateX(0);
+            }
+
+            100% {
+                transform: translateX(-50%);
+            }
+        }
+
+        @keyframes ripple {
+            0% {
+                transform: scale(0);
+                opacity: 0.4;
+            }
+
+            100% {
+                transform: scale(4);
+                opacity: 0;
+            }
+        }
+
+        @keyframes streak {
+            0% {
+                opacity: 0;
+                transform: translateX(-100px);
+            }
+
+            30% {
+                opacity: 1;
+            }
+
+            100% {
+                opacity: 0;
+                transform: translateX(120vw);
+            }
+        }
+
+        /* Enhanced card hover */
+        .card.click:hover,
+        .card:hover {
+            transform: translateY(-2px) !important;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08) !important;
+        }
+
+        .card {
+            transition: border-color 0.25s, box-shadow 0.3s, transform 0.3s cubic-bezier(.22, 1, .36, 1) !important;
+        }
+
+        /* Stagger animation for feed items */
+        .stagger-item {
+            animation: stagger-in 0.4s cubic-bezier(.22, 1, .36, 1) both;
+        }
+
+        /* Button ripple effect */
+        .btn,
+        .btn-sm,
+        .btn-o {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-ripple {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.35);
+            pointer-events: none;
+            animation: ripple 0.55s ease-out forwards;
+            transform-origin: center;
+            width: 120px;
+            height: 120px;
+            margin-left: -60px;
+            margin-top: -60px;
+        }
+
+        /* Bottom nav enhancement */
+        .tab {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .tab.on::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            width: 32px;
+            height: 2px;
+            background: #0a0a0a;
+            transform: translateX(-50%);
+            border-radius: 0 0 4px 4px;
+            animation: slide-right 0.25s cubic-bezier(.22, 1, .36, 1);
+        }
+
+        /* Reaction float animation */
+        .rx-float {
+            position: fixed;
+            pointer-events: none;
+            font-size: 22px;
+            z-index: 9999;
+            animation: float-up 0.8s cubic-bezier(.22, 1, .36, 1) forwards;
+        }
+
+        /* King card glow */
+        .king-card {
+            animation: king-glow 4s ease-in-out infinite !important;
+        }
+
+        /* Live dot enhanced */
+        .live-dot {
+            animation: lp-anim 1.8s infinite;
+            box-shadow: 0 0 0 0 rgba(10, 10, 10, 0.4);
+        }
+
+        .live-dot-pulse {
+            position: relative;
+            display: inline-flex;
+        }
+
+        .live-dot-pulse::after {
+            content: '';
+            position: absolute;
+            inset: -3px;
+            border-radius: 50%;
+            border: 2px solid #0a0a0a;
+            animation: pulse-ring 1.8s infinite;
+        }
+
+        /* Smooth view transition wrapper */
+        .view-enter {
+            animation: stagger-in 0.35s cubic-bezier(.22, 1, .36, 1);
+        }
+
+        /* Poll bar animated */
+        .poll-bar {
+            transition: width 0.9s cubic-bezier(.22, 1, .36, 1) !important;
+        }
+
+        /* Duel progress bar */
+        .duel-progress {
+            transition: width 0.9s cubic-bezier(.22, 1, .36, 1) !important;
+        }
+
+        /* Topbar subtle glow on scroll */
+        #topbar.scrolled {
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.06);
+        }
+
+        /* ── Custom Cursor ── */
+        @media (min-width:900px) {
+            #custom-cursor {
+                position: fixed;
+                width: 10px;
+                height: 10px;
+                border-radius: 50%;
+                background: #0a0a0a;
+                pointer-events: none;
+                z-index: 99999;
+                mix-blend-mode: multiply;
+                transition: transform 0.12s ease, opacity 0.2s, width 0.2s, height 0.2s;
+                transform: translate(-50%, -50%);
+                opacity: 0;
+            }
+
+            #custom-cursor.visible {
+                opacity: 1;
+            }
+
+            #custom-cursor.big {
+                width: 28px;
+                height: 28px;
+                opacity: 0.18;
+            }
+        }
+
+        /* ── GDPR Cookie Banner ── */
+        #gdpr-banner {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 9000;
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-top: 1px solid #eee;
+            padding: 16px 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            animation: su 0.4s cubic-bezier(.22, 1, .36, 1);
+            box-shadow: 0 -8px 40px rgba(0, 0, 0, 0.06);
+        }
+
+        @media (min-width:640px) {
+            #gdpr-banner {
+                flex-direction: row;
+                align-items: center;
+                gap: 16px;
+                padding: 14px 28px;
+            }
+        }
+
+        #gdpr-banner .gdpr-text {
+            font-size: 12px;
+            color: #555;
+            line-height: 1.6;
+            flex: 1;
+        }
+
+        #gdpr-banner .gdpr-text strong {
+            color: #0a0a0a;
+        }
+
+        #gdpr-banner .gdpr-text a {
+            color: #0a0a0a;
+            text-decoration: underline;
+            cursor: pointer;
+        }
+
+        #gdpr-banner .gdpr-actions {
+            display: flex;
+            gap: 8px;
+            flex-shrink: 0;
+            flex-wrap: wrap;
+        }
+
+        /* ── Streak / Sparkle background decorations ── */
+        #bg-streaks {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        .streak {
+            position: absolute;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(0, 0, 0, 0.04), transparent);
+            border-radius: 1px;
+            animation: streak linear infinite;
+        }
+
+        /* ── Interaction micro-feedback ── */
+        .just-reacted {
+            animation: wobble 0.4s ease !important;
+        }
+
+        /* .rx.on bounce removed - restarted on every render */
+
+        /* ── Marquee top strip ── */
+        #marquee-bar {
+            width: 100%;
+            background: #0a0a0a;
+            overflow: hidden;
+            height: 22px;
+            display: flex;
+            align-items: center;
+        }
+
+        #marquee-inner {
+            display: flex;
+            white-space: nowrap;
+            gap: 60px;
+            animation: nf-marquee 18s linear infinite;
+            color: rgba(255, 255, 255, 0.45);
+            font-size: 9px;
+            font-family: 'Bebas Neue', cursive;
+            letter-spacing: 3px;
+            padding: 0 30px;
+        }
+
+        /* Loading skeleton */
+        .skeleton {
+            background: linear-gradient(90deg, #f0f0f0 25%, #e8e8e8 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: skeleton-wave 1.5s infinite;
+            border-radius: 6px;
+        }
+
+        @keyframes skeleton-wave {
+            0% {
+                background-position: 200% center;
+            }
+
+            100% {
+                background-position: -200% center;
+            }
+        }
+
+        /* Progress bar top (loading) */
+        #nprogress {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: #0a0a0a;
+            z-index: 99999;
+            transform-origin: left;
+            transform: scaleX(0);
+            transition: transform 0.3s ease, opacity 0.5s;
+        }
+
+        #nprogress.loading {
+            transform: scaleX(0.7);
+        }
+
+        #nprogress.done {
+            transform: scaleX(1);
+            opacity: 0;
+        }
+
+        /* Enhanced sheet */
+        .sheet {
+            box-shadow: 0 -20px 80px rgba(0, 0, 0, 0.12) !important;
+        }
+
+        /* Post card accent line on hover */
+        .card {
+            position: relative;
+            transition: border-color 0.25s, box-shadow 0.3s, transform 0.3s cubic-bezier(.22, 1, .36, 1) !important;
+        }
+
+        .card:hover {
+            box-shadow: inset 3px 0 0 #e8e8e8, 0 6px 24px rgba(0, 0, 0, 0.06) !important;
+            transform: translateY(-1px) !important;
+        }
+
+        .card.click:hover {
+            box-shadow: inset 3px 0 0 #0a0a0a, 0 8px 32px rgba(0, 0, 0, 0.08) !important;
+        }
+
+        /* Duel card enhanced */
+        .duel-card {
+            transition: transform 0.3s cubic-bezier(.22, 1, .36, 1), box-shadow 0.3s !important;
+        }
+
+        .duel-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.07);
+        }
+
+        /* ── Interactive NO FILTER title ── */
+        #topbar-logo {
+            display: inline-block;
+            transition: letter-spacing 0.35s cubic-bezier(.22, 1, .36, 1);
+            user-select: none;
+        }
+
+        #topbar-logo:hover {
+            letter-spacing: 7px !important;
+        }
+
+        #topbar-logo .char {
+            display: inline-block;
+            transition: transform 0.25s cubic-bezier(.34, 1.56, .64, 1), color 0.15s;
+            will-change: transform;
+        }
+
+        #topbar-logo .char:hover {
+            transform: translateY(-4px) scale(1.2);
+            color: #555;
+        }
+
+        @keyframes title-glitch {
+            0% {
+                transform: translate(0, 0);
+            }
+
+            20% {
+                transform: translate(-2px, 1px);
+                color: #888;
+            }
+
+            40% {
+                transform: translate(2px, -1px);
+            }
+
+            60% {
+                transform: translate(-1px, 0);
+                color: #0a0a0a;
+            }
+
+            80% {
+                transform: translate(1px, 0);
+            }
+
+            100% {
+                transform: translate(0, 0);
+            }
+        }
+
+        .title-glitching {
+            animation: title-glitch 0.4s steps(4, end) both;
+        }
+    </style>
 </head>
 
 <body>
-  <div class="overlay" id="overlay" onclick="closeSidebar()"></div>
 
-  <aside class="sidebar" id="sidebar">
-    <div class="sb-title">
-      <strong>No Filter</strong>
-      <div class="sb-close" onclick="closeSidebar()">✕</div>
-    </div>
+    <!-- Progress bar -->
+    <div id="nprogress"></div>
 
-    <div class="small" style="color:var(--sidebarMuted); line-height:1.4;">
-      Global · Live · 24h
-      <div style="margin-top:6px;">Say what you can't say anywhere else.</div>
-    </div>
+    <!-- Custom cursor (desktop) -->
+    <div id="custom-cursor"></div>
 
-<div class="sb-section">
-      <div class="sb-label">Language</div>
-      <select id="language" onchange="onLanguageChange()" style="background:#111; color:#fff; border:1px solid rgba(255,255,255,0.15);"></select>
-    </div>
+    <!-- Background decorative streaks -->
+    <div id="bg-streaks"></div>
 
-    <div class="sb-section">
-      <div class="sb-label">Navigation</div>
-      <div class="sb-nav">
-        <div class="sb-item" id="nav-home" onclick="setPage('home')">🏠 Home <span style="opacity:.7;">›</span></div>
-        <div class="sb-item" id="nav-feed" onclick="setPage('feed')">📰 Feed <span style="opacity:.7;">›</span></div>
-        <div class="sb-item" id="nav-polls" onclick="setPage('polls')">📊 Polls <span style="opacity:.7;">›</span></div>
-      </div>
-    </div>
-
-    <div class="sb-section">
-      <div class="sb-label">Quick actions</div>
-      <div class="sb-nav">
-        <div class="sb-item" onclick="openPostModal()">✍️ Create post <span style="opacity:.7;">+</span></div>
-        <div class="sb-item" onclick="openPollModal()">🗳️ Create poll <span style="opacity:.7;">+</span></div>
-      </div>
-    </div>
-
-<div class="sb-nav">
-  <div class="sb-item" onclick="createPrivateGroup()" style="background:rgba(255,255,255,0.15); border:1px dashed #fff; margin-top: 10px;">
-  ➕ Create Private Group
-</div>
-  </div>
-
-<div class="sb-section">
-  <div class="sb-label">I miei Gruppi</div>
-  <div id="myGroupsList" class="sb-nav">
-    </div>
-</div>
-
-    <div class="sb-section">
-      <div class="sb-label">Categories</div>
-      <div class="sb-chips" id="catChips"></div>
-    </div>
-
-    <div class="sb-section">
-      <div class="sb-label">Mood</div>
-      <select id="mood" onchange="onMoodChange()" style="background:#111; color:#fff; border:1px solid rgba(255,255,255,0.15);"></select>
-    </div>
-
-    <div class="sb-section">
-      <div class="sb-label">Notes</div>
-      <div class="small" style="color:var(--sidebarMuted); line-height:1.4;">
-        If you open this as a local file (<b>file://</b>) on mobile, posting/realtime may fail. Use an <b>https</b> link.
-      </div>
-    </div>
-  </aside>
-
-  <main class="main">
-<div id="groupInfo"></div>
-    <div class="topbar">
-      <div style="display:flex; gap:10px; align-items:center;">
-        <div class="hamburger" onclick="openSidebar()">☰</div>
-        <div class="brand">
-          <h1 id="pageTitle">No Filter</h1>
-          <div class="subtitle">Say what you can't say anywhere else.</div>
+    <!-- Marquee ticker -->
+    <div id="marquee-bar">
+        <div id="marquee-inner">
+            NO FILTER &nbsp;·&nbsp; PENSIERI ANONIMI &nbsp;·&nbsp; 24H &nbsp;·&nbsp; SENZA CENSURA &nbsp;·&nbsp; NO
+            FILTER
+            &nbsp;·&nbsp; PENSIERI ANONIMI &nbsp;·&nbsp; 24H &nbsp;·&nbsp; SENZA CENSURA &nbsp;·&nbsp; NO FILTER
+            &nbsp;·&nbsp;
+            PENSIERI ANONIMI &nbsp;·&nbsp; 24H &nbsp;·&nbsp; SENZA CENSURA &nbsp;·&nbsp; NO FILTER &nbsp;·&nbsp;
+            PENSIERI
+            ANONIMI &nbsp;·&nbsp; 24H &nbsp;·&nbsp; SENZA CENSURA &nbsp;·&nbsp;
         </div>
-      </div>
-      <button class="btn-outline" onclick="reloadAll(true)">↻ Refresh</button>
     </div>
 
-    <div id="fileWarn" class="warn" style="display:none;">
-      You opened this as <b>file://</b>. On many phones this blocks Supabase requests. Publish on <b>https</b> (Netlify/Vercel) and it will work.
-    </div>
-
-    <section id="homePage" class="card" style="display:none;">
-      <div class="landing">
-        <h2>No Filter</h2>
-        <p class="tagline">
-          Anonymous thoughts, real conversations.<br/>
-          <span class="pill">Global</span> <span class="pill">Live</span> <span class="pill">24h</span>
-        </p>
-        <div class="actions">
-          <button onclick="openPostModal()">✍️ Create post</button>
-          <button class="btn-outline" onclick="setPage('feed')">📰 Open feed</button>
-          <button class="btn-outline" onclick="openPollModal()">🗳️ Create poll</button>
+    <div id="layout">
+        <!-- LEFT SIDEBAR (desktop) -->
+        <div id="left-sidebar">
+            <!-- filled by JS -->
         </div>
-        <p class="small" style="max-width:640px;">
-          Categories are in the left sidebar. Posts/comments/reactions/polls stay visible for <b>24 hours</b>.
-        </p>
-      </div>
-    </section>
 
-    <section id="pollsPage" style="display:none;">
-      <div class="card">
-        <div class="poll-title">
-          <div>
-            <div style="font-weight:950; font-size:18px; letter-spacing:-0.2px;">Polls</div>
-            <div class="small">Latest active poll for this category (24h).</div>
-          </div>
-          <button onclick="openPollModal()">➕ Create poll</button>
+        <!-- MAIN COLUMN -->
+        <div id="main-area">
+            <!-- TOP BAR -->
+            <div id="topbar">
+                <button id="hamburger-btn" onclick="toggleSidebar()"
+                    style="background:none;border:none;color:#555;cursor:pointer;display:flex;padding:4px;flex-shrink:0;transition:opacity 0.2s;">
+                    <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round">
+                        <line x1="3" y1="6" x2="21" y2="6" />
+                        <line x1="3" y1="12" x2="21" y2="12" />
+                        <line x1="3" y1="18" x2="21" y2="18" />
+                    </svg>
+                </button>
+                <div id="topbar-title" style="flex:1;display:flex;align-items:center;justify-content:center;gap:6px;">
+                </div>
+                <div id="topbar-right" style="width:36px;display:flex;justify-content:flex-end;"></div>
+            </div>
+
+            <!-- CONTENT + RIGHT PANEL -->
+            <div id="content-wrap">
+                <div id="content-col">
+                    <div id="app"></div>
+                </div>
+                <!-- RIGHT PANEL (desktop) -->
+                <div id="right-panel">
+                    <!-- filled by JS -->
+                </div>
+            </div>
         </div>
-        <div id="pollBox"></div>
-      </div>
-    </section>
+    </div>
 
-    <section id="feedPage" style="display:none;">
-      <div class="feed-header">
-        <div class="left">
-          <div class="pill" id="scopePill">Scope</div>
-          <div class="small">Global · Live · Last 24h</div>
+    <!-- BOTTOM NAV (mobile) -->
+    <div id="bottom-nav">
+        <!-- filled by JS -->
+    </div>
+
+    <!-- GDPR Cookie Banner -->
+    <div id="gdpr-banner" style="display:none;">
+        <div class="gdpr-text">
+            <strong>🔒 Privacy & Cookie</strong> — Utilizziamo cookie tecnici essenziali per il funzionamento del sito e
+            un
+            device ID anonimo per salvare reazioni e preferenze sul tuo dispositivo. <strong>Non raccogliamo dati
+                personali</strong>, non usiamo cookie di tracciamento o profilazione. Tutti i contenuti si
+            autodistruggono dopo
+            24h. <a onclick="document.getElementById('gdpr-modal').style.display='flex'">Maggiori info</a> · <a
+                href="mailto:privacy@nofilterthoughts.it">privacy@nofilterthoughts.it</a>
         </div>
-        <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
-          <select id="sortMode" onchange="renderPosts()" style="max-width:220px;">
-            <option value="new">Newest</option>
-            <option value="hot">Hot</option>
-          </select>
-          <button onclick="openPostModal()">✍️ Create post</button>
+        <div class="gdpr-actions">
+            <button class="btn-o" style="font-size:12px;padding:9px 14px;" onclick="gdprReject()">Solo
+                essenziali</button>
+            <button class="btn" style="font-size:12px;padding:9px 18px;" onclick="gdprAccept()">Accetta e
+                continua</button>
         </div>
-      </div>
-      <div id="feed"></div>
-    </section>
-
-    <div id="statusOk" class="card" style="display:none; border-left:6px solid #14a44d;">✅ Done</div>
-    <div id="statusErr" class="card" style="display:none; border-left:6px solid #b00020;">❌ Error</div>
-  </main>
-
-  <div class="modal-backdrop" id="postModalBg" onclick="modalBackdropClose(event, 'postModalBg')">
-    <div class="modal">
-      <h3>Create post</h3>
-      <div class="small">Anonymous · Global · Visible for 24h</div>
-
-      <div class="modal-row">
-        <label style="font-weight:900;">Category</label>
-        <select id="postCategory"></select>
-      </div>
-
-      <div class="modal-row">
-        <label style="font-weight:900;">Mood</label>
-        <select id="postMood"></select>
-      </div>
-
-      <div class="modal-row">
-        <label style="font-weight:900;">Text</label>
-        <textarea id="postText" maxlength="300" placeholder="Write your unfiltered thought..."></textarea>
-        <div class="small" id="postPrompt"></div>
-      </div>
-
-      <div class="btn-row">
-        <button id="postSubmitBtn" onclick="createPost()">Post</button>
-        <button class="btn-outline" onclick="closeModal('postModalBg')">Cancel</button>
-      </div>
     </div>
-  </div>
 
-  <div class="modal-backdrop" id="pollModalBg" onclick="modalBackdropClose(event, 'pollModalBg')">
-    <div class="modal">
-      <h3>Create poll</h3>
-      <div class="small">Global · Active for 24h · Visible in this category</div>
-
-      <div class="modal-row">
-        <label style="font-weight:900;">Category</label>
-        <select id="pollCategory"></select>
-      </div>
-
-      <div class="modal-row">
-        <label style="font-weight:900;">Question</label>
-        <input id="pollQuestion" placeholder="Write the poll question..." />
-      </div>
-
-      <div class="modal-row">
-        <label style="font-weight:900;">Options (2–5)</label>
-        <input id="pollOpt1" placeholder="Option 1" />
-        <input id="pollOpt2" placeholder="Option 2" style="margin-top:8px;" />
-        <input id="pollOpt3" placeholder="Option 3 (optional)" style="margin-top:8px;" />
-        <input id="pollOpt4" placeholder="Option 4 (optional)" style="margin-top:8px;" />
-        <input id="pollOpt5" placeholder="Option 5 (optional)" style="margin-top:8px;" />
-      </div>
-
-      <div class="btn-row">
-        <button id="pollSubmitBtn" onclick="createPoll()">Create</button>
-        <button class="btn-outline" onclick="closeModal('pollModalBg')">Cancel</button>
-      </div>
+    <!-- GDPR Modal -->
+    <div id="gdpr-modal"
+        style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.5);align-items:center;justify-content:center;padding:20px;">
+        <div
+            style="background:#fff;border-radius:16px;padding:28px;max-width:520px;width:100%;max-height:80vh;overflow-y:auto;box-shadow:0 30px 80px rgba(0,0,0,0.2);">
+            <div style="font-family:'Bebas Neue',cursive;font-size:22px;letter-spacing:2px;margin-bottom:16px;">PRIVACY
+                & GDPR
+            </div>
+            <div style="font-size:13px;line-height:1.75;color:#444;">
+                <p style="margin-bottom:12px;"><strong>Chi siamo:</strong> NO FILTER è una piattaforma di pensieri
+                    anonimi.
+                    Titolare del trattamento: NO FILTER (privacy@nofilterthoughts.it).</p>
+                <p style="margin-bottom:12px;"><strong>Dati raccolti:</strong> Un device ID casuale generato localmente
+                    sul tuo
+                    dispositivo (mai associato a dati personali). I post, commenti e reazioni che pubblichi sono anonimi
+                    e vengono
+                    eliminati automaticamente dopo 24 ore.</p>
+                <p style="margin-bottom:12px;"><strong>Cookie:</strong> Utilizziamo esclusivamente cookie tecnici
+                    essenziali
+                    (localStorage) per mantenere le tue preferenze di sessione. Nessun cookie di terze parti, nessun
+                    tracker,
+                    nessuna pubblicità.</p>
+                <p style="margin-bottom:12px;"><strong>Base giuridica:</strong> Interesse legittimo (art. 6.1.f GDPR)
+                    per i
+                    cookie tecnici essenziali. Consenso (art. 6.1.a GDPR) per eventuali funzionalità analitiche future.
+                </p>
+                <p style="margin-bottom:12px;"><strong>I tuoi diritti:</strong> Accesso, rettifica, cancellazione,
+                    portabilità e
+                    opposizione al trattamento. Puoi esercitarli scrivendo a privacy@nofilterthoughts.it. Hai il diritto
+                    di
+                    presentare reclamo al Garante per la Protezione dei Dati Personali (www.garanteprivacy.it).</p>
+                <p style="margin-bottom:12px;"><strong>Conservazione dati:</strong> I contenuti vengono eliminati
+                    automaticamente dopo 24h. Il device ID è conservato localmente sul tuo dispositivo e puoi
+                    cancellarlo in
+                    qualsiasi momento tramite Impostazioni → Resetta dati.</p>
+                <p><strong>Trasferimento dati:</strong> I dati sono trattati all'interno dell'UE su infrastruttura
+                    Supabase
+                    (conforme GDPR).</p>
+            </div>
+            <div style="margin-top:20px;display:flex;gap:8px;">
+                <button class="btn-o" style="flex:1;font-size:12px;"
+                    onclick="document.getElementById('gdpr-modal').style.display='none'">Chiudi</button>
+                <button class="btn" style="flex:1;font-size:12px;"
+                    onclick="gdprAccept();document.getElementById('gdpr-modal').style.display='none'">Accetta</button>
+            </div>
+        </div>
     </div>
-  </div>
 
-<script>
-const SUPABASE_URL = "https://wgzyqzilzxqlpuamxxrr.supabase.co";
-const SUPABASE_KEY = "sb_publishable_-WlIpnkALrWZFGCUfn2y5w_Gk_vh30i";
-const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-
-// LOGICA GRUPPI E URL
-const urlParams = new URLSearchParams(window.location.search);
-let currentGroupId = urlParams.get('join') || 'public';
-
-if (currentGroupId !== 'public') {
-  document.getElementById('groupInfo').innerHTML = `
-    <div class="group-banner">
-      <span>Stanza: ${currentGroupId}</span>
-      <button onclick="window.location.href='index copia 3.html'" style="background:#fff; color:#000; padding:5px 10px; font-size:12px;">Esci</button>
-    </div>`;
-}
-
-function createPrivateGroup() {
-  const gName = prompt("Che nome vuoi dare al gruppo?");
-  if (!gName) return;
-
-  const id = "room-" + Math.random().toString(36).substring(2, 8);
-  const url = new URL(window.location.href);
-  url.searchParams.set('join', id);
-  
-  // Salva nella lista locale per il menu
-  let myGroups = JSON.parse(localStorage.getItem("nofilter_myGroups") || "[]");
-  myGroups.push({ id, name: gName });
-  localStorage.setItem("nofilter_myGroups", JSON.stringify(myGroups));
-  
-  alert("Gruppo '" + gName + "' creato! Link copiato.");
-  window.location.href = url.toString();
-}
-
-function updateGroupsMenu() {
-  const list = document.getElementById("myGroupsList");
-  const myGroups = JSON.parse(localStorage.getItem("nofilter_myGroups") || "[]");
-  if (myGroups.length === 0) {
-    list.innerHTML = '<div style="padding:10px; opacity:0.5; font-size:12px;">Nessun gruppo</div>';
-    return;
-  }
-  list.innerHTML = myGroups.map(g => `
-    <div class="sb-item" onclick="window.location.href='?join=${g.id}'">👥 ${g.name}</div>
-  `).join('');
-}
-
-function escapeHtml(str){
-  return String(str)
-    .replaceAll("&","&amp;")
-    .replaceAll("<","&lt;")
-    .replaceAll(">","&gt;")
-    .replaceAll('"',"&quot;")
-    .replaceAll("'","&#039;");
-}
-const blockedWords = ["spamword1","spamword2"];
-function containsBlockedWords(text){
-  const t = (text||"").toLowerCase();
-  return blockedWords.some(w => w && t.includes(w.toLowerCase()));
-}
-function iso24hAgo(){ return new Date(Date.now() - 24*60*60*1000).toISOString(); }
-function within24h(ts){ return new Date(ts).getTime() >= Date.now() - 24*60*60*1000; }
-
-function showOk(msg){
-  const el=document.getElementById("statusOk");
-  el.style.display="block";
-  el.innerHTML = "✅ " + escapeHtml(msg || "Done");
-  setTimeout(()=>el.style.display="none", 1400);
-}
-function showErr(msg){
-  const el=document.getElementById("statusErr");
-  el.style.display="block";
-  el.innerHTML = "❌ " + escapeHtml(msg || "Error");
-  setTimeout(()=>el.style.display="none", 5200);
-}
-
-let deviceId = localStorage.getItem("nofilter_deviceId");
-if(!deviceId){
-  deviceId = (crypto?.randomUUID?.() || ("dev_" + Math.random().toString(16).slice(2) + Date.now()));
-  localStorage.setItem("nofilter_deviceId", deviceId);
-}
-let userName = localStorage.getItem("nofilter_name");
-if(!userName){
-  const adjectives=["Silent","Hidden","Blue","Dark","Quiet","Lost","Golden","Soft","Wild","Mysterious"];
-  const nouns=["Fox","Cloud","Wave","Mind","Shadow","Star","River","Flame","Echo"];
-  userName = adjectives[Math.floor(Math.random()*adjectives.length)] +
-             nouns[Math.floor(Math.random()*nouns.length)] +
-             Math.floor(Math.random()*100);
-  localStorage.setItem("nofilter_name", userName);
-}
-
-const categories = {
-  en:["Confession","Opinion","Idea","Relationship","Work","Study","Life","Fun","Health"],
-  it:["Confessione","Opinione","Idea","Relazioni","Lavoro","Studio","Vita","Divertimento","Salute"],
-  es:["Confesión","Opinión","Idea","Relaciones","Trabajo","Estudio","Vida","Diversión","Salud"],
-  fr:["Confession","Opinion","Idée","Relation","Travail","Étude","Vie","Amusement","Santé"],
-  de:["Geständnis","Meinung","Idee","Beziehung","Arbeit","Studium","Leben","Spaß","Gesundheit"]
-};
-const moods = {
-  en:["Neutral","Happy","Sad","Reflective"],
-  it:["Neutro","Felice","Triste","Riflessivo"],
-  es:["Neutro","Feliz","Triste","Reflexivo"],
-  fr:["Neutre","Heureux","Triste","Réfléchi"],
-  de:["Neutral","Glücklich","Traurig","Nachdenklich"]
-};
-const prompts = {
-  en:["What keeps you awake at night?","What’s something you’ve never said out loud?","What are you afraid of right now?","What made you smile today?"],
-  it:["Cosa ti tiene sveglio la notte?","Una cosa che non hai mai detto ad alta voce?","Di cosa hai paura adesso?","Cosa ti ha fatto sorridere oggi?"],
-  es:["¿Qué te quita el sueño?","¿Qué nunca has dicho en voz alta?","¿De qué tienes miedo ahora?","¿Qué te hizo sonreír hoy?"],
-  fr:["Qu’est-ce qui t’empêche de dormir ?","Qu’as-tu jamais dit à voix haute ?","De quoi as-tu peur maintenant ?","Qu’est-ce qui t’a fait sourire aujourd’hui ?"],
-  de:["Was hält dich nachts wach?","Was hast du nie laut gesagt?","Wovor hast du gerade Angst?","Was hat dich heute zum Lächeln gebracht?"]
-};
-const EMOJIS = ["💭","🔥","🖤","😂","😮","😢"];
-
-let currentLang = "it";
-let currentCategory = categories[currentLang][0];
-let currentMood = moods[currentLang][0];
-
-let page = "home";
-
-let posts = [];
-let commentsByPost = new Map();
-let reactionsAgg = new Map();
-let myReactions = new Map();
-
-let activePoll = null;
-let pollAgg = null;
-
-let hiddenPosts = JSON.parse(localStorage.getItem("nofilter_hiddenPosts")||"[]") || [];
-let commentsExpanded = new Set();
-
-function openSidebar(){
-  document.getElementById("sidebar").classList.add("open");
-  document.getElementById("overlay").classList.add("show");
-}
-function closeSidebar(){
-  document.getElementById("sidebar").classList.remove("open");
-  document.getElementById("overlay").classList.remove("show");
-}
-function setPage(next){
-  page = next;
-  document.getElementById("homePage").style.display = (page==="home") ? "block" : "none";
-  document.getElementById("feedPage").style.display = (page==="feed") ? "block" : "none";
-  document.getElementById("pollsPage").style.display = (page==="polls") ? "block" : "none";
-
-  document.getElementById("nav-home").classList.toggle("active", page==="home");
-  document.getElementById("nav-feed").classList.toggle("active", page==="feed");
-  document.getElementById("nav-polls").classList.toggle("active", page==="polls");
-
-  document.getElementById("pageTitle").textContent =
-    page==="home" ? "No Filter" : (page==="feed" ? "Feed" : "Polls");
-
-  closeSidebar();
-  if(page==="feed" || page==="polls") reloadAll(false);
-}
-
-function modalBackdropClose(e, id){
-  if(e.target && e.target.id === id) closeModal(id);
-}
-function openModal(id){ document.getElementById(id).classList.add("show"); }
-function closeModal(id){ document.getElementById(id).classList.remove("show"); }
-
-function fillSelect(id, items, value){
-  const sel = document.getElementById(id);
-  sel.innerHTML = "";
-  items.forEach(v=>{
-    const opt=document.createElement("option");
-    opt.value=v; opt.textContent=v;
-    sel.appendChild(opt);
-  });
-  sel.value = value || items[0];
-}
-function setPrompt(){
-  const list = prompts[currentLang] || prompts.en;
-  document.getElementById("postPrompt").textContent = list[Math.floor(Math.random()*list.length)];
-}
-function openPostModal(){
-  fillSelect("postCategory", categories[currentLang], currentCategory);
-  fillSelect("postMood", moods[currentLang], currentMood);
-  document.getElementById("postText").value = "";
-  setPrompt();
-  openModal("postModalBg");
-  closeSidebar();
-}
-function openPollModal(){
-  fillSelect("pollCategory", categories[currentLang], currentCategory);
-  document.getElementById("pollQuestion").value="";
-  ["pollOpt1","pollOpt2","pollOpt3","pollOpt4","pollOpt5"].forEach(id=>document.getElementById(id).value="");
-  openModal("pollModalBg");
-  closeSidebar();
-}
-
-function updateScopePill(){
-  document.getElementById("scopePill").textContent =
-    `${currentLang.toUpperCase()} • ${currentCategory} • ${currentMood} • 24h`;
-}
-function renderCategoryChips(){
-  const wrap = document.getElementById("catChips");
-  wrap.innerHTML="";
-  categories[currentLang].forEach(cat=>{
-    const chip=document.createElement("div");
-    chip.className = "chip" + (cat===currentCategory ? " active" : "");
-    chip.textContent = cat;
-    chip.onclick = async ()=>{
-      currentCategory = cat;
-      renderCategoryChips();
-      updateScopePill();
-      await reloadAll(true);
-      setPage("feed");
-    };
-    wrap.appendChild(chip);
-  });
-}
-function buildSidebar(){
-  const langSel = document.getElementById("language");
-  langSel.innerHTML = "";
-  Object.keys(categories).forEach(l=>{
-    const opt=document.createElement("option");
-    opt.value=l; opt.textContent=l.toUpperCase();
-    langSel.appendChild(opt);
-  });
-  langSel.value = currentLang;
-
-  fillSelect("mood", moods[currentLang], currentMood);
-  renderCategoryChips();
-  updateScopePill();
-
-  document.getElementById("nav-home").classList.toggle("active", page==="home");
-  document.getElementById("nav-feed").classList.toggle("active", page==="feed");
-  document.getElementById("nav-polls").classList.toggle("active", page==="polls");
-}
-async function onLanguageChange(){
-  // 1. Prendi il valore della nuova lingua selezionata
-  currentLang = document.getElementById("language").value;
-  
-  // 2. Resetta la categoria iniziale alla prima della nuova lingua
-  currentCategory = categories[currentLang][0];
-  
-  // 3. Aggiorna i selettori e i suggerimenti grafici
-  fillSelect("mood", moods[currentLang], moods[currentLang][0]);
-  renderCategoryChips();
-  updateScopePill();
-  setPrompt();
-  
-  // 4. Forza il ricaricamento dei post filtrati per la nuova lingua
-  await reloadAll(true);
-}
-
-function updateGroupsMenu() {
-  const list = document.getElementById("myGroupsList");
-  if (!list) return; // Carica solo se l'elemento esiste nell'HTML
-
-  const myGroups = JSON.parse(localStorage.getItem("nofilter_myGroups") || "[]");
-  
-  if (myGroups.length === 0) {
-    list.innerHTML = '<div style="padding:10px; opacity:0.5; font-size:12px;">Nessun gruppo salvato</div>';
-    return;
-  }
-
-  list.innerHTML = myGroups.map(g => `
-    <div class="sb-item" onclick="window.location.href='?join=${g.id}'" style="cursor:pointer; margin-bottom:5px;">
-      👥 ${g.name}
-    </div>
-  `).join('');
-}
-
-async function loadPosts(){
-  const since = iso24hAgo();
-  const { data, error } = await supabaseClient
-    .from("posts")
-    .select("id,created_at,language,category,mood,author,text,group_id") // Aggiungi group_id qui
-    .gte("created_at", since)
-    .eq("language", currentLang)
-    .eq("group_id", currentGroupId) // <--- QUESTO È IL FILTRO CRUCIALE
-    .eq("category", currentCategory)
-    .eq("mood", currentMood)
-    .order("created_at", { ascending:false })
-    .limit(200);
-
-  if(error) throw error;
-  posts = (data||[]).filter(p => !hiddenPosts.includes(p.id));
-}
-
-async function loadCommentsFor(postIds){
-  commentsByPost = new Map();
-  if(!postIds.length) return;
-
-  const since = iso24hAgo();
-  const { data, error } = await supabaseClient
-    .from("comments")
-    .select("id,created_at,post_id,author,text,commenter_id")
-    .gte("created_at", since)
-    .in("post_id", postIds)
-    .order("created_at", { ascending:true });
-
-  if(error) throw error;
-
-  (data||[]).forEach(c=>{
-    if(!commentsByPost.has(c.post_id)) commentsByPost.set(c.post_id, []);
-    commentsByPost.get(c.post_id).push(c);
-  });
-}
-async function loadReactionsFor(postIds){
-  reactionsAgg = new Map();
-  myReactions = new Map();
-  if(!postIds.length) return;
-
-  const since = iso24hAgo();
-  const { data, error } = await supabaseClient
-    .from("reactions")
-    .select("id,created_at,post_id,emoji,reactor_id")
-    .gte("created_at", since)
-    .in("post_id", postIds);
-
-  if(error) throw error;
-
-  (data||[]).forEach(r=>{
-    if(!reactionsAgg.has(r.post_id)) reactionsAgg.set(r.post_id, {});
-    const agg = reactionsAgg.get(r.post_id);
-    agg[r.emoji] = (agg[r.emoji] || 0) + 1;
-
-    if(r.reactor_id === deviceId){
-      if(!myReactions.has(r.post_id)) myReactions.set(r.post_id, new Set());
-      myReactions.get(r.post_id).add(r.emoji);
-    }
-  });
-}
-async function loadActivePoll(){
-  const { data, error } = await supabaseClient
-    .from("polls")
-    .select("id,created_at,expires_at,language,category,question,options,creator_id")
-    .eq("language", currentLang)
-    .eq("category", currentCategory)
-    .gt("expires_at", new Date().toISOString())
-    .order("created_at", { ascending:false })
-    .limit(1);
-
-  if(error) throw error;
-
-  activePoll = (data && data[0]) ? data[0] : null;
-  pollAgg = null;
-
-  if(!activePoll) return;
-
-  const { data: votes, error: e2 } = await supabaseClient
-    .from("poll_votes")
-    .select("id,option_index,voter_id")
-    .eq("poll_id", activePoll.id);
-
-  if(e2) throw e2;
-
-  const opts = Array.isArray(activePoll.options) ? activePoll.options : [];
-  const counts = new Array(opts.length).fill(0);
-  let myVotedIndex = null;
-
-  (votes||[]).forEach(v=>{
-    if(counts[v.option_index] != null) counts[v.option_index] += 1;
-    if(v.voter_id === deviceId) myVotedIndex = v.option_index;
-  });
-
-  const total = counts.reduce((a,b)=>a+b,0);
-  pollAgg = { counts, total, myVotedIndex };
-}
-
-function renderPoll(){
-  const box = document.getElementById("pollBox");
-  box.innerHTML = "";
-
-  if(!activePoll){
-    box.innerHTML = `<div class="small">No active poll for this category (last 24h).</div>`;
-    return;
-  }
-
-  const opts = Array.isArray(activePoll.options) ? activePoll.options : [];
-  const q = activePoll.question;
-  const mins = Math.max(0, Math.round((new Date(activePoll.expires_at).getTime() - Date.now())/60000));
-
-  const header = document.createElement("div");
-  header.className = "poll-q";
-  header.textContent = `${q} · expires in ~${mins} min`;
-  box.appendChild(header);
-
-  const voted = (pollAgg?.myVotedIndex != null);
-  const counts = pollAgg?.counts || new Array(opts.length).fill(0);
-  const total = pollAgg?.total || 0;
-
-  opts.forEach((opt,i)=>{
-    const row = document.createElement("div");
-    row.className = "poll-option";
-
-    const btn = document.createElement("button");
-    btn.className = "poll-btn";
-    btn.textContent = voted ? opt : `Vote: ${opt}`;
-    btn.disabled = voted;
-    btn.onclick = ()=>votePoll(i);
-
-    const wrap = document.createElement("div");
-    wrap.className = "poll-bar-wrap";
-    const bar = document.createElement("div");
-    bar.className = "poll-bar";
-    const pct = total===0 ? 0 : Math.round((counts[i]/total)*100);
-    bar.style.width = voted ? `${pct}%` : "0%";
-    wrap.appendChild(bar);
-
-    const meta = document.createElement("div");
-    meta.className = "poll-meta";
-    meta.textContent = voted ? `${pct}% (${counts[i]})` : "";
-
-    row.appendChild(btn);
-    row.appendChild(wrap);
-    row.appendChild(meta);
-    box.appendChild(row);
-  });
-
-  const foot = document.createElement("div");
-  foot.className = "small";
-  foot.style.marginTop="10px";
-  foot.textContent = `Total votes: ${total}`;
-  box.appendChild(foot);
-}
-
-function getUserBadge(author){
-  const n = posts.filter(p=>p.author===author).length;
-  if(n>=20) return "Deep Thinker";
-  if(n>=10) return "Active Voice";
-  return "New Soul";
-}
-function getHotScore(post){
-  const cs = (commentsByPost.get(post.id)||[]).length;
-  const agg = reactionsAgg.get(post.id) || {};
-  const rs = Object.values(agg).reduce((a,b)=>a+b,0);
-  const age = Date.now() - new Date(post.created_at).getTime();
-  const recency = Math.max(0, 1e9 - age);
-  return cs*50 + rs*10 + recency/1e6;
-}
-function renderCommentsBlock(container, postId, comments){
-  const expanded = commentsExpanded.has(postId);
-  container.innerHTML = "";
-  if(comments.length === 0) return;
-
-  const first = comments[0];
-  const firstEl = document.createElement("div");
-  firstEl.className="comment-row";
-  firstEl.innerHTML = `<strong>${first.author}</strong>: ${first.text}`;
-  container.appendChild(firstEl);
-
-  if(comments.length > 1){
-    const toggle = document.createElement("div");
-    toggle.className="view-more";
-    toggle.textContent = expanded ? "Hide comments" : `View all ${comments.length} comments`;
-    toggle.onclick = ()=>{
-      if(expanded) commentsExpanded.delete(postId);
-      else commentsExpanded.add(postId);
-      renderPosts();
-    };
-    container.appendChild(toggle);
-
-    if(expanded){
-      for(let i=1;i<comments.length;i++){
-        const c = comments[i];
-        const el = document.createElement("div");
-        el.className="comment-row";
-        el.innerHTML = `<strong>${c.author}</strong>: ${c.text}`;
-        container.appendChild(el);
-      }
-    }
-  }
-}
-function renderPosts(){
-  const feed = document.getElementById("feed");
-  feed.innerHTML = "";
-
-  const sortMode = document.getElementById("sortMode").value;
-  let list = posts.slice();
-  if(sortMode==="hot") list.sort((a,b)=>getHotScore(b)-getHotScore(a));
-  else list.sort((a,b)=> new Date(b.created_at) - new Date(a.created_at));
-
-  list.forEach(post=>{
-    const div=document.createElement("div");
-    div.className="post";
-
-    const agg = reactionsAgg.get(post.id) || {};
-    const mine = myReactions.get(post.id) || new Set();
-    const comments = commentsByPost.get(post.id) || [];
-
-    div.innerHTML = `
-      <div class="author">
-        ${post.author} <span class="badge">${getUserBadge(post.author)}</span>
-      </div>
-      <div class="context">${post.category} • ${post.mood}</div>
-      <div class="text">${post.text}</div>
-      <div class="reactions" id="react-${post.id}"></div>
-      <div class="row-actions">
-        <button class="hide" onclick="hidePost(${post.id})">Report / Hide</button>
-      </div>
-      <div class="comments-area" id="comments-${post.id}"></div>
-      <div class="reply-box">
-        <input class="reply-input" id="reply-${post.id}" placeholder="Write your unfiltered thought..." />
-        <button class="reply-btn" onclick="addComment(${post.id})">Reply</button>
+    <script>
+        const { createClient } = supabase;
+        const SUPABASE_URL = "https://wgzyqzilzxqlpuamxxrr.supabase.co";
+        const SUPABASE_ANON_KEY = "sb_publishable_-WlIpnkALrWZFGCUfn2y5w_Gk_vh30i";
+        const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        const LANG = "it";
+
+        /* ── Utils ── */
+        const getDeviceId = () => { let id = localStorage.getItem("nofilter_deviceId"); if (!id) { id = crypto?.randomUUID?.() || ("dev_" + Math.random().toString(16).slice(2) + Date.now()); localStorage.setItem("nofilter_deviceId", id); } return id; };
+        const getUserName = () => { let n = localStorage.getItem("nofilter_name"); if (!n) { const a = ["Silent", "Hidden", "Blue", "Dark", "Quiet", "Lost", "Golden", "Soft", "Wild", "Mysterious"]; const b = ["Fox", "Cloud", "Wave", "Mind", "Shadow", "Star", "River", "Flame", "Echo"]; n = a[Math.floor(Math.random() * a.length)] + b[Math.floor(Math.random() * b.length)] + Math.floor(Math.random() * 100); localStorage.setItem("nofilter_name", n); } return n; };
+        const getMyGroups = () => JSON.parse(localStorage.getItem("nofilter_myGroups") || "[]");
+        const saveMyGroups = g => localStorage.setItem("nofilter_myGroups", JSON.stringify(g));
+        const getSettings = () => JSON.parse(localStorage.getItem("nofilter_settings") || '{"compactMode":false}');
+        const saveSettings = s => localStorage.setItem("nofilter_settings", JSON.stringify(s));
+        const getMyReacted = () => JSON.parse(localStorage.getItem("nofilter_reacted") || "[]");
+        const addMyReacted = id => { const r = new Set(getMyReacted()); r.add(id); localStorage.setItem("nofilter_reacted", JSON.stringify([...r].slice(-200))); };
+        const getHidden = () => JSON.parse(localStorage.getItem("nofilter_hidden") || "[]");
+        const genGroupId = () => "room-" + Math.random().toString(36).substring(2, 8);
+        const timeAgo = ts => { if (!ts) return ""; const d = (Date.now() - new Date(ts)) / 1000; if (d < 60) return `${Math.floor(d)}s`; if (d < 3600) return `${Math.floor(d / 60)}m`; return `${Math.floor(d / 3600)}h`; };
+        const expiresIn = (ts, base) => { const b = base ? new Date(base).getTime() : new Date(ts).getTime(); const d = (b + 24 * 3600 * 1000 - Date.now()) / 1000; if (d <= 0) return "scaduto"; return `${Math.floor(d / 3600)}h ${Math.floor((d % 3600) / 60)}m`; };
+        const isDesktop = () => window.innerWidth >= 900;
+
+        const deviceId = getDeviceId();
+        const userName = getUserName();
+        const CATEGORIES = ["Confessione", "Opinione", "Idea", "Relazioni", "Lavoro", "Studio", "Vita", "Divertimento", "Salute"];
+        const MOODS = ["Rage", "Dark", "Funny", "Sad", "Evil", "Love", "Mind-blown", "Bored"];
+        const REACTIONS = ["🔥", "💀", "😂", "🥺", "😈", "❤️", "🤯", "😴"];
+
+        const I = {
+            Home: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>`,
+            Group: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>`,
+            Plus: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>`,
+            Search: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>`,
+            Menu: `<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>`,
+            X: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`,
+            Clock: `<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>`,
+            Msg: `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>`,
+            Filter: `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>`,
+            Lock: `<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>`,
+            Globe: `<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>`,
+            Reply: `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="9 17 4 12 9 7"/><path d="M20 18v-2a4 4 0 00-4-4H4"/></svg>`,
+            Copy: `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>`,
+            Settings: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>`,
+            Chevron: `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="9 18 15 12 9 6"/></svg>`,
+            Trash: `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg>`,
+            Dice: `<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="3"/><circle cx="8" cy="8" r="1.2" fill="currentColor"/><circle cx="16" cy="8" r="1.2" fill="currentColor"/><circle cx="8" cy="16" r="1.2" fill="currentColor"/><circle cx="16" cy="16" r="1.2" fill="currentColor"/><circle cx="12" cy="12" r="1.2" fill="currentColor"/></svg>`,
+            User: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>`,
+            EyeOff: `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>`,
+            Sword: `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="14.5 17.5 3 6 3 3 6 3 17.5 14.5"/><line x1="13" y1="19" x2="19" y2="13"/><line x1="16" y1="16" x2="20" y2="20"/><line x1="19" y1="21" x2="21" y2="19"/></svg>`,
+            Trophy: `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="8 21 12 17 16 21"/><line x1="12" y1="17" x2="12" y2="11"/><path d="M7 4H4a2 2 0 000 4c0 2.5 2 4.5 5 5"/><path d="M17 4h3a2 2 0 010 4c0 2.5-2 4.5-5 5"/><rect x="7" y="2" width="10" height="9" rx="1"/></svg>`,
+            Poll: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>`,
+            ClockSm: `<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>`,
+            ArrowLeft: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>`,
+        };
+
+        /* ── State ── */
+        const state = {
+            view: "feed", prevView: "feed",
+            currentGroupId: "public", currentGroupName: "",
+            myGroups: getMyGroups(),
+            settings: getSettings(),
+            posts: [], polls: [], pollVotes: {}, reactions: {}, comments: {},
+            duels: [], duelVotes: {},
+            hotPosts: [],
+            expandedComments: new Set(),
+            replyingTo: null, replyText: "",
+            hiddenPosts: getHidden(),
+            reactPickerPost: null,
+            sortBy: "newest", filterCat: null, filterMood: null, searchQuery: "",
+            filtersOpen: false, sidebarOpen: false,
+            createOpen: false, createType: "post",
+            groupSettingsOpen: null,
+            toast: null, loading: true, posting: false,
+            tiktokOpen: false, tiktokIdx: 0, tiktokDir: null,
+            tiktokShowComment: false, tiktokCommentInput: "", tiktokReactPickerOpen: false,
+            kingPost: null,
+            myPosts: [], myPolls: [], interactedPosts: [],
+            newPost: { text: "", mood: "", category: "" },
+            newPoll: { question: "", options: ["", ""], category: "" },
+            newGroup: { name: "", isPrivate: true },
+            newDuel: { topic: "", sideA: "", sideB: "", category: "" },
+            challengePost: null,
+            realtimeChannel: null,
+        };
+
+        function escHtml(s) { return String(s || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;"); }
+
+        let _lastRenderedView = null;
+
+        /* ── Render ── */
+        function render() {
+            const s = state;
+            const isFeed = s.view === "feed" || s.view === "group-feed";
+            const viewChanged = s.view !== _lastRenderedView;
+
+            // Topbar
+            const ttitle = document.getElementById("topbar-title");
+            const tright = document.getElementById("topbar-right");
+            if (ttitle) ttitle.innerHTML = `
+    ${s.view === "group-feed" ? `<button onclick="goFeed()" style="background:none;border:none;color:#999;cursor:pointer;display:flex;padding:4px;transition:color 0.2s;margin-right:2px;">${I.ArrowLeft}</button>` : ""}
+    <span id="topbar-logo" style="font-family:'Bebas Neue',cursive;font-size:22px;letter-spacing:3px;">${s.view === "group-feed" ? escHtml(s.currentGroupName.toUpperCase()) : "NO FILTER"}</span>
+  `;
+            if (tright) tright.innerHTML = s.view === "group-feed" && s.myGroups.find(g => g.id === s.currentGroupId)?.isAdmin
+                ? `<button onclick="openGroupSettings('${s.currentGroupId}')" style="background:none;border:none;color:#999;cursor:pointer;display:flex;">${I.Settings}</button>` : "";
+
+            // Left sidebar (desktop)
+            const ls = document.getElementById("left-sidebar");
+            if (ls) ls.innerHTML = buildDesktopSidebar();
+
+            // Right panel (desktop)
+            const rp = document.getElementById("right-panel");
+            if (rp) rp.innerHTML = buildRightPanel();
+
+            // Main content
+            const app = document.getElementById("app");
+            if (app) {
+                let html = "";
+                if (s.tiktokOpen) { document.body.insertAdjacentHTML("beforeend", ""); renderTiktok(); return; }
+                if (isFeed) html = buildSearchBar() + buildFeed();
+                else if (s.view === "polls") html = buildPolls();
+                else if (s.view === "duels") html = buildDuels();
+                else if (s.view === "hot") html = buildHot();
+                else if (s.view === "groups") html = buildGroups();
+                else if (s.view === "my-activity") html = buildMyActivity();
+                else if (s.view === "settings") html = buildSettings();
+                if (viewChanged) {
+                    app.innerHTML = `<div class="view-enter">${html}</div>`;
+                    _lastRenderedView = s.view;
+                } else {
+                    app.innerHTML = html;
+                }
+            }
+
+            // Bottom nav (mobile)
+            const bn = document.getElementById("bottom-nav");
+            if (bn) bn.innerHTML = buildBottomNav();
+
+            // Mobile sidebar overlay
+            let mo = document.getElementById("mob-sidebar-container");
+            if (mo) mo.remove();
+            if (s.sidebarOpen) {
+                const div = document.createElement("div");
+                div.id = "mob-sidebar-container";
+                div.innerHTML = `
+      <div class="mob-sidebar-overlay" onclick="toggleSidebar()"></div>
+      <div class="mob-sidebar">
+        ${buildSidebarContent()}
       </div>
     `;
-    feed.appendChild(div);
+                document.body.appendChild(div);
+            }
 
-    const rWrap = div.querySelector(`#react-${post.id}`);
-    EMOJIS.forEach(emoji=>{
-      const btn=document.createElement("button");
-      btn.className = "react-btn" + (mine.has(emoji) ? " active" : "");
-      btn.textContent = `${emoji} ${agg[emoji] || 0}`;
-      btn.onclick = ()=>toggleReaction(post.id, emoji);
-      rWrap.appendChild(btn);
-    });
+            // Sheets / overlays
+            let existing = document.getElementById("sheet-container");
+            if (existing) existing.remove();
+            let sheetHtml = "";
+            if (s.createOpen) sheetHtml = buildCreateSheet();
+            if (s.groupSettingsOpen) sheetHtml = buildGroupSettingsSheet();
+            if (s.challengePost) sheetHtml = buildChallengeSheet();
+            if (sheetHtml) {
+                const div = document.createElement("div");
+                div.id = "sheet-container";
+                div.innerHTML = sheetHtml;
+                document.body.appendChild(div);
+            }
 
-    const cWrap = div.querySelector(`#comments-${post.id}`);
-    renderCommentsBlock(cWrap, post.id, comments);
-  });
-}
+            // TikTok
+            let ttv = document.getElementById("tiktok-view-container");
+            if (s.tiktokOpen) {
+                if (!ttv) {
+                    ttv = document.createElement("div");
+                    ttv.id = "tiktok-view-container";
+                    document.body.appendChild(ttv);
+                }
+                ttv.innerHTML = buildTiktok();
+            } else if (ttv) ttv.remove();
 
-function hidePost(postId){
-  if(!hiddenPosts.includes(postId)) hiddenPosts.push(postId);
-  localStorage.setItem("nofilter_hiddenPosts", JSON.stringify(hiddenPosts));
-  posts = posts.filter(p=>p.id!==postId);
-  renderPosts();
-}
+            // Toast
+            let et = document.getElementById("toast-el");
+            if (et) et.remove();
+            if (s.toast) {
+                const t = document.createElement("div");
+                t.id = "toast-el";
+                t.className = "toast";
+                t.style = `background:${s.toast.err ? "#0a0a0a" : "#f0f0f0"};border:1px solid #ddd;color:${s.toast.err ? "#fff" : "#0a0a0a"};`;
+                t.textContent = s.toast.msg;
+                document.body.appendChild(t);
+            }
 
-function canPostNow(){
-  const key="nofilter_lastPostTs";
-  const last=Number(localStorage.getItem(key)||0);
-  const now=Date.now();
-  const cooldown=8*1000;
-  if(now-last < cooldown) return false;
-  localStorage.setItem(key, String(now));
-  return true;
-}
+            attachEvents();
+        }
 
-async function createPost(){
-  const btn = document.getElementById("postSubmitBtn");
-  btn.disabled = true;
-  btn.textContent = "Posting...";
-  try{
-    if(location.protocol === "file:"){
-      showErr("You're on file://. Publish on https (Netlify/Vercel) or Supabase may be blocked on mobile.");
-      return;
-    }
-    if(!canPostNow()){ showErr("Wait a few seconds 🙂"); return; }
+        /* ── Sidebar content ── */
+        function buildSidebarContent() {
+            const s = state;
+            const isFeed = s.view === "feed" || s.view === "group-feed";
+            return `
+    <button class="lucky-btn" style="margin-top:4px;" onclick="openTiktok();if(!isDesktop())toggleSidebar();">${I.Dice} RANDOM TRIP</button>
+    <div class="section-label" style="margin-top:10px;padding:0 2px;">Esplora</div>
+    <button class="si${isFeed ? " on" : ""}" onclick="goView('feed');if(!isDesktop())toggleSidebar();">${I.Home} Feed</button>
+    <button class="si${s.view === "hot" ? " on" : ""}" onclick="goView('hot');loadHotPosts();if(!isDesktop())toggleSidebar();">${I.Trophy} Post popolari 24h</button>
+    <button class="si${s.view === "polls" ? " on" : ""}" onclick="goView('polls');if(!isDesktop())toggleSidebar();">${I.Poll} Poll</button>
+    <button class="si${s.view === "duels" ? " on" : ""}" onclick="goView('duels');loadDuels();if(!isDesktop())toggleSidebar();">${I.Sword} Duelli</button>
+    <div class="section-label" style="margin-top:10px;padding:0 2px;">Il mio</div>
+    <button class="si${s.view === "my-activity" ? " on" : ""}" onclick="goView('my-activity');loadMyActivity();if(!isDesktop())toggleSidebar();">${I.User} La mia attività</button>
+    <div class="section-label" style="margin-top:10px;padding:0 2px;">Gruppi</div>
+    <button class="si${s.view === "groups" ? " on" : ""}" onclick="goView('groups');if(!isDesktop())toggleSidebar();">${I.Group} Tutti i gruppi</button>
+    ${s.myGroups.map(g => `
+      <button class="si${s.view === "group-feed" && s.currentGroupId === g.id ? " on" : ""}" onclick="enterGroup(${JSON.stringify(g)});if(!isDesktop())toggleSidebar();">
+        <span style="display:flex;align-items:center;gap:5px;flex:1;">${g.isPrivate ? I.Lock : I.Globe}<span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12px;">${escHtml(g.name)}</span></span>
+        ${g.isAdmin ? `<span style="font-size:9px;color:#ccc;">admin</span>` : ""}
+      </button>
+    `).join("")}
+    <div class="section-label" style="margin-top:10px;padding:0 2px;">Account</div>
+    <button class="si${s.view === "settings" ? " on" : ""}" onclick="goView('settings');if(!isDesktop())toggleSidebar();">${I.Settings} Impostazioni</button>
+    <div style="margin-top:auto;padding-top:16px;padding:16px 2px 0;font-size:11px;color:#ccc;border-top:1px solid #f0f0f0;margin-top:12px;">
+      Sei: <strong style="color:#888;">${escHtml(userName)}</strong>
+    </div>
+  `;
+        }
 
-    const cat = document.getElementById("postCategory").value;
-    const mood = document.getElementById("postMood").value;
-    const raw = (document.getElementById("postText").value || "").trim();
+        function buildDesktopSidebar() {
+            return `
+    ${buildSidebarContent().replace(/if\(!isDesktop\(\)\)toggleSidebar\(\);/g, "")}
+  `;
+        }
 
-    if(raw.length < 5){ showErr("Write at least 5 characters."); return; }
-    if(containsBlockedWords(raw)){ showErr("Blocked content."); return; }
+        function buildRightPanel() {
+            const s = state;
+            if (!s.kingPost) return "";
+            return `
+    <div class="right-widget">
+      <div class="section-label" style="margin-bottom:8px;">👑 Re di ieri</div>
+      <div class="king-card" style="margin-bottom:0;">
+        <div style="display:flex;align-items:center;gap:7px;margin-bottom:8px;">
+          <span style="font-size:18px;" class="king-shimmer">👑</span>
+          <div style="font-size:10px;color:rgba(255,215,0,0.6);letter-spacing:1px;">${s.kingPost._rxCount} REAZIONI</div>
+        </div>
+        ${s.kingPost.category ? `<span class="chip" style="margin-bottom:7px;display:inline-flex;background:#1a1a1a;border-color:#333;color:#666;">${escHtml(s.kingPost.category)}</span>` : ""}
+        <p style="font-size:13px;line-height:1.6;color:#fff;">${escHtml(s.kingPost.text)}</p>
+      </div>
+    </div>
+    <div class="right-widget" style="cursor:pointer;" onclick="openCreate()">
+      <div style="text-align:center;padding:8px 0;">
+        <div style="width:40px;height:40px;border-radius:50%;background:#0a0a0a;color:#fff;display:flex;align-items:center;justify-content:center;margin:0 auto 8px;">${I.Plus}</div>
+        <div style="font-size:12px;color:#888;">Condividi un pensiero anonimo</div>
+      </div>
+    </div>
+  `;
+        }
 
-    // MODIFICA QUI: Aggiunto group_id al payload
-    const payload = { 
-      language: currentLang, 
-      category: cat, 
-      mood, 
-      author: userName, 
-      text: escapeHtml(raw),
-      group_id: currentGroupId 
-    };
+        function buildBottomNav() {
+            const s = state;
+            const isFeed = s.view === "feed" || s.view === "group-feed";
+            return `
+    <button class="tab${isFeed ? " on" : ""}" onclick="${s.currentGroupId !== "public" ? "goFeed()" : "goView('feed')"}">${I.Home}HOME</button>
+    <button class="tab${s.view === "polls" ? " on" : ""}" onclick="goView('polls')">${I.Poll}POLL</button>
+    <button class="tab" style="flex:1;" onclick="openCreate()">
+      <div style="width:36px;height:36px;border-radius:50%;background:#0a0a0a;color:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 3px 12px rgba(0,0,0,0.18);">${I.Plus}</div>
+    </button>
+    <button class="tab${s.view === "duels" ? " on" : ""}" onclick="goView('duels');loadDuels();">${I.Sword}DUELLI</button>
+    <button class="tab${s.view === "groups" ? " on" : ""}" onclick="goView('groups')">${I.Group}GRUPPI</button>
+  `;
+        }
 
-    const { error } = await supabaseClient.from("posts").insert(payload);
-    if(error){ console.error(error); showErr("Post failed: " + (error.message || "check RLS/policies")); return; }
+        /* ── Feed ── */
+        function filteredPosts() {
+            const s = state;
+            return s.posts
+                .filter(p => !s.hiddenPosts.includes(p.id))
+                .filter(p => !s.filterCat || p.category === s.filterCat)
+                .filter(p => !s.filterMood || p.mood === s.filterMood)
+                .filter(p => { if (!s.searchQuery) return true; const q = s.searchQuery.toLowerCase(); return p.text?.toLowerCase().includes(q) || p.category?.toLowerCase().includes(q) || p.mood?.toLowerCase().includes(q); })
+                .sort((a, b) => {
+                    if (s.sortBy === "hot") return (s.reactions[b.id] || []).length - (s.reactions[a.id] || []).length;
+                    if (s.sortBy === "comments") return (s.comments[b.id] || []).length - (s.comments[a.id] || []).length;
+                    return new Date(b.created_at) - new Date(a.created_at);
+                });
+        }
 
-    // FIX: move scope to where you posted so you SEE it
-    currentCategory = cat;
-    currentMood = mood;
-    document.getElementById("mood").value = currentMood;
-    renderCategoryChips();
-    updateScopePill();
+        function buildSearchBar() {
+            const s = state;
+            const activeFilters = [s.filterCat, s.filterMood, s.searchQuery].filter(Boolean).length;
+            const fp = filteredPosts();
+            return `
+    <div style="margin-bottom:12px;">
+      <div class="sbar" style="margin-bottom:8px;">
+        ${I.Search}
+        <input placeholder="Cerca post..." value="${escHtml(s.searchQuery)}" oninput="handleSearchInput(this.value)" onkeydown="if(event.key==='Enter')applySearch()"/>
+        ${s.searchQuery ? `<button onclick="clearSearch()" style="background:none;border:none;cursor:pointer;color:#bbb;display:flex;transition:opacity 0.2s;">${I.X}</button>` : ""}
+        <button onclick="toggleFilters()" style="background:none;border:none;cursor:pointer;display:flex;align-items:center;gap:4px;color:${activeFilters > 0 ? "#0a0a0a" : "#bbb"};padding:0 2px;transition:color 0.2s;">
+          ${I.Filter}
+          ${activeFilters > 0 ? `<span style="background:#0a0a0a;color:#fff;border-radius:50%;width:14px;height:14px;display:flex;align-items:center;justify-content:center;font-size:9px;">${activeFilters}</span>` : ""}
+        </button>
+      </div>
+      ${s.filtersOpen ? `
+        <div style="background:#fff;border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:10px;animation:su 0.22s cubic-bezier(.22,1,.36,1);">
+          <div class="section-label">Ordina</div>
+          <div style="display:flex;gap:5px;margin-bottom:12px;flex-wrap:wrap;">
+            ${[["newest", "Recenti"], ["hot", "Hot"], ["comments", "Discussi"]].map(([v, l]) => `<button class="fchip${s.sortBy === v ? " on" : ""}" onclick="setSortBy('${v}')">${l}</button>`).join("")}
+          </div>
+          <div class="section-label">Categoria</div>
+          <div style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:12px;">
+            ${CATEGORIES.map(c => `<button class="fchip${s.filterCat === c ? " on" : ""}" onclick="toggleFilterCat('${c}')">${c}</button>`).join("")}
+          </div>
+          <div class="section-label">Mood</div>
+          <div style="display:flex;gap:4px;flex-wrap:wrap;">
+            ${MOODS.map(m => `<button class="fchip${s.filterMood === m ? " on" : ""}" onclick="toggleFilterMood('${m}')">${m}</button>`).join("")}
+          </div>
+          ${(s.filterCat || s.filterMood || s.searchQuery) ? `<button class="btn-o" style="margin-top:10px;width:100%;font-size:12px;" onclick="clearFilters()">Rimuovi filtri</button>` : ""}
+        </div>
+      `: ""}
+      <div style="font-size:11px;color:#bbb;display:flex;align-items:center;gap:5px;">
+        <span class="live-dot"></span>
+        ${fp.length} post · live · 24h
+        ${s.searchQuery ? `<span style="color:#888;">· "${escHtml(s.searchQuery)}"</span>` : ""}
+        <button onclick="openTiktok()" style="margin-left:auto;background:none;border:none;cursor:pointer;display:flex;align-items:center;gap:4px;font-size:11px;color:#888;font-family:'DM Mono',monospace;padding:3px 7px;border-radius:5px;transition:all 0.2s;border:1px solid #eee;background:#fff;" title="Random Trip">${I.Dice} <span style="font-size:10px;">random</span></button>
+      </div>
+    </div>
+  `;
+        }
 
-    closeModal("postModalBg");
-    showOk("Posted!");
-    setPage("feed");
-    await reloadAll(false);
-  } finally {
-    btn.disabled = false;
-    btn.textContent = "Post";
-  }
-}
-async function addComment(postId){
-  if(location.protocol === "file:"){ showErr("file:// blocks network on many phones. Use https."); return; }
-  const input = document.getElementById(`reply-${postId}`);
-  const raw = (input?.value || "").trim();
-  if(raw.length < 2) return;
-  if(containsBlockedWords(raw)){ showErr("Blocked comment."); return; }
+        function buildFeed() {
+            const s = state;
+            const fp = filteredPosts();
+            return `
+    ${s.kingPost && s.currentGroupId === "public" && !isDesktop() ? `
+      <div class="king-card">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+          <span style="font-size:22px;" class="king-shimmer">👑</span>
+          <div>
+            <div style="font-size:10px;color:rgba(255,215,0,0.7);letter-spacing:2px;text-transform:uppercase;">Re del giorno</div>
+            <div style="font-size:10px;color:#555;margin-top:1px;">post più reagito di ieri · ${s.kingPost._rxCount} reazioni</div>
+          </div>
+        </div>
+        ${s.kingPost.category ? `<span class="chip" style="margin-bottom:8px;display:inline-flex;background:#1a1a1a;border-color:#333;color:#666;">${escHtml(s.kingPost.category)}</span>` : ""}
+        <p style="font-size:15px;line-height:1.65;color:#fff;margin-bottom:0;">${escHtml(s.kingPost.text)}</p>
+      </div>
+    `: ""}
+    ${s.loading ? buildSkeletons(4) : ""}
+    ${!s.loading && fp.length === 0 ? `<div style="text-align:center;padding:60px;color:#bbb;"><div style="font-size:24px;margin-bottom:10px;">—</div><div style="font-size:13px;">Nessun post.</div></div>` : ""}
+    ${fp.map((post, i) => buildPostCard(post, i)).join("")}
+  `;
+        }
 
-  const p = posts.find(x => x.id == postId);
-  if(!p) return;
+        function buildPostCard(post, idx) {
+            const s = state;
+            const rxList = s.reactions[post.id] || [];
+            const cmtList = s.comments[post.id] || [];
+            const myReaction = REACTIONS.find(e => rxList.some(r => r.emoji === e && r.reactor_id === deviceId));
+            const topRx = REACTIONS.map(e => ({ emoji: e, count: rxList.filter(r => r.emoji === e).length, mine: rxList.some(r => r.emoji === e && r.reactor_id === deviceId) })).filter(r => r.count > 0).sort((a, b) => b.count - a.count).slice(0, 4);
+            const expanded = s.expandedComments.has(post.id);
+            const shownComments = expanded ? cmtList : cmtList.slice(0, 1);
+            const reactPickerOpen = s.reactPickerPost === post.id;
+            return `
+    <div class="card stagger-item" style="animation-delay:${idx * 0.04}s;">
+      ${reactPickerOpen ? `<div style="position:fixed;inset:0;z-index:19;" onclick="closeReactPicker()"></div>` : ""}
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;">
+        <div style="display:flex;gap:4px;flex-wrap:wrap;">
+          ${post.category ? `<span class="chip">${escHtml(post.category)}</span>` : ""}
+          ${post.mood ? `<span class="chip">${escHtml(post.mood)}</span>` : ""}
+        </div>
+        <div style="display:flex;align-items:center;gap:3px;font-size:11px;color:#bbb;white-space:nowrap;margin-left:8px;">
+          ${I.ClockSm} ${timeAgo(post.created_at)}
+        </div>
+      </div>
+      <p style="font-size:14px;line-height:1.7;margin-bottom:11px;">${escHtml(post.text)}</p>
+      <div style="display:flex;gap:5px;flex-wrap:wrap;align-items:center;margin-bottom:${cmtList.length > 0 ? 9 : 0}px;position:relative;">
+        ${topRx.map(({ emoji, count, mine }) => `<button class="rx${mine ? " on" : ""}" onclick="toggleReaction('${post.id}','${emoji}')">${emoji} ${count}</button>`).join("")}
+        <div style="position:relative;display:inline-block;">
+          <button class="rx${myReaction ? " on" : ""}" onclick="toggleReactPicker('${escAttr(post.id)}')" style="font-size:12px;">${myReaction ? "✓ react" : "+ react"}</button>
+          ${reactPickerOpen ? `
+            <div class="react-picker">
+              ${REACTIONS.map(emoji => { const mine = rxList.some(r => r.emoji === emoji && r.reactor_id === deviceId); return `<button class="react-emoji${mine ? " on" : ""}" onclick="reactAndClose('${escAttr(post.id)}','${emoji}')">${emoji}</button>`; }).join("")}
+            </div>
+          `: ""}
+        </div>
+        <button class="rx" onclick="hidePost('${escAttr(post.id)}')" title="Nascondi">${I.EyeOff}</button>
+        <button class="rx" onclick="openChallenge('${escAttr(post.id)}')" style="gap:4px;font-size:11px;">${I.Sword} Sfida</button>
+        ${cmtList.length > 0 ? `<button style="background:none;border:none;cursor:pointer;display:flex;align-items:center;gap:4px;font-size:11px;color:#bbb;margin-left:auto;transition:color 0.2s;font-family:'DM Mono',monospace;" onclick="toggleComments('${post.id}')">${I.Msg} ${cmtList.length} ${expanded ? "▲" : "▼"}</button>` : ""}
+      </div>
+      ${expanded && cmtList.length > 0 ? `
+        <div style="border-top:1px solid #f5f5f5;padding-top:9px;">
+          ${shownComments.map(c => `
+            <div class="comment-row">
+              <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+                <span style="font-size:11px;font-weight:500;color:#444;">${escHtml(c.author)} <span style="font-weight:400;color:#bbb;font-size:10px;">· ${timeAgo(c.created_at)}</span></span>
+                <button style="background:none;border:none;cursor:pointer;display:flex;align-items:center;gap:3px;font-size:11px;color:#bbb;flex-shrink:0;font-family:'DM Mono',monospace;" onclick="setReplyingTo('${post.id}','${c.id}','${escHtml(c.author)}')">${I.Reply} Rispondi</button>
+              </div>
+              <p style="font-size:13px;margin-top:3px;line-height:1.5;color:${c.text.startsWith("@") ? "#555" : "#0a0a0a"};">${escHtml(c.text)}</p>
+              ${s.replyingTo?.postId === post.id && s.replyingTo?.commentId === c.id ? `
+                <div style="display:flex;gap:6px;margin-top:7px;animation:su 0.2s ease;">
+                  <input id="reply-${c.id}" placeholder="Rispondi a ${escHtml(c.author)}..." value="${escHtml(s.replyText)}" oninput="state.replyText=this.value" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();submitReply('${post.id}','${c.id}');}" style="font-size:12px;padding:7px 10px;" autofocus/>
+                  <button class="btn-sm" onclick="submitReply('${post.id}','${c.id}')" style="flex-shrink:0;">→</button>
+                </div>
+              `: ""}
+            </div>
+          `).join("")}
+        </div>
+      `: ""}
+      <div style="display:flex;gap:6px;margin-top:${expanded && cmtList.length > 0 ? 8 : cmtList.length === 0 ? 10 : 4}px;">
+        <input id="comment-${post.id}" placeholder="Commenta..." onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();submitCommentBtn('${post.id}');}" style="font-size:12px;padding:7px 10px;"/>
+        <button class="btn-sm" onclick="submitCommentBtn('${post.id}')" style="flex-shrink:0;">→</button>
+      </div>
+      ${cmtList.length > 1 && !expanded ? `<button style="background:none;border:none;cursor:pointer;font-size:11px;color:#bbb;margin-top:5px;display:flex;align-items:center;gap:4px;transition:color 0.2s;font-family:'DM Mono',monospace;" onclick="toggleComments('${post.id}')">${I.Msg} Vedi tutti i ${cmtList.length} commenti</button>` : ""}
+    </div>
+  `;
+        }
 
-  const payload = {
-    post_id: postId,
-    group_id: currentGroupId,
-    language: p.language,
-    category: p.category,
-    mood: p.mood,
-    author: userName,
-    text: escapeHtml(raw),
-    commenter_id: deviceId
-  };
+        /* ── Polls ── */
+        function buildPolls() {
+            const s = state;
+            return `
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+      <span style="font-family:'Bebas Neue',cursive;font-size:20px;letter-spacing:2px;">POLL</span>
+      <button class="btn-sm" onclick="openCreate('poll')">+ Nuovo</button>
+    </div>
+    ${s.loading ? `<div style="text-align:center;padding:60px;color:#ccc;font-size:13px;">Caricamento...</div>` : ""}
+    ${!s.loading && s.polls.length === 0 ? `<div style="text-align:center;padding:60px;color:#bbb;"><div style="font-size:24px;margin-bottom:10px;">—</div><div style="font-size:13px;">Nessun poll attivo.</div></div>` : ""}
+    ${s.polls.map((p, i) => buildPollCard(p, i)).join("")}
+  `;
+        }
 
-  const { error } = await supabaseClient.from("comments").insert(payload);
-  if(error){ console.error(error); showErr("Comment failed: " + (error.message || "check RLS/policies")); return; }
+        function buildPollCard(poll, idx) {
+            const s = state;
+            const vd = s.pollVotes[poll.id] || { votes: [], myVote: null };
+            const { votes, myVote } = vd;
+            const total = (votes || []).reduce((sum, v) => sum + (v || 0), 0);
+            const hasVoted = myVote !== null && myVote !== undefined;
+            return `
+    <div class="card slide-up" style="animation-delay:${idx * 0.04}s;">
+      <div style="display:flex;justify-content:space-between;margin-bottom:9px;">
+        ${poll.category ? `<span class="chip">${escHtml(poll.category)}</span>` : "<span></span>"}
+        <span style="font-size:11px;color:#bbb;display:flex;align-items:center;gap:3px;">${I.ClockSm} ${expiresIn(null, poll.expires_at)}</span>
+      </div>
+      <p style="font-size:14px;font-weight:500;margin-bottom:11px;line-height:1.5;">${escHtml(poll.question)}</p>
+      <div style="display:flex;flex-direction:column;gap:7px;">
+        ${(poll.options || []).map((opt, i) => {
+                const cnt = (votes || [])[i] || 0;
+                const pct = total > 0 ? Math.round((cnt / total) * 100) : 0;
+                const isVoted = myVote === i;
+                return `
+            <button onclick="${!hasVoted ? `votePoll('${poll.id}',${i})` : "void(0)"}" ${hasVoted ? "disabled" : ""} style="background:none;border:1.5px solid ${isVoted ? "#0a0a0a" : "#e8e8e8"};border-radius:8px;padding:10px 13px;cursor:${hasVoted ? "default" : "pointer"};position:relative;overflow:hidden;text-align:left;color:#0a0a0a;font-family:'DM Mono',monospace;font-size:13px;transition:all 0.2s;">
+              ${hasVoted ? `<div style="position:absolute;left:0;top:0;bottom:0;width:${pct}%;background:${isVoted ? "#ebebeb" : "#f8f8f8"};transition:width 0.7s cubic-bezier(.22,1,.36,1);"></div>` : ""}
+              <span style="position:relative;z-index:1;display:flex;justify-content:space-between;align-items:center;">
+                <span>${escHtml(opt)}</span>
+                ${hasVoted ? `<span style="color:${isVoted ? "#0a0a0a" : "#aaa"};font-weight:${isVoted ? 700 : 400};font-size:12px;">${pct}%</span>` : ""}
+              </span>
+            </button>
+          `;
+            }).join("")}
+      </div>
+      <div style="margin-top:9px;font-size:11px;color:#bbb;">${total} voti</div>
+    </div>
+  `;
+        }
 
-  input.value = "";
-  showOk("Replied!");
-  await reloadAll(false);
-}
+        /* ── Duels ── */
+        function buildDuels() {
+            const s = state;
+            return `
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+      <span style="font-family:'Bebas Neue',cursive;font-size:20px;letter-spacing:2px;">⚔️ DUELLI</span>
+      <button class="btn-sm" onclick="openCreate('duel')">+ Lancia</button>
+    </div>
+    <div style="font-size:11px;color:#bbb;margin-bottom:14px;">Vota il lato che senti tuo. I duelli scadono in 24h.</div>
+    ${s.duels.length === 0 ? `<div style="text-align:center;padding:60px;color:#bbb;"><div style="font-size:24px;margin-bottom:10px;">—</div><div style="font-size:13px;">Nessun duello attivo. Lanciane uno.</div></div>` : ""}
+    ${s.duels.map((d, i) => buildDuelCard(d, i)).join("")}
+  `;
+        }
 
-async function toggleReaction(postId, emoji){
-  if(location.protocol === "file:"){ showErr("file:// blocks network on many phones. Use https."); return; }
-  const mine = myReactions.get(postId) || new Set();
+        function buildDuelCard(duel, idx) {
+            const s = state;
+            const vd = s.duelVotes[duel.id] || { votes: [0, 0], myVote: null };
+            const { votes, myVote } = vd;
+            const total = (votes[0] || 0) + (votes[1] || 0);
+            const hasVoted = myVote !== null && myVote !== undefined;
+            const pctA = total > 0 ? Math.round(((votes[0] || 0) / total) * 100) : 50;
+            const pctB = 100 - pctA;
+            return `
+    <div class="duel-card" style="animation-delay:${idx * 0.04}s;">
+      <div style="padding:13px 16px 9px;background:#fafafa;border-bottom:1px solid #eee;">
+        <div style="font-size:11px;color:#bbb;letter-spacing:1px;text-transform:uppercase;margin-bottom:3px;">⚔️ Duello</div>
+        <p style="font-size:15px;font-weight:500;line-height:1.4;">${escHtml(duel.question)}</p>
+        <div style="font-size:10px;color:#bbb;margin-top:4px;display:flex;align-items:center;gap:4px;">${I.ClockSm} scade tra ${expiresIn(null, duel.expires_at)} · ${total} voti</div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;">
+        ${[0, 1].map(side => {
+                const isVoted = myVote === side;
+                const pct = side === 0 ? pctA : pctB;
+                return `
+            <div class="duel-side" onclick="${!hasVoted ? `voteDuel('${duel.id}',${side})` : "void(0)"}" style="background:${isVoted ? "#0a0a0a" : side === 0 ? "#fff" : "#f8f8f8"};border-right:${side === 0 ? "1px solid #eee" : "none"};cursor:${hasVoted ? "default" : "pointer"};">
+              ${hasVoted ? `<div style="position:absolute;bottom:0;left:0;right:0;height:3px;background:${isVoted ? "#fff" : "#e0e0e0"};"></div>` : ""}
+              <div style="font-size:14px;font-weight:600;color:${isVoted ? "#fff" : side === 0 ? "#0a0a0a" : "#333"};margin-bottom:${hasVoted ? 4 : 0}px;">${escHtml(duel.options[side] || "")}</div>
+              ${hasVoted ? `<div style="font-size:20px;font-weight:700;font-family:'Bebas Neue',cursive;letter-spacing:1px;color:${isVoted ? "#fff" : "#888"};">${pct}%</div>` : `<div style="font-size:10px;color:#bbb;margin-top:4px;">Clicca per votare</div>`}
+            </div>
+          `;
+            }).join("")}
+      </div>
+      ${hasVoted ? `<div style="height:4px;background:#f0f0f0;position:relative;overflow:hidden;"><div style="position:absolute;left:0;top:0;bottom:0;width:${pctA}%;background:#0a0a0a;transition:width 0.8s cubic-bezier(.22,1,.36,1);"></div></div>` : ""}
+    </div>
+  `;
+        }
 
-  if(mine.has(emoji)){
-    const { error } = await supabaseClient
-      .from("reactions")
-      .delete()
-      .eq("post_id", postId)
-      .eq("emoji", emoji)
-      .eq("reactor_id", deviceId);
+        /* ── Hot ── */
+        function buildHot() {
+            const s = state;
+            return `
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+      <span style="font-family:'Bebas Neue',cursive;font-size:20px;letter-spacing:2px;">🔥 TOP 24H</span>
+      <button class="btn-sm" onclick="loadHotPosts()">Aggiorna</button>
+    </div>
+    ${s.kingPost ? `
+      <div style="margin-bottom:18px;">
+        <div class="section-label" style="margin-bottom:7px;">👑 RE DI IERI</div>
+        <div class="king-card">
+          <div style="display:flex;align-items:center;gap:7px;margin-bottom:9px;">
+            <span style="font-size:20px;" class="king-shimmer">👑</span>
+            <div style="font-size:10px;color:rgba(255,215,0,0.6);letter-spacing:1px;">${s.kingPost._rxCount} REAZIONI · POST PIÙ AMATO</div>
+          </div>
+          ${s.kingPost.category ? `<span class="chip" style="margin-bottom:7px;display:inline-flex;background:#1a1a1a;border-color:#333;color:#666;">${escHtml(s.kingPost.category)}</span>` : ""}
+          <p style="font-size:14px;line-height:1.6;color:#fff;">${escHtml(s.kingPost.text)}</p>
+        </div>
+      </div>
+    `: ""}
+    <div style="font-size:11px;color:#bbb;margin-bottom:12px;">Classifica globale ultime 24 ore.</div>
+    ${s.hotPosts.length === 0 ? `<div style="text-align:center;padding:60px;color:#bbb;"><div style="font-size:24px;margin-bottom:10px;">—</div><div style="font-size:13px;">Nessun post ancora.</div></div>` : ""}
+    <div style="background:#fff;border:1px solid var(--border);border-radius:14px;overflow:hidden;">
+      ${s.hotPosts.map((post, i) => `
+        <div class="rank-row" style="animation-delay:${i * 0.035}s;border-bottom:${i < s.hotPosts.length - 1 ? "1px solid #f5f5f5" : "none"};border-radius:0;">
+          <div class="rank-num" style="color:${i === 0 ? "#0a0a0a" : i === 1 ? "#555" : i === 2 ? "#888" : "#bbb"};">
+            ${i === 0 ? "①" : i === 1 ? "②" : i === 2 ? "③" : `${i + 1}`}
+          </div>
+          <div style="flex:1;min-width:0;">
+            <p style="font-size:13px;line-height:1.45;color:#0a0a0a;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;">${escHtml(post.text)}</p>
+            <div style="display:flex;gap:6px;margin-top:4px;align-items:center;">
+              ${post.category ? `<span class="chip" style="font-size:10px;">${escHtml(post.category)}</span>` : ""}
+              <span style="font-size:10px;color:#bbb;">${timeAgo(post.created_at)}</span>
+            </div>
+          </div>
+          <div style="flex-shrink:0;font-size:13px;color:#555;font-weight:500;display:flex;align-items:center;gap:4px;">🔥 ${post._rxCount}</div>
+        </div>
+      `).join("")}
+    </div>
+  `;
+        }
 
-    if(error){ console.error(error); showErr("Reaction delete failed: " + (error.message || "")); return; }
-  }else{
-    const { error } = await supabaseClient
-      .from("reactions")
-      .insert({ post_id: postId, emoji, reactor_id: deviceId });
+        /* ── Groups ── */
+        function buildGroups() {
+            const s = state;
+            return `
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+      <span style="font-family:'Bebas Neue',cursive;font-size:20px;letter-spacing:2px;">GRUPPI</span>
+      <button class="btn-sm" onclick="openCreate('group')">+ Crea</button>
+    </div>
+    ${s.myGroups.length === 0 ? `
+      <div style="text-align:center;padding:60px;color:#bbb;">
+        <div style="font-size:24px;margin-bottom:10px;">—</div>
+        <div style="font-size:13px;margin-bottom:14px;">Nessun gruppo ancora.</div>
+        <button class="btn" onclick="openCreate('group')">Crea il primo gruppo</button>
+      </div>
+    `: ""}
+    ${s.myGroups.map(g => `
+      <div class="group-card" onclick="enterGroupById('${g.id}')">
+        <div>
+          <div style="display:flex;align-items:center;gap:7px;margin-bottom:3px;">
+            <span style="font-size:14px;font-weight:500;">${escHtml(g.name)}</span>
+            <span class="badge">${g.isPrivate ? I.Lock + " Privato" : I.Globe + " Pubblico"}</span>
+            ${g.isAdmin ? `<span class="badge">admin</span>` : ""}
+          </div>
+          <div style="font-size:11px;color:#ccc;">${escHtml(g.id)}</div>
+        </div>
+        <div style="display:flex;gap:7px;align-items:center;">
+          ${g.isAdmin ? `<button style="background:none;border:none;cursor:pointer;color:#bbb;display:flex;padding:4px;" onclick="event.stopPropagation();openGroupSettings('${g.id}');">${I.Settings}</button>` : ""}
+          ${I.Chevron}
+        </div>
+      </div>
+    `).join("")}
+    <div style="margin-top:16px;padding:14px;background:#fff;border-radius:12px;border:1px solid var(--border);">
+      <div class="section-label" style="margin-bottom:8px;">Entra con un link</div>
+      <div style="display:flex;gap:7px;">
+        <input id="join-input" placeholder="Incolla link o ID..." onkeydown="if(event.key==='Enter')joinByLink()" style="font-size:12px;padding:8px 11px;"/>
+        <button class="btn-sm" onclick="joinByLink()" style="flex-shrink:0;">Entra</button>
+      </div>
+    </div>
+  `;
+        }
 
-    if(error){ console.error(error); showErr("Reaction failed: " + (error.message || "")); return; }
-  }
+        /* ── My Activity ── */
+        function buildMyActivity() {
+            const s = state;
+            return `
+    <div style="font-family:'Bebas Neue',cursive;font-size:20px;letter-spacing:2px;margin-bottom:14px;">LA MIA ATTIVITÀ</div>
+    ${s.myPosts.length > 0 ? `
+      <div class="section-label">Post attivi</div>
+      ${s.myPosts.map(p => `
+        <div class="card click" onclick="openTiktok()">
+          <div style="display:flex;justify-content:space-between;margin-bottom:5px;">
+            <div style="display:flex;gap:4px;">${p.category ? `<span class="chip">${escHtml(p.category)}</span>` : ""}${p.mood ? `<span class="chip">${escHtml(p.mood)}</span>` : ""}</div>
+            <span style="font-size:10px;color:#bbb;display:flex;align-items:center;gap:3px;">${I.ClockSm} ${expiresIn(p.created_at)}</span>
+          </div>
+          <p style="font-size:13px;line-height:1.55;">${escHtml(p.text)}</p>
+        </div>
+      `).join("")}
+    `: ""}
+    ${s.interactedPosts.length > 0 ? `
+      <div class="section-label" style="margin-top:16px;">Ho interagito</div>
+      ${s.interactedPosts.map(p => `
+        <div class="card click" onclick="openTiktok()">
+          <div style="display:flex;gap:4px;margin-bottom:5px;">${p.category ? `<span class="chip">${escHtml(p.category)}</span>` : ""}</div>
+          <p style="font-size:13px;line-height:1.55;">${escHtml(p.text)}</p>
+          <div style="font-size:10px;color:#bbb;margin-top:4px;">${escHtml(p.author)} · ${timeAgo(p.created_at)}</div>
+        </div>
+      `).join("")}
+    `: ""}
+    ${s.myPosts.length === 0 && s.myPolls.length === 0 && s.interactedPosts.length === 0 ? `<div style="text-align:center;padding:60px;color:#bbb;"><div style="font-size:24px;margin-bottom:10px;">—</div><div style="font-size:13px;">Nessuna attività nelle ultime 24h.</div></div>` : ""}
+  `;
+        }
 
-  await reloadAll(false);
-}
+        /* ── Settings ── */
+        function buildSettings() {
+            const s = state;
+            return `
+    <div style="font-family:'Bebas Neue',cursive;font-size:20px;letter-spacing:2px;margin-bottom:18px;">IMPOSTAZIONI</div>
+    <div class="card" style="cursor:default;margin-bottom:10px;">
+      <div class="section-label">Nickname anonimo</div>
+      <div style="font-size:14px;margin-bottom:3px;">${escHtml(userName)}</div>
+      <div style="font-size:11px;color:#bbb;">Generato automaticamente. Salvato solo su questo dispositivo.</div>
+    </div>
+    <div class="card" style="cursor:default;margin-bottom:10px;">
+      <div class="section-label">Visualizzazione</div>
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <span style="font-size:13px;">Modalità compatta</span>
+        <button class="toggle${s.settings.compactMode ? " on" : ""}" onclick="toggleCompact()"></button>
+      </div>
+    </div>
+    <div class="card" style="cursor:default;margin-bottom:10px;">
+      <div class="section-label">Privacy</div>
+      <div style="font-size:12px;color:#bbb;line-height:1.6;">Tutto è anonimo e sparisce dopo 24h. Nessun dato personale raccolto. Il tuo device ID serve solo per reazioni e voti.</div>
+    </div>
+    <button class="btn-o" style="width:100%;margin-top:10px;color:#cc2222;border-color:#f0d0d0;font-size:12px;" onclick="resetData()">Resetta tutti i dati</button>
+  `;
+        }
 
-async function createPoll(){
-  const btn = document.getElementById("pollSubmitBtn");
-  btn.disabled = true;
-  btn.textContent = "Creating...";
-  try{
-    if(location.protocol === "file:"){ showErr("file:// blocks network on many phones. Use https."); return; }
+        /* ── Create Sheet ── */
+        function buildCreateSheet() {
+            const s = state;
+            const types = [["post", "Post"], ["poll", "Poll"], ["duel", "⚔️ Duello"], ["group", "Gruppo"]];
+            const isDesk = isDesktop();
+            return `
+    <div class="overlay" onclick="event.target===this&&closeCreate()">
+      <div class="sheet ${isDesk ? "sheet-desktop" : "sheet-mobile"}" onclick="event.stopPropagation()">
+        <div style="display:flex;gap:5px;margin-bottom:18px;flex-wrap:wrap;">
+          ${types.map(([t, l]) => `<button class="${s.createType === t ? "btn" : "btn-o"}" style="flex:1;min-width:70px;padding:8px 10px;font-size:12px;" onclick="setCreateType('${t}')">${l}</button>`).join("")}
+          <button style="background:none;border:none;cursor:pointer;color:#bbb;display:flex;align-items:center;padding:0 4px;" onclick="closeCreate()">${I.X}</button>
+        </div>
+        ${buildCreateForm()}
+      </div>
+    </div>
+  `;
+        }
 
-    const cat = document.getElementById("pollCategory").value;
-    const q = (document.getElementById("pollQuestion").value||"").trim();
-    const opts = [
-      document.getElementById("pollOpt1").value.trim(),
-      document.getElementById("pollOpt2").value.trim(),
-      document.getElementById("pollOpt3").value.trim(),
-      document.getElementById("pollOpt4").value.trim(),
-      document.getElementById("pollOpt5").value.trim()
-    ].filter(Boolean);
+        function buildCreateForm() {
+            const s = state;
+            if (s.createType === "post") return `
+    <div style="display:flex;flex-direction:column;gap:10px;">
+      <div style="font-size:10px;color:#bbb;letter-spacing:1px;">ANONIMO · ${escHtml(userName)} · 24H${s.currentGroupId !== "public" ? ` · ${escHtml(s.currentGroupName)}` : ""}</div>
+      <textarea id="np-text" rows="4" placeholder="Di' quello che non puoi dire da nessun'altra parte..." style="resize:none;">${escHtml(s.newPost.text)}</textarea>
+      <select id="np-cat" onchange="state.newPost.category=this.value">
+        <option value="">Categoria (opzionale)...</option>
+        ${CATEGORIES.map(c => `<option value="${c}"${s.newPost.category === c ? " selected" : ""}>${c}</option>`).join("")}
+      </select>
+      <select id="np-mood" onchange="state.newPost.mood=this.value">
+        <option value="">Mood (opzionale)...</option>
+        ${MOODS.map(m => `<option value="${m}"${s.newPost.mood === m ? " selected" : ""}>${m}</option>`).join("")}
+      </select>
+      <div style="display:flex;gap:8px;margin-top:4px;">
+        <button class="btn-o" style="flex:1;" onclick="closeCreate()">Annulla</button>
+        <button class="btn" style="flex:2;" onclick="submitPost()" ${s.posting ? "disabled" : ""}>Pubblica</button>
+      </div>
+    </div>
+  `;
+            if (s.createType === "poll") return `
+    <div style="display:flex;flex-direction:column;gap:10px;">
+      <input id="npl-q" placeholder="La tua domanda..." value="${escHtml(s.newPoll.question)}" oninput="state.newPoll.question=this.value"/>
+      ${s.newPoll.options.map((opt, i) => `
+        <div style="display:flex;gap:6px;">
+          <input placeholder="Opzione ${i + 1}" value="${escHtml(opt)}" oninput="state.newPoll.options[${i}]=this.value" data-poll-opt="${i}"/>
+          ${s.newPoll.options.length > 2 ? `<button class="btn-o" style="padding:0 11px;flex-shrink:0;" onclick="removePollOption(${i})">—</button>` : ""}
+        </div>
+      `).join("")}
+      ${s.newPoll.options.length < 5 ? `<button class="btn-o" style="font-size:12px;" onclick="addPollOption()">+ Opzione</button>` : ""}
+      <div style="display:flex;gap:8px;">
+        <button class="btn-o" style="flex:1;" onclick="closeCreate()">Annulla</button>
+        <button class="btn" style="flex:2;" onclick="submitPoll()" ${s.posting ? "disabled" : ""}>Crea poll</button>
+      </div>
+    </div>
+  `;
+            if (s.createType === "duel") return `
+    <div style="display:flex;flex-direction:column;gap:10px;">
+      <div style="font-size:10px;color:#bbb;letter-spacing:1px;">DUELLO ANONIMO · 24H</div>
+      <input id="nd-topic" placeholder="Tema del duello... (es. Studio vs Lavoro)" value="${escHtml(s.newDuel.topic)}" oninput="state.newDuel.topic=this.value"/>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+        <div>
+          <div style="font-size:10px;color:#bbb;margin-bottom:5px;letter-spacing:1px;">LATO A</div>
+          <input placeholder="es. Studio" value="${escHtml(s.newDuel.sideA)}" oninput="state.newDuel.sideA=this.value" style="text-align:center;"/>
+        </div>
+        <div>
+          <div style="font-size:10px;color:#bbb;margin-bottom:5px;letter-spacing:1px;">LATO B</div>
+          <input placeholder="es. Lavoro" value="${escHtml(s.newDuel.sideB)}" oninput="state.newDuel.sideB=this.value" style="text-align:center;"/>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:4px;">
+        <button class="btn-o" style="flex:1;" onclick="closeCreate()">Annulla</button>
+        <button class="btn" style="flex:2;" onclick="submitDuel()" ${s.posting ? "disabled" : ""}>⚔️ Lancia duello</button>
+      </div>
+    </div>
+  `;
+            if (s.createType === "group") return `
+    <div style="display:flex;flex-direction:column;gap:10px;">
+      <input id="ng-name" placeholder="Nome del gruppo..." value="${escHtml(s.newGroup.name)}" oninput="state.newGroup.name=this.value"/>
+      <div>
+        <div class="section-label" style="margin-bottom:8px;">Visibilità</div>
+        <div style="display:flex;gap:8px;">
+          <button class="fchip${!s.newGroup.isPrivate ? " on" : ""}" style="flex:1;text-align:center;" onclick="state.newGroup.isPrivate=false;render();">${I.Globe} Pubblico</button>
+          <button class="fchip${s.newGroup.isPrivate ? " on" : ""}" style="flex:1;text-align:center;" onclick="state.newGroup.isPrivate=true;render();">${I.Lock} Privato</button>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;">
+        <button class="btn-o" style="flex:1;" onclick="closeCreate()">Annulla</button>
+        <button class="btn" style="flex:2;" onclick="createGroup()">Crea</button>
+      </div>
+    </div>
+  `;
+            return "";
+        }
 
-    if(!q || opts.length < 2){ showErr("Poll needs question + 2 options."); return; }
-    if(containsBlockedWords(q) || opts.some(o=>containsBlockedWords(o))){ showErr("Blocked poll content."); return; }
+        /* ── Group Settings ── */
+        function buildGroupSettingsSheet() {
+            const s = state;
+            const g = s.myGroups.find(x => x.id === s.groupSettingsOpen);
+            if (!g) return "";
+            const isDesk = isDesktop();
+            return `
+    <div class="overlay" onclick="event.target===this&&closeGroupSettings()">
+      <div class="sheet ${isDesk ? "sheet-desktop" : "sheet-mobile"}" onclick="event.stopPropagation()">
+        <div style="display:flex;justify-content:space-between;margin-bottom:16px;">
+          <span style="font-family:'Bebas Neue',cursive;font-size:18px;letter-spacing:1px;">IMPOSTAZIONI GRUPPO</span>
+          <button style="background:none;border:none;cursor:pointer;color:#bbb;display:flex;" onclick="closeGroupSettings()">${I.X}</button>
+        </div>
+        <div style="margin-bottom:13px;">
+          <div class="section-label">Nome</div>
+          <div style="font-size:15px;font-weight:500;">${escHtml(g.name)}</div>
+          <div style="font-size:11px;color:#bbb;">ID: ${escHtml(g.id)}</div>
+        </div>
+        <div class="divider"></div>
+        <div style="margin-bottom:13px;">
+          <div class="section-label">Visibilità</div>
+          <div style="display:flex;gap:8px;">
+            <button class="fchip${!g.isPrivate ? " on" : ""}" style="flex:1;text-align:center;" onclick="toggleGroupPrivacy('${g.id}')">${I.Globe} Pubblico</button>
+            <button class="fchip${g.isPrivate ? " on" : ""}" style="flex:1;text-align:center;" onclick="toggleGroupPrivacy('${g.id}')">${I.Lock} Privato</button>
+          </div>
+          <div style="font-size:11px;color:#bbb;margin-top:6px;">${g.isPrivate ? "Solo chi ha il link può entrare." : "Visibile a tutti."}</div>
+        </div>
+        <div class="divider"></div>
+        <div style="margin-bottom:13px;">
+          <div class="section-label">Condividi link</div>
+          <div style="display:flex;gap:7px;">
+            <input value="https://nofilterthoughts.it/?join=${g.id}" readonly style="font-size:11px;background:#f8f8f8;color:#888;"/>
+            <button class="btn-sm" onclick="copyGroupLink('${g.id}')" style="flex-shrink:0;">${I.Copy}</button>
+          </div>
+        </div>
+        <div class="divider"></div>
+        <button class="btn-o" style="width:100%;color:#cc2222;border-color:#f0d0d0;font-size:12px;" onclick="deleteGroup('${g.id}')">Rimuovi dalla lista</button>
+      </div>
+    </div>
+  `;
+        }
 
-    const expiresAt = new Date(Date.now() + 24*60*60*1000).toISOString();
-    const payload = { language: currentLang, category: cat, question: escapeHtml(q), options: opts.map(escapeHtml), creator_id: deviceId, expires_at: expiresAt };
-    const { error } = await supabaseClient.from("polls").insert(payload);
-    if(error){ console.error(error); showErr("Poll create failed: " + (error.message || "")); return; }
+        /* ── Challenge sheet ── */
+        function buildChallengeSheet() {
+            const s = state;
+            if (!s.challengePost) return "";
+            const isDesk = isDesktop();
+            return `
+    <div class="overlay" onclick="event.target===this&&closeChallenge()">
+      <div class="sheet ${isDesk ? "sheet-desktop" : "sheet-mobile"}" onclick="event.stopPropagation()">
+        <div style="display:flex;justify-content:space-between;margin-bottom:14px;">
+          <span style="font-family:'Bebas Neue',cursive;font-size:17px;letter-spacing:1px;">⚔️ SFIDA POST</span>
+          <button style="background:none;border:none;cursor:pointer;color:#bbb;display:flex;" onclick="closeChallenge()">${I.X}</button>
+        </div>
+        <div style="background:#f8f8f8;border-radius:8px;padding:11px;margin-bottom:13px;border-left:3px solid #e0e0e0;">
+          <div style="font-size:11px;color:#bbb;margin-bottom:4px;">POST ORIGINALE</div>
+          <p style="font-size:13px;line-height:1.5;color:#555;">${escHtml(s.challengePost.text.length > 120 ? s.challengePost.text.slice(0, 117) + "..." : s.challengePost.text)}</p>
+        </div>
+        <div style="font-size:10px;color:#bbb;margin-bottom:8px;letter-spacing:1px;">LA TUA RISPOSTA</div>
+        <textarea id="challenge-text" rows="3" placeholder="Contesta questo pensiero..." style="resize:none;margin-bottom:11px;"></textarea>
+        <div style="display:flex;gap:8px;">
+          <button class="btn-o" style="flex:1;" onclick="closeChallenge()">Annulla</button>
+          <button class="btn" style="flex:2;" onclick="submitChallenge()" ${s.posting ? "disabled" : ""}>⚔️ Lancia duello</button>
+        </div>
+      </div>
+    </div>
+  `;
+        }
 
-    currentCategory = cat;
-    renderCategoryChips();
-    updateScopePill();
+        /* ── TikTok view ── */
+        function buildTiktok() {
+            const s = state;
+            const posts = s.posts.filter(p => !s.hiddenPosts.includes(p.id));
+            if (!posts.length) return "";
+            const post = posts[s.tiktokIdx % posts.length];
+            const rxList = s.reactions[post.id] || [];
+            const postComments = s.comments[post.id] || [];
+            const myRx = REACTIONS.find(e => rxList.some(r => r.emoji === e && r.reactor_id === deviceId));
+            const topRx = REACTIONS.map(e => ({ emoji: e, count: rxList.filter(r => r.emoji === e).length, mine: rxList.some(r => r.emoji === e && r.reactor_id === deviceId) })).filter(r => r.count > 0).sort((a, b) => b.count - a.count).slice(0, 4);
+            const textSize = post.text.length > 200 ? 15 : post.text.length > 100 ? 17 : 19;
+            return `
+    <div class="tiktok-view" ontouchstart="ttTouchStart(event)" ontouchend="ttTouchEnd(event)">
+      <div class="tiktok-post${s.tiktokDir === "up" ? " exit-up" : ""}">
+        <div style="position:absolute;top:0;left:0;right:0;height:100%;background:linear-gradient(to bottom,rgba(0,0,0,0.2) 0%,transparent 30%,transparent 50%,rgba(0,0,0,0.7) 100%);"></div>
+        <div style="position:absolute;top:0;left:0;right:0;padding:18px 20px;display:flex;align-items:center;justify-content:space-between;z-index:2;">
+          <div style="font-family:'Bebas Neue',cursive;font-size:17px;letter-spacing:3px;color:#fff;">NO FILTER</div>
+          <button onclick="closeTiktok()" style="background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.2);border-radius:8px;color:rgba(255,255,255,0.8);font-family:'DM Mono',monospace;font-size:12px;padding:6px 12px;cursor:pointer;backdrop-filter:blur(4px);transition:all 0.2s;">${I.X} chiudi</button>
+        </div>
+        <div style="position:absolute;top:50%;right:20px;transform:translateY(-50%);display:flex;flex-direction:column;align-items:center;gap:4px;z-index:2;">
+          <div style="font-size:11px;color:rgba(255,255,255,0.3);font-family:'DM Mono',monospace;">${(s.tiktokIdx % posts.length) + 1}/${posts.length}</div>
+        </div>
+        <div style="padding:0 24px 28px;position:relative;z-index:2;">
+          <div style="display:flex;gap:5px;margin-bottom:13px;flex-wrap:wrap;">
+            ${post.category ? `<span style="background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.15);color:rgba(255,255,255,0.6);padding:3px 9px;border-radius:4px;font-size:11px;">${escHtml(post.category)}</span>` : ""}
+            ${post.mood ? `<span style="background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.15);color:rgba(255,255,255,0.6);padding:3px 9px;border-radius:4px;font-size:11px;">${escHtml(post.mood)}</span>` : ""}
+          </div>
+          <p style="font-size:${textSize}px;line-height:1.55;color:#fff;font-family:'DM Mono',monospace;margin-bottom:16px;font-weight:${post.text.length < 60 ? 500 : 400};">${escHtml(post.text)}</p>
+          <div style="font-size:10px;color:rgba(255,255,255,0.3);margin-bottom:18px;display:flex;align-items:center;gap:5px;">${I.ClockSm} ${timeAgo(post.created_at)} · scade tra ${expiresIn(post.created_at)}</div>
+          <div style="display:flex;gap:7px;flex-wrap:wrap;align-items:center;margin-bottom:13px;position:relative;">
+            ${topRx.map(({ emoji, count, mine }) => `<button onclick="ttReact('${post.id}','${emoji}')" style="background:${mine ? "#fff" : "rgba(255,255,255,0.08)"};border:1px solid ${mine ? "#fff" : "rgba(255,255,255,0.15)"};color:${mine ? "#000" : "#fff"};padding:6px 12px;border-radius:18px;font-size:13px;cursor:pointer;display:flex;align-items:center;gap:4px;transition:all 0.2s;font-family:'DM Mono',monospace;">${emoji} ${count}</button>`).join("")}
+            <div style="position:relative;">
+              <button onclick="toggleTtReactPicker()" style="background:${myRx ? "#fff" : "rgba(255,255,255,0.08)"};border:1px solid ${myRx ? "#fff" : "rgba(255,255,255,0.2)"};color:${myRx ? "#000" : "rgba(255,255,255,0.7)"};padding:6px 14px;border-radius:18px;font-size:12px;cursor:pointer;font-family:'DM Mono',monospace;transition:all 0.2s;">${myRx ? "✓ react" : "+ react"}</button>
+              ${s.tiktokReactPickerOpen ? `
+                <div style="position:fixed;inset:0;z-index:1;" onclick="state.tiktokReactPickerOpen=false;render();"></div>
+                <div style="position:absolute;bottom:calc(100% + 8px);left:0;background:#1a1a1a;border:1px solid #333;border-radius:12px;padding:8px 10px;display:flex;gap:4px;z-index:2;box-shadow:0 8px 30px rgba(0,0,0,0.5);animation:picker-in 0.18s cubic-bezier(.34,1.56,.64,1);">
+                  ${REACTIONS.map(emoji => { const mine = rxList.some(r => r.emoji === emoji && r.reactor_id === deviceId); return `<button class="react-emoji${mine ? " on" : ""}" onclick="ttReact('${post.id}','${emoji}')">${emoji}</button>`; }).join("")}
+                </div>
+              `: ""}
+            </div>
+          </div>
+          <div style="display:flex;gap:8px;margin-bottom:${s.tiktokShowComment ? 14 : 0}px;">
+            <button onclick="toggleTtComment()" style="background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);color:rgba(255,255,255,0.7);padding:8px 16px;border-radius:9px;font-size:12px;cursor:pointer;font-family:'DM Mono',monospace;display:flex;align-items:center;gap:6px;transition:all 0.2s;">${I.Msg} ${postComments.length > 0 ? postComments.length + " commenti" : "Commenta"}</button>
+            <button onclick="ttHide('${post.id}')" style="background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);color:rgba(255,255,255,0.4);padding:8px 12px;border-radius:9px;font-size:12px;cursor:pointer;font-family:'DM Mono',monospace;display:flex;align-items:center;gap:5px;transition:all 0.2s;">${I.EyeOff}</button>
+            <button onclick="ttChallenge('${post.id}')" style="background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);color:rgba(255,255,255,0.6);padding:8px 12px;border-radius:9px;font-size:12px;cursor:pointer;font-family:'DM Mono',monospace;display:flex;align-items:center;gap:5px;transition:all 0.2s;">${I.Sword}</button>
+          </div>
+          ${s.tiktokShowComment ? `
+            <div style="display:flex;gap:6px;animation:su 0.2s ease;">
+              <input id="tt-comment" placeholder="Commenta..." value="${escHtml(s.tiktokCommentInput)}" oninput="state.tiktokCommentInput=this.value" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();ttSubmitComment('${post.id}');}" autofocus style="background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.15);color:#fff;font-size:12px;padding:9px 12px;border-radius:8px;"/>
+              <button class="btn-sm" onclick="ttSubmitComment('${post.id}')" style="flex-shrink:0;background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.2);">→</button>
+            </div>
+          `: ""}
+        </div>
+        <div style="position:absolute;bottom:32px;right:24px;z-index:2;">
+          <button onclick="ttNext()" style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);border-radius:12px;padding:11px 18px;color:rgba(255,255,255,0.5);font-family:'DM Mono',monospace;font-size:11px;cursor:pointer;display:flex;align-items:center;gap:5px;backdrop-filter:blur(4px);transition:all 0.2s;letter-spacing:.5px;">SKIP ↑</button>
+        </div>
+      </div>
+    </div>
+  `;
+        }
 
-    closeModal("pollModalBg");
-    showOk("Poll created!");
-    setPage("polls");
-    await reloadAll(false);
-  } finally {
-    btn.disabled = false;
-    btn.textContent = "Create";
-  }
-}
+        /* ── Event handlers / Actions ── */
+        function attachEvents() {
+            const params = new URLSearchParams(window.location.search);
+            const joinId = params.get("join");
+            if (joinId && !state._joinHandled) { state._joinHandled = true; joinGroupByIdRaw(joinId); }
+        }
 
-async function votePoll(optionIndex){
-  if(!activePoll) return;
-  if(pollAgg?.myVotedIndex != null) return;
+        function toggleSidebar() { state.sidebarOpen = !state.sidebarOpen; render(); }
+        function goView(v) { state.prevView = state.view; state.view = v; npStart(); setTimeout(npDone, 400); render(); }
+        function openCreate(type = "post") { state.createType = type; state.createOpen = true; render(); }
+        function closeCreate() { state.createOpen = false; render(); }
+        function setCreateType(t) { state.createType = t; render(); }
+        function toggleFilters() { state.filtersOpen = !state.filtersOpen; render(); }
+        function setSortBy(v) { state.sortBy = v; render(); }
+        function toggleFilterCat(c) { state.filterCat = state.filterCat === c ? null : c; render(); }
+        function toggleFilterMood(m) { state.filterMood = state.filterMood === m ? null : m; render(); }
+        function clearFilters() { state.filterCat = null; state.filterMood = null; state.searchQuery = ""; render(); }
+        function handleSearchInput(v) { state.searchQuery = v; render(); }
+        function applySearch() { render(); }
+        function clearSearch() { state.searchQuery = ""; render(); }
+        function openGroupSettings(id) { state.groupSettingsOpen = id; render(); }
+        function closeGroupSettings() { state.groupSettingsOpen = null; render(); }
+        function openChallenge(postId) { state.challengePost = state.posts.find(p => p.id === postId) || state.hotPosts.find(p => p.id === postId); render(); }
+        function closeChallenge() { state.challengePost = null; render(); }
 
-  const { error } = await supabaseClient
-    .from("poll_votes")
-    .insert({ poll_id: activePoll.id, option_index: optionIndex, voter_id: deviceId });
+        function openTiktok() {
+            const posts = state.posts.filter(p => !state.hiddenPosts.includes(p.id));
+            if (!posts.length) { showToast("Nessun post disponibile."); return; }
+            state.tiktokIdx = Math.floor(Math.random() * posts.length);
+            state.tiktokDir = null; state.tiktokShowComment = false; state.tiktokCommentInput = ""; state.tiktokReactPickerOpen = false;
+            state.tiktokOpen = true; render();
+        }
+        function closeTiktok() { state.tiktokOpen = false; render(); }
 
-  if(error){ console.error(error); showErr("Vote failed: " + (error.message || "maybe already voted")); return; }
-  showOk("Voted!");
-  await loadActivePoll();
-  renderPoll();
-}
+        let ttTouchStartY = null;
+        function ttTouchStart(e) { ttTouchStartY = e.touches[0].clientY; }
+        function ttTouchEnd(e) { if (ttTouchStartY === null) return; const dy = ttTouchStartY - e.changedTouches[0].clientY; if (dy > 60) ttNext(); ttTouchStartY = null; }
+        function ttNext() {
+            const posts = state.posts.filter(p => !state.hiddenPosts.includes(p.id));
+            if (!posts.length) return;
+            state.tiktokDir = "up"; render();
+            setTimeout(() => {
+                state.tiktokIdx = (state.tiktokIdx + 1) % posts.length;
+                state.tiktokDir = null; state.tiktokShowComment = false; state.tiktokCommentInput = ""; state.tiktokReactPickerOpen = false;
+                render();
+            }, 300);
+        }
+        function toggleTtComment() { state.tiktokShowComment = !state.tiktokShowComment; render(); }
+        function toggleTtReactPicker() { state.tiktokReactPickerOpen = !state.tiktokReactPickerOpen; render(); }
+        async function ttReact(postId, emoji) { state.tiktokReactPickerOpen = false; await toggleReactionAsync(postId, emoji); render(); }
+        async function ttSubmitComment(postId) { const txt = state.tiktokCommentInput.trim(); if (!txt) return; await addCommentAsync(postId, txt); state.tiktokCommentInput = ""; render(); }
+        function ttHide(postId) { hidePost(postId); ttNext(); }
+        function ttChallenge(postId) { const posts = state.posts.filter(p => !state.hiddenPosts.includes(p.id)); state.challengePost = posts.find(p => p.id === postId); state.tiktokOpen = false; render(); }
 
-let chPosts=null, chComments=null, chReactions=null, chPolls=null, chPollVotes=null;
-function clearChannels(){
-  if(chPosts) supabaseClient.removeChannel(chPosts);
-  if(chComments) supabaseClient.removeChannel(chComments);
-  if(chReactions) supabaseClient.removeChannel(chReactions);
-  if(chPolls) supabaseClient.removeChannel(chPolls);
-  if(chPollVotes) supabaseClient.removeChannel(chPollVotes);
-  chPosts=chComments=chReactions=chPolls=chPollVotes=null;
-}
-function subscribeRealtime(){
-  clearChannels();
+        function toggleReactPicker(postId) { state.reactPickerPost = state.reactPickerPost === postId ? null : postId; render(); }
+        function closeReactPicker() { state.reactPickerPost = null; render(); }
+        async function reactAndClose(postId, emoji) { await toggleReactionAsync(postId, emoji); state.reactPickerPost = null; render(); setTimeout(() => maybeFloatEmoji(postId, emoji), 50); }
+        async function toggleReaction(postId, emoji) { await toggleReactionAsync(postId, emoji); render(); setTimeout(() => maybeFloatEmoji(postId, emoji), 50); }
+        function toggleComments(postId) { const s = new Set(state.expandedComments); s.has(postId) ? s.delete(postId) : s.add(postId); state.expandedComments = s; render(); }
+        function setReplyingTo(postId, commentId, author) { if (state.replyingTo?.postId === postId && state.replyingTo?.commentId === commentId) state.replyingTo = null; else { state.replyingTo = { postId, commentId, author }; state.replyText = ""; } render(); if (state.replyingTo) setTimeout(() => { const el = document.getElementById("reply-" + commentId); if (el) el.focus(); }, 50); }
 
-  chPosts = supabaseClient
-    .channel("rt-posts")
-    .on("postgres_changes",{event:"INSERT",schema:"public",table:"posts"}, (payload)=>{
-      const p = payload.new;
-      
-      // FILTRO GRUPPI: Se il post appartiene a un altro gruppo, ignoralo
-      if(p.group_id !== currentGroupId) return; 
+        async function submitReply(postId, commentId) {
+            const inputEl = document.getElementById("reply-" + commentId);
+            const txt = inputEl ? inputEl.value : state.replyText;
+            if (!txt || !txt.trim()) return;
+            const c = state.comments[postId]?.find(x => x.id === commentId);
+            const prefix = c ? `@${c.author} ` : "";
+            const ok = await addCommentAsync(postId, prefix + txt.trim());
+            if (ok) { state.replyingTo = null; state.replyText = ""; }
+            render();
+        }
+        async function submitComment(postId, inputEl) { const txt = inputEl.value; await addCommentAsync(postId, txt); inputEl.value = ""; render(); }
+        async function submitCommentBtn(postId) { const inputEl = document.getElementById("comment-" + postId); if (!inputEl) return; const txt = inputEl.value; await addCommentAsync(postId, txt); inputEl.value = ""; render(); }
 
-      if(!within24h(p.created_at)) return;
-      if(p.language !== currentLang || p.category !== currentCategory || p.mood !== currentMood) return;
-      if(hiddenPosts.includes(p.id)) return;
-      if(posts.some(x=>x.id===p.id)) return;
+        function hidePost(postId) { const u = [...state.hiddenPosts, postId]; state.hiddenPosts = u; localStorage.setItem("nofilter_hidden", JSON.stringify(u.slice(-500))); render(); }
+        function toggleCompact() { const s = { ...state.settings, compactMode: !state.settings.compactMode }; state.settings = s; saveSettings(s); render(); }
+        function resetData() { if (confirm("Sei sicuro? Perderai gruppi e preferenze.")) { localStorage.clear(); window.location.reload(); } }
+        function addPollOption() { if (state.newPoll.options.length < 5) { state.newPoll.options.push(""); render(); } }
+        function removePollOption(i) { state.newPoll.options = state.newPoll.options.filter((_, idx) => idx !== i); render(); }
 
-      posts.unshift(p);
-      if(!commentsByPost.has(p.id)) commentsByPost.set(p.id, []);
-      if(!reactionsAgg.has(p.id)) reactionsAgg.set(p.id, {});
-      renderPosts();
-    })
-    .subscribe();
+        function enterGroupById(id) { const g = state.myGroups.find(x => x.id === id) || { id, name: id }; enterGroup(g); }
+        function enterGroup(g) { state.currentGroupId = g.id; state.currentGroupName = g.name; state.posts = []; state.view = "group-feed"; state.sidebarOpen = false; state.loading = true; render(); loadPosts(g.id).then(() => { state.loading = false; render(); }); }
+        function goFeed() { state.currentGroupId = "public"; state.view = "feed"; state.posts = []; state.loading = true; render(); loadPosts("public").then(() => { state.loading = false; render(); }); }
 
-  chComments = supabaseClient
-    .channel("rt-comments")
-    .on("postgres_changes",{event:"INSERT",schema:"public",table:"comments"}, (payload)=>{
-      const c = payload.new;
-      
-      // FILTRO GRUPPI: Carica il commento solo se il post appartiene al gruppo attuale
-      // Nota: aggiungiamo il controllo sul group_id anche qui per sicurezza
-      if(c.group_id !== currentGroupId) return;
+        function createGroup() {
+            const nameEl = document.getElementById("ng-name");
+            const name = ((nameEl ? nameEl.value : "") || state.newGroup.name).trim();
+            if (!name) { showToast("Dai un nome.", true); return; }
+            const id = genGroupId();
+            const g = { id, name, isPrivate: state.newGroup.isPrivate, isAdmin: true };
+            const u = [...state.myGroups, g]; saveMyGroups(u); state.myGroups = u;
+            state.newGroup = { name: "", isPrivate: true }; state.createOpen = false;
+            enterGroup(g); showToast("Gruppo creato!");
+        }
+        function joinByLink() { const v = document.getElementById("join-input")?.value || ""; joinGroupByIdRaw(v); }
+        function joinGroupByIdRaw(raw) { let id = raw.trim(); try { const u = new URL(id); id = u.searchParams.get("join") || id; } catch (_) { } if (!id) return; const exists = state.myGroups.find(g => g.id === id); if (!exists) { const g = { id, name: id, isPrivate: false, isAdmin: false }; const u = [...state.myGroups, g]; saveMyGroups(u); state.myGroups = u; enterGroup(g); } else enterGroup(exists); }
+        function toggleGroupPrivacy(gid) { const u = state.myGroups.map(g => g.id === gid ? { ...g, isPrivate: !g.isPrivate } : g); saveMyGroups(u); state.myGroups = u; showToast("Aggiornato."); render(); }
+        function deleteGroup(gid) { const u = state.myGroups.filter(g => g.id !== gid); saveMyGroups(u); state.myGroups = u; if (state.currentGroupId === gid) goFeed(); state.groupSettingsOpen = null; showToast("Rimosso."); render(); }
+        function copyGroupLink(gid) { const url = `https://nofilterthoughts.it/?join=${gid}`; navigator.clipboard.writeText(url).then(() => showToast("Link copiato!")).catch(() => showToast("Copia: " + url)); }
 
-      if(!within24h(c.created_at)) return;
-      if(!posts.some(p=>p.id===c.post_id)) return;
+        async function submitPost() {
+            const txtEl = document.getElementById("np-text");
+            const catEl = document.getElementById("np-cat");
+            const moodEl = document.getElementById("np-mood");
+            const txt = (txtEl ? txtEl.value : "") || state.newPost.text;
+            const cat = (catEl ? catEl.value : "") || state.newPost.category;
+            const mood = (moodEl ? moodEl.value : "") || state.newPost.mood;
+            if (!txt || !txt.trim() || txt.trim().length < 5) { showToast("Scrivi almeno 5 caratteri.", true); return; }
+            state.posting = true; render();
+            const { error } = await sb.from("posts").insert({ language: LANG, category: cat || "Altro", mood: mood || "Bored", author: userName, text: txt.trim(), group_id: state.currentGroupId });
+            state.posting = false;
+            if (error) { showToast("Errore: " + error.message, true); render(); return; }
+            state.newPost = { text: "", mood: "", category: "" }; state.createOpen = false; showToast("Pubblicato! 🔥"); render();
+        }
+        async function submitPoll() {
+            const qEl = document.getElementById("npl-q");
+            const q = (qEl ? qEl.value : "") || state.newPoll.question;
+            // sync options from DOM
+            document.querySelectorAll("[data-poll-opt]").forEach(el => { state.newPoll.options[+el.dataset.pollOpt] = el.value; });
+            const opts = state.newPoll.options.filter(o => o && o.trim());
+            if (!q || !q.trim()) { showToast("Scrivi la domanda.", true); return; }
+            if (opts.length < 2) { showToast("Almeno 2 opzioni.", true); return; }
+            state.posting = true; render();
+            const { error } = await sb.from("polls").insert({ language: LANG, category: state.newPoll.category || "Opinione", question: q.trim(), options: opts, creator_id: deviceId, expires_at: new Date(Date.now() + 24 * 3600 * 1000).toISOString() });
+            state.posting = false;
+            if (error) { showToast("Errore: " + error.message, true); render(); return; }
+            state.newPoll = { question: "", options: ["", ""], category: "" }; state.createOpen = false; showToast("Poll creato."); goView("polls");
+        }
+        async function submitDuel() {
+            const topicEl = document.getElementById("nd-topic");
+            const topic = (topicEl ? topicEl.value : "") || state.newDuel.topic;
+            state.newDuel.topic = topic;
+            if (!topic || !topic.trim()) { showToast("Scrivi il tema del duello.", true); return; }
+            if (!state.newDuel.sideA.trim() || !state.newDuel.sideB.trim()) { showToast("Scrivi entrambi i lati.", true); return; }
+            state.posting = true; render();
+            const { error } = await sb.from("polls").insert({ language: LANG, category: "DUEL", question: state.newDuel.topic.trim(), options: [state.newDuel.sideA.trim(), state.newDuel.sideB.trim()], creator_id: deviceId, expires_at: new Date(Date.now() + 24 * 3600 * 1000).toISOString() });
+            state.posting = false;
+            if (error) { showToast("Errore: " + error.message, true); render(); return; }
+            state.newDuel = { topic: "", sideA: "", sideB: "", category: "" }; state.createOpen = false; showToast("Duello lanciato! ⚔️"); goView("duels");
+        }
+        async function submitChallenge() {
+            const txt = document.getElementById("challenge-text")?.value || "";
+            if (!state.challengePost || !txt.trim() || txt.trim().length < 5) return;
+            state.posting = true; render();
+            const sideA = state.challengePost.text.length > 80 ? state.challengePost.text.slice(0, 77) + "..." : state.challengePost.text;
+            const { error } = await sb.from("polls").insert({ language: LANG, category: "DUEL", question: "Chi ha ragione?", options: [sideA, txt.trim()], creator_id: deviceId, expires_at: new Date(Date.now() + 24 * 3600 * 1000).toISOString() });
+            state.posting = false;
+            if (error) { showToast("Errore: " + error.message, true); render(); return; }
+            state.challengePost = null; showToast("Duello lanciato! ⚔️"); loadDuels(); goView("duels");
+        }
+        async function votePoll(pollId, optIdx) { const pv = state.pollVotes[pollId]; if (pv?.myVote !== null && pv?.myVote !== undefined) return; const { error } = await sb.from("poll_votes").insert({ poll_id: pollId, option_index: optIdx, voter_id: deviceId }); if (error) showToast("Errore voto.", true); }
+        async function voteDuel(duelId, side) { const dv = state.duelVotes[duelId]; if (dv?.myVote !== null && dv?.myVote !== undefined) return; const { error } = await sb.from("poll_votes").insert({ poll_id: duelId, option_index: side, voter_id: deviceId }); if (error) showToast("Errore.", true); }
 
-      if(!commentsByPost.has(c.post_id)) commentsByPost.set(c.post_id, []);
-      commentsByPost.get(c.post_id).push(c);
-      renderPosts();
-    })
-    .subscribe();
+        async function toggleReactionAsync(postId, emoji) { const myRx = (state.reactions[postId] || []).find(r => r.reactor_id === deviceId && r.emoji === emoji); if (myRx) await sb.from("reactions").delete().eq("id", myRx.id); else { await sb.from("reactions").insert({ post_id: postId, emoji, reactor_id: deviceId }); addMyReacted(postId); } }
+        async function addCommentAsync(postId, text) { if (!text.trim() || text.trim().length < 2) return false; const post = state.posts.find(p => p.id === postId) || state.hotPosts.find(p => p.id === postId); if (!post) return false; const { error } = await sb.from("comments").insert({ post_id: postId, group_id: state.currentGroupId, language: post.language || LANG, category: post.category, mood: post.mood, author: userName, text: text.trim(), commenter_id: deviceId }); if (error) { showToast("Errore commento.", true); return false; } return true; }
 
-  // Il resto della funzione (Reactions, Polls) rimane invariato 
-  // perché si basano sulla lista 'posts' che è già stata filtrata sopra.
-  
-  chReactions = supabaseClient
-    .channel("rt-reactions")
-    .on("postgres_changes",{event:"INSERT",schema:"public",table:"reactions"}, (payload)=>{
-      const r=payload.new;
-      if(!within24h(r.created_at)) return;
-      if(!posts.some(p=>p.id===r.post_id)) return;
+        function showToast(msg, err = false) { state.toast = { msg, err }; render(); setTimeout(() => { state.toast = null; render(); }, 2600); }
 
-      if(!reactionsAgg.has(r.post_id)) reactionsAgg.set(r.post_id, {});
-      const agg = reactionsAgg.get(r.post_id);
-      agg[r.emoji] = (agg[r.emoji]||0) + 1;
+        /* ── Data loaders ── */
+        async function loadPosts(groupId = state.currentGroupId) {
+            const cutoff = new Date(Date.now() - 24 * 3600 * 1000).toISOString();
+            const { data, error } = await sb.from("posts").select("id,created_at,language,category,mood,author,text,group_id").eq("language", LANG).eq("group_id", groupId).gte("created_at", cutoff).order("created_at", { ascending: false });
+            if (error) { console.error(error); return; }
+            if (data) {
+                state.posts = data.map(p => ({ ...p, id: String(p.id) }));
+                if (data.length) { const ids = state.posts.map(p => p.id); await Promise.all([loadReactions(ids), loadComments(ids)]); }
+            }
+        }
+        async function loadReactions(ids) { if (!ids.length) return; const { data } = await sb.from("reactions").select("id,post_id,emoji,reactor_id").in("post_id", ids); if (data) { const m = {}; data.forEach(r => { r.id = String(r.id); r.post_id = String(r.post_id); if (!m[r.post_id]) m[r.post_id] = []; m[r.post_id].push(r); }); state.reactions = { ...state.reactions, ...m }; } }
+        async function loadComments(ids) { if (!ids.length) return; const { data } = await sb.from("comments").select("id,post_id,author,text,created_at,commenter_id").in("post_id", ids).order("created_at", { ascending: true }); if (data) { const m = {}; data.forEach(c => { c.id = String(c.id); c.post_id = String(c.post_id); if (!m[c.post_id]) m[c.post_id] = []; m[c.post_id].push(c); }); state.comments = { ...state.comments, ...m }; } }
+        async function loadPolls() { const { data } = await sb.from("polls").select("id,created_at,expires_at,language,category,question,options,creator_id").eq("language", LANG).neq("category", "DUEL").gt("expires_at", new Date().toISOString()).order("created_at", { ascending: false }); if (data) { state.polls = data.map(p => ({ ...p, id: String(p.id) })); if (data.length) { const ids = state.polls.map(p => p.id); const { data: vs } = await sb.from("poll_votes").select("poll_id,option_index,voter_id").in("poll_id", ids); if (vs) { const m = {}; ids.forEach(id => { m[id] = { votes: [], myVote: null }; }); vs.forEach(v => { v.poll_id = String(v.poll_id); if (!m[v.poll_id]) return; m[v.poll_id].votes[v.option_index] = (m[v.poll_id].votes[v.option_index] || 0) + 1; if (v.voter_id === deviceId) m[v.poll_id].myVote = v.option_index; }); state.pollVotes = m; } } } }
+        async function loadDuels() { const { data } = await sb.from("polls").select("id,created_at,expires_at,language,category,question,options,creator_id").eq("language", LANG).eq("category", "DUEL").gt("expires_at", new Date().toISOString()).order("created_at", { ascending: false }); if (data) { state.duels = data.map(d => ({ ...d, id: String(d.id) })); if (data.length) { const ids = state.duels.map(d => d.id); const { data: vs } = await sb.from("poll_votes").select("poll_id,option_index,voter_id").in("poll_id", ids); if (vs) { const m = {}; ids.forEach(id => { m[id] = { votes: [0, 0], myVote: null }; }); vs.forEach(v => { v.poll_id = String(v.poll_id); if (!m[v.poll_id]) return; m[v.poll_id].votes[v.option_index] = (m[v.poll_id].votes[v.option_index] || 0) + 1; if (v.voter_id === deviceId) m[v.poll_id].myVote = v.option_index; }); state.duelVotes = m; } } } }
+        async function loadHotPosts() { const cutoff = new Date(Date.now() - 24 * 3600 * 1000).toISOString(); const { data: p } = await sb.from("posts").select("id,created_at,language,category,mood,author,text,group_id").eq("language", LANG).eq("group_id", "public").gte("created_at", cutoff); if (!p || !p.length) { state.hotPosts = []; render(); return; } const ids = p.map(x => String(x.id)); const { data: rx } = await sb.from("reactions").select("post_id").in("post_id", ids); const counts = {}; ids.forEach(id => { counts[id] = 0; }); if (rx) rx.forEach(r => { r.post_id = String(r.post_id); counts[r.post_id] = (counts[r.post_id] || 0) + 1; }); const sorted = p.map(x => ({ ...x, id: String(x.id) })).sort((a, b) => (counts[b.id] || 0) - (counts[a.id] || 0)).slice(0, 20); sorted.forEach(post => { post._rxCount = counts[post.id] || 0; }); state.hotPosts = sorted; if (sorted.length) { const topIds = sorted.map(x => x.id); const { data: rxFull } = await sb.from("reactions").select("id,post_id,emoji,reactor_id").in("post_id", topIds); if (rxFull) { const m = {}; rxFull.forEach(r => { r.id = String(r.id); r.post_id = String(r.post_id); if (!m[r.post_id]) m[r.post_id] = []; m[r.post_id].push(r); }); state.reactions = { ...state.reactions, ...m }; } } render(); }
+        async function loadKingPost() { const todayStart = new Date(); todayStart.setHours(0, 0, 0, 0); const yesterdayStart = new Date(todayStart - 24 * 3600 * 1000); const stored = localStorage.getItem("nofilter_king"); if (stored) { try { const k = JSON.parse(stored); if (k.date === todayStart.toDateString()) { state.kingPost = k.post; return; } } catch (_) { } } const { data: p } = await sb.from("posts").select("id,created_at,language,category,mood,text,group_id").eq("language", LANG).eq("group_id", "public").gte("created_at", yesterdayStart.toISOString()).lt("created_at", todayStart.toISOString()); if (!p || !p.length) return; const ids = p.map(x => String(x.id)); const { data: rx } = await sb.from("reactions").select("post_id").in("post_id", ids); const counts = {}; ids.forEach(id => { counts[id] = 0; }); if (rx) rx.forEach(r => { r.post_id = String(r.post_id); counts[r.post_id] = (counts[r.post_id] || 0) + 1; }); const king = p.map(x => ({ ...x, id: String(x.id) })).sort((a, b) => (counts[b.id] || 0) - (counts[a.id] || 0))[0]; if (king) { king._rxCount = counts[king.id] || 0; state.kingPost = king; localStorage.setItem("nofilter_king", JSON.stringify({ date: todayStart.toDateString(), post: king })); } }
+        async function loadMyActivity() { const cutoff = new Date(Date.now() - 24 * 3600 * 1000).toISOString(); const { data: mp } = await sb.from("posts").select("id,created_at,category,mood,text,group_id").eq("author", userName).gte("created_at", cutoff).order("created_at", { ascending: false }); if (mp) state.myPosts = mp.map(x => ({ ...x, id: String(x.id) })); const { data: mpl } = await sb.from("polls").select("id,created_at,expires_at,question,options,category").eq("creator_id", deviceId).neq("category", "DUEL").gt("expires_at", new Date().toISOString()); if (mpl) state.myPolls = mpl.map(x => ({ ...x, id: String(x.id) })); const reactedIds = getMyReacted().map(String); if (reactedIds.length) { const { data: rp } = await sb.from("posts").select("id,created_at,category,mood,text,group_id,author").in("id", reactedIds.slice(-50)).gte("created_at", cutoff); if (rp) state.interactedPosts = rp.map(x => ({ ...x, id: String(x.id) })); } render(); }
 
-      if(r.reactor_id===deviceId){
-        if(!myReactions.has(r.post_id)) myReactions.set(r.post_id, new Set());
-        myReactions.get(r.post_id).add(r.emoji);
-      }
-      renderPosts();
-    })
-    .on("postgres_changes",{event:"DELETE",schema:"public",table:"reactions"}, (payload)=>{
-      const r=payload.old;
-      if(!r) return;
-      if(!posts.some(p=>p.id===r.post_id)) return;
+        /* ── Realtime ── */
+        function setupRealtime(groupId) {
+            if (state.realtimeChannel) sb.removeChannel(state.realtimeChannel);
+            const ch = sb.channel("nf-rt-" + groupId)
+                .on("postgres_changes", { event: "INSERT", schema: "public", table: "posts" }, p => { const post = p.new; post.id = String(post.id); if (post.language !== LANG || post.group_id !== state.currentGroupId) return; state.posts = [post, ...state.posts]; render(); })
+                .on("postgres_changes", { event: "INSERT", schema: "public", table: "reactions" }, p => { const r = p.new; r.id = String(r.id); r.post_id = String(r.post_id); if (!state.reactions[r.post_id]) state.reactions[r.post_id] = []; state.reactions = { ...state.reactions, [r.post_id]: [...state.reactions[r.post_id], r] }; render(); })
+                .on("postgres_changes", { event: "DELETE", schema: "public", table: "reactions" }, p => { const r = p.old; r.id = String(r.id); r.post_id = String(r.post_id); if (!state.reactions[r.post_id]) return; state.reactions = { ...state.reactions, [r.post_id]: state.reactions[r.post_id].filter(x => x.id !== r.id) }; render(); })
+                .on("postgres_changes", { event: "INSERT", schema: "public", table: "comments" }, p => { const c = p.new; c.id = String(c.id); c.post_id = String(c.post_id); if (c.group_id !== state.currentGroupId) return; if (!state.comments[c.post_id]) state.comments[c.post_id] = []; state.comments = { ...state.comments, [c.post_id]: [...state.comments[c.post_id], c] }; render(); })
+                .on("postgres_changes", { event: "INSERT", schema: "public", table: "polls" }, () => { loadPolls(); loadDuels(); })
+                .on("postgres_changes", { event: "INSERT", schema: "public", table: "poll_votes" }, p => { const v = p.new; v.poll_id = String(v.poll_id); const e = state.pollVotes[v.poll_id] || { votes: [], myVote: null }; const votes = [...e.votes]; votes[v.option_index] = (votes[v.option_index] || 0) + 1; state.pollVotes = { ...state.pollVotes, [v.poll_id]: { votes, myVote: v.voter_id === deviceId ? v.option_index : e.myVote } }; if (state.duelVotes[v.poll_id]) { const ed = state.duelVotes[v.poll_id]; const dvotes = [...ed.votes]; dvotes[v.option_index] = (dvotes[v.option_index] || 0) + 1; state.duelVotes = { ...state.duelVotes, [v.poll_id]: { votes: dvotes, myVote: v.voter_id === deviceId ? v.option_index : ed.myVote } }; } render(); })
+                .subscribe();
+            state.realtimeChannel = ch;
+        }
 
-      const agg = reactionsAgg.get(r.post_id) || {};
-      agg[r.emoji] = Math.max(0, (agg[r.emoji]||0) - 1);
-      reactionsAgg.set(r.post_id, agg);
+        /* ── Responsive resize handler ── */
+        let lastWidth = window.innerWidth;
+        window.addEventListener("resize", () => {
+            const w = window.innerWidth;
+            if ((lastWidth < 900) !== (w < 900)) render();
+            lastWidth = w;
+        });
 
-      if(r.reactor_id===deviceId){
-        const s = myReactions.get(r.post_id);
-        if(s) s.delete(r.emoji);
-      }
-      renderPosts();
-    })
-    .subscribe();
+        /* ── GDPR ── */
+        function gdprAccept() { localStorage.setItem("nf_gdpr", "accepted"); document.getElementById("gdpr-banner").style.display = "none"; }
+        function gdprReject() { localStorage.setItem("nf_gdpr", "essential"); document.getElementById("gdpr-banner").style.display = "none"; }
+        function initGDPR() { if (!localStorage.getItem("nf_gdpr")) { setTimeout(() => { const b = document.getElementById("gdpr-banner"); if (b) b.style.display = "flex"; }, 1200); } }
 
-  chPolls = supabaseClient
-    .channel("rt-polls")
-    .on("postgres_changes",{event:"INSERT",schema:"public",table:"polls"}, async (payload)=>{
-      const p=payload.new;
-      // Anche per i sondaggi, se hai aggiunto group_id, filtrali:
-      if(p.group_id !== currentGroupId) return;
-      if(p.language!==currentLang || p.category!==currentCategory) return;
-      await loadActivePoll();
-      renderPoll();
-    })
-    .subscribe();
+        /* ── Custom Cursor ── */
+        (function initCursor() {
+            if (window.innerWidth < 900) return;
+            const c = document.getElementById("custom-cursor");
+            if (!c) return;
+            let mx = 0, my = 0, cx = 0, cy = 0;
+            document.addEventListener("mousemove", e => {
+                mx = e.clientX; my = e.clientY;
+                c.classList.add("visible");
+            });
+            function loop() { cx += (mx - cx) * 0.18; cy += (my - cy) * 0.18; c.style.left = cx + "px"; c.style.top = cy + "px"; requestAnimationFrame(loop); }
+            loop();
+            document.addEventListener("mouseover", e => {
+                if (e.target.closest("button") || e.target.closest("a") || e.target.closest("[onclick]")) c.classList.add("big");
+                else c.classList.remove("big");
+            });
+        })();
 
-  chPollVotes = supabaseClient
-    .channel("rt-pollvotes")
-    .on("postgres_changes",{event:"INSERT",schema:"public",table:"poll_votes"}, async (payload)=>{
-      const v=payload.new;
-      if(!activePoll) return;
-      if(v.poll_id!==activePoll.id) return;
-      await loadActivePoll();
-      renderPoll();
-    })
-    .subscribe();
-}
+        /* ── Ripple Effect on buttons ── */
+        document.addEventListener("click", function (e) {
+            try {
+                const btn = e.target.closest(".btn,.btn-sm,.btn-o,.lucky-btn,.tab");
+                if (!btn) return;
+                const r = document.createElement("span");
+                r.className = "btn-ripple";
+                const rect = btn.getBoundingClientRect();
+                r.style.left = (e.clientX - rect.left) + "px";
+                r.style.top = (e.clientY - rect.top) + "px";
+                requestAnimationFrame(() => {
+                    if (btn.isConnected) btn.appendChild(r);
+                    setTimeout(() => { try { r.remove(); } catch (_) { } }, 600);
+                });
+            } catch (_) { }
+        });
 
-async function reloadAll(showToast){
-  try{
-    updateScopePill();
-    await loadPosts();
-    const ids = posts.map(p=>p.id);
-    await loadCommentsFor(ids);
-    await loadReactionsFor(ids);
-    await loadActivePoll();
+        /* ── Progress Bar ── */
+        function npStart() { const el = document.getElementById("nprogress"); if (!el) return; el.className = "loading"; el.style.opacity = "1"; }
+        function npDone() { const el = document.getElementById("nprogress"); if (!el) return; el.className = "done"; setTimeout(() => { el.className = ""; el.style.transform = "scaleX(0)"; el.style.opacity = "1"; }, 600); }
 
-    renderPosts();
-    renderPoll();
-    subscribeRealtime();
+        /* ── Background Streaks ── */
+        (function initStreaks() {
+            const c = document.getElementById("bg-streaks");
+            if (!c) return;
+            const count = 6;
+            for (let i = 0; i < count; i++) {
+                const s = document.createElement("div");
+                s.className = "streak";
+                const w = Math.random() * 200 + 100;
+                s.style.width = w + "px";
+                s.style.top = (Math.random() * 100) + "%";
+                s.style.left = "-" + (w + 20) + "px";
+                s.style.animationDuration = (Math.random() * 12 + 10) + "s";
+                s.style.animationDelay = (Math.random() * 15) + "s";
+                s.style.opacity = Math.random() * 0.5 + 0.1;
+                c.appendChild(s);
+            }
+        })();
 
-    if(showToast) showOk("Updated");
-  }catch(e){
-    console.error(e);
-    showErr("Load failed: " + (e?.message || "check Supabase tables/policies"));
-  }
-}
+        /* ── Scroll-triggered topbar shadow ── */
+        window.addEventListener("scroll", () => {
+            const tb = document.getElementById("topbar");
+            if (tb) { if (window.scrollY > 10) tb.classList.add("scrolled"); else tb.classList.remove("scrolled"); }
+        }, { passive: true });
 
-(function boot(){
-  if(location.protocol === "file:"){
-    document.getElementById("fileWarn").style.display = "block";
-  }
-  buildSidebar();
-  setPage("home");
-  setPrompt();
+        /* ── Emoji float animation on reaction ── */
+        function floatEmoji(emoji, x, y) {
+            const el = document.createElement("div");
+            el.className = "rx-float";
+            el.textContent = emoji;
+            el.style.left = x + "px";
+            el.style.top = y + "px";
+            document.body.appendChild(el);
+            setTimeout(() => el.remove(), 900);
+        }
 
-  fillSelect("postCategory", categories[currentLang], currentCategory);
-  fillSelect("postMood", moods[currentLang], currentMood);
-  fillSelect("pollCategory", categories[currentLang], currentCategory);
+        /* ── Float emoji helper called directly from reaction functions ── */
+        function maybeFloatEmoji(postId, emoji) {
+            const rxList = state.reactions[postId] || [];
+            const mine = rxList.some(r => r.emoji === emoji && r.reactor_id === deviceId);
+            if (mine) {
+                const btn = document.querySelector(`[onclick*="${emoji}"]`);
+                if (btn) { const r = btn.getBoundingClientRect(); floatEmoji(emoji, r.left + r.width / 2 - 10, r.top - 10); }
+            }
+        }
 
-  reloadAll(false);
-  updateGroupsMenu();
-})();
-</script>
+        /* ── Skeleton loading for feed ── */
+        function buildSkeletons(n = 3) {
+            return Array.from({ length: n }, () => `
+    <div class="card" style="cursor:default;margin-bottom:10px;">
+      <div style="display:flex;gap:6px;margin-bottom:10px;">
+        <div class="skeleton" style="width:60px;height:18px;"></div>
+        <div class="skeleton" style="width:40px;height:18px;"></div>
+      </div>
+      <div class="skeleton" style="width:100%;height:14px;margin-bottom:7px;"></div>
+      <div class="skeleton" style="width:80%;height:14px;margin-bottom:7px;"></div>
+      <div class="skeleton" style="width:60%;height:14px;"></div>
+    </div>
+  `).join("");
+        }
+
+
+        /* ── Interactive Title (scramble + glitch on click) ── */
+        function initInteractiveTitle() {
+            const el = document.getElementById("topbar-logo");
+            if (!el || el.dataset.init === "1" || state.view === "group-feed") return;
+            el.dataset.init = "1";
+            const origText = "NO FILTER";
+            const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ#@!?*";
+            el.innerHTML = origText.split("").map((ch, i) =>
+                ch === " "
+                    ? `<span class="char" style="display:inline-block;width:0.45em;">&nbsp;</span>`
+                    : `<span class="char" data-orig="${ch}">${ch}</span>`
+            ).join("");
+            let scrambling = false;
+            el.addEventListener("mouseenter", () => {
+                if (scrambling) return;
+                scrambling = true;
+                const spans = el.querySelectorAll(".char[data-orig]");
+                let resolved = 0;
+                spans.forEach((span, i) => {
+                    let ticks = 0;
+                    const max = 3 + i;
+                    const iv = setInterval(() => {
+                        span.textContent = chars[Math.floor(Math.random() * chars.length)];
+                        ticks++;
+                        if (ticks >= max) {
+                            span.textContent = span.dataset.orig;
+                            clearInterval(iv);
+                            resolved++;
+                            if (resolved === spans.length) scrambling = false;
+                        }
+                    }, 45);
+                });
+            });
+            el.addEventListener("click", () => {
+                el.classList.remove("title-glitching");
+                void el.offsetWidth;
+                el.classList.add("title-glitching");
+                setTimeout(() => el.classList.remove("title-glitching"), 450);
+            });
+        }
+
+        /* ── Init ── */
+        (async function init() {
+            initGDPR();
+            npStart();
+            state.loading = true; render();
+            await Promise.all([loadPosts(), loadPolls(), loadDuels(), loadKingPost()]);
+            state.loading = false; npDone(); render();
+            setTimeout(initInteractiveTitle, 150);
+            setupRealtime(state.currentGroupId);
+        })();
+    </script>
 </body>
+
 </html>
