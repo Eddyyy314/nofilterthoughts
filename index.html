@@ -1634,7 +1634,7 @@
             device ID anonimo per salvare reazioni e preferenze sul tuo dispositivo. <strong>Non raccogliamo dati
                 personali</strong>, non usiamo cookie di tracciamento o profilazione. Tutti i contenuti si
             autodistruggono dopo
-            24h. <a onclick="document.getElementById('gdpr-modal').style.display='flex'">Maggiori info</a> · <a href="/cdn-cgi/l/email-protection#d6a6a4bfa0b7b5af96b8b9b0bfbaa2b3a4a2beb9a3b1bea2a5f8bfa2"><span class="__cf_email__" data-cfemail="8dfdffe4fbeceef4cde3e2ebe4e1f9e8fff9e5e2f8eae5f9fea3e4f9">[email&#160;protected]</span></a>
+            24h. <a onclick="document.getElementById('gdpr-modal').style.display='flex'">Maggiori info</a> · <a href="/cdn-cgi/l/email-protection#39494b504f585a407957565f50554d5c4b4d51564c5e514d4a17504d"><span class="__cf_email__" data-cfemail="d5a5a7bca3b4b6ac95bbbab3bcb9a1b0a7a1bdbaa0b2bda1a6fbbca1">[email&#160;protected]</span></a>
         </div>
         <div class="gdpr-actions">
             <button class="btn-o" style="font-size:12px;padding:9px 14px;" onclick="gdprReject()">Solo
@@ -1655,7 +1655,7 @@
             <div style="font-size:13px;line-height:1.75;color:#444;">
                 <p style="margin-bottom:12px;"><strong>Chi siamo:</strong> NO FILTER è una piattaforma di pensieri
                     anonimi.
-                    Titolare del trattamento: NO FILTER (<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="9eeeecf7e8fffde7def0f1f8f7f2eafbeceaf6f1ebf9f6eaedb0f7ea">[email&#160;protected]</a>).</p>
+                    Titolare del trattamento: NO FILTER (<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="09797b607f686a704967666f60657d6c7b7d61667c6e617d7a27607d">[email&#160;protected]</a>).</p>
                 <p style="margin-bottom:12px;"><strong>Dati raccolti:</strong> Un device ID casuale generato localmente
                     sul tuo
                     dispositivo (mai associato a dati personali). I post, commenti e reazioni che pubblichi sono anonimi
@@ -1672,7 +1672,7 @@
                 </p>
                 <p style="margin-bottom:12px;"><strong>I tuoi diritti:</strong> Accesso, rettifica, cancellazione,
                     portabilità e
-                    opposizione al trattamento. Puoi esercitarli scrivendo a <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="6d1d1f041b0c0e142d03020b040119081f190502180a05191e430419">[email&#160;protected]</a>. Hai il diritto
+                    opposizione al trattamento. Puoi esercitarli scrivendo a <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="92e2e0fbe4f3f1ebd2fcfdf4fbfee6f7e0e6fafde7f5fae6e1bcfbe6">[email&#160;protected]</a>. Hai il diritto
                     di
                     presentare reclamo al Garante per la Protezione dei Dati Personali (www.garanteprivacy.it).</p>
                 <p style="margin-bottom:12px;"><strong>Conservazione dati:</strong> I contenuti vengono eliminati
@@ -1778,6 +1778,8 @@
         };
 
         function escHtml(s) { return String(s || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;"); }
+        function escAttr(s) { return String(s || "").replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/'/g, "&#39;"); }
+        function renderTiktok() { /* handled inline via buildTiktok */ }
 
         let _lastRenderedView = null;
 
@@ -2904,7 +2906,7 @@
             });
         }
 
-        /* ── Attach events (called after render) ── */
+        /* ── Attach events (called after every render) ── */
         function attachEvents() {
             initInteractiveTitle();
         }
