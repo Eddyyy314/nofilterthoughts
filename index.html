@@ -1811,7 +1811,7 @@
             const app = document.getElementById("app");
             if (app) {
                 let html = "";
-                if (s.tiktokOpen) { document.body.insertAdjacentHTML("beforeend", ""); renderTiktok(); return; }
+                if (s.tiktokOpen) { /* tiktok handled below via tiktok-view-container */ }
                 if (isFeed) html = buildSearchBar() + buildFeed();
                 else if (s.view === "polls") html = buildPolls();
                 else if (s.view === "duels") html = buildDuels();
