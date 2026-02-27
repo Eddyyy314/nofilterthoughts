@@ -2052,7 +2052,8 @@
     <div class="card stagger-item" style="animation-delay:${idx * 0.04}s;">
       ${reactPickerOpen ? `<div style="position:fixed;inset:0;z-index:19;" onclick="closeReactPicker()"></div>` : ""}
       <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;">
-        <div style="display:flex;gap:4px;flex-wrap:wrap;">
+        <div style="display:flex;gap:4px;flex-wrap:wrap;align-items:center;">
+          <span style="font-size:11px;font-weight:700;color:#000;">${escHtml(post.author)}</span>
           ${post.category ? `<span class="chip">${escHtml(post.category)}</span>` : ""}
           ${post.mood ? `<span class="chip">${escHtml(post.mood)}</span>` : ""}
         </div>
