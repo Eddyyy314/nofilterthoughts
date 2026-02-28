@@ -1807,7 +1807,7 @@
             if (ttitle) ttitle.innerHTML = `
     <span id="topbar-logo" style="font-family:'Bebas Neue',cursive;font-size:22px;letter-spacing:3px;">${s.view === "group-feed" ? escHtml(s.currentGroupName.toUpperCase()) : "NO FILTER"}</span>
   `;
-            if (tright) tright.innerHTML = s.view === "group-feed" && s.myGroups.find(g => g.id === s.currentGroupId)?.isAdmin
+            if (tright) tright.innerHTML = s.view === "group-feed"
                 ? `<button onclick="openGroupSettings('${s.currentGroupId}')" style="background:none;border:none;color:#999;cursor:pointer;display:flex;">${I.Settings}</button>` : "";
 
             // Left sidebar (desktop)
@@ -2706,46 +2706,62 @@
         /* ── Group Settings ── */
         function buildGroupSettingsSheet() {
             const s = state;
-            const g = s.myGroups.find(x => x.id === s.groupSettingsOpen);
+            const gid = s.groupSettingsOpen;
+            const g = s.myGroups.find(x => x.id === gid);
             if (!g) return "";
             const isDesk = isDesktop();
+            const isAdmin = !!g.isAdmin;
             return `
     <div class="overlay" onclick="event.target===this&&closeGroupSettings()">
       <div class="sheet ${isDesk ? "sheet-desktop" : "sheet-mobile"}" onclick="event.stopPropagation()">
-        <div style="display:flex;justify-content:space-between;margin-bottom:16px;">
-          <span style="font-family:'Bebas Neue',cursive;font-size:18px;letter-spacing:1px;">IMPOSTAZIONI GRUPPO</span>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+          <span style="font-family:'Bebas Neue',cursive;font-size:18px;letter-spacing:1px;">${escHtml(g.name.toUpperCase())}</span>
           <button style="background:none;border:none;cursor:pointer;color:#bbb;display:flex;" onclick="closeGroupSettings()">${I.X}</button>
         </div>
+
+        <!-- Info visibile a tutti -->
         <div style="margin-bottom:13px;">
-          <div class="section-label">Nome</div>
-          <div style="font-size:15px;font-weight:500;">${escHtml(g.name)}</div>
-          ${g.description ? `<div style="font-size:12px;color:#888;margin-top:3px;">${escHtml(g.description)}</div>` : ""}
-          <div style="font-size:11px;color:#bbb;">ID: ${escHtml(g.id)}</div>
-        </div>
-        <div class="divider"></div>
-        <div style="margin-bottom:13px;">
-          <div class="section-label">Descrizione</div>
-          <textarea id="gs-desc-${g.id}" rows="2" placeholder="Aggiungi una descrizione..." style="resize:none;font-size:13px;width:100%;box-sizing:border-box;" oninput="updateGroupDesc('${g.id}',this.value)">${escHtml(g.description||"")}</textarea>
-        </div>
-        <div class="divider"></div>
-        <div style="margin-bottom:13px;">
-          <div class="section-label">Visibilità</div>
-          <div style="display:flex;gap:8px;">
-            <button class="fchip${!g.isPrivate ? " on" : ""}" style="flex:1;text-align:center;" onclick="toggleGroupPrivacy('${g.id}')">${I.Globe} Pubblico</button>
-            <button class="fchip${g.isPrivate ? " on" : ""}" style="flex:1;text-align:center;" onclick="toggleGroupPrivacy('${g.id}')">${I.Lock} Privato</button>
+          <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;">
+            <span class="badge">${g.isPrivate ? I.Lock + " Privato" : I.Globe + " Pubblico"}</span>
+            ${isAdmin ? `<span class="badge">admin</span>` : ""}
           </div>
-          <div style="font-size:11px;color:#bbb;margin-top:6px;">${g.isPrivate ? "Solo chi ha il link può entrare." : "Visibile a tutti."}</div>
+          ${g.description ? `<div style="font-size:12px;color:#888;margin-top:6px;line-height:1.6;">${escHtml(g.description)}</div>` : ""}
         </div>
         <div class="divider"></div>
+
+        <!-- Copia link — tutti -->
         <div style="margin-bottom:13px;">
-          <div class="section-label">Condividi link</div>
+          <div class="section-label" style="margin-bottom:8px;">Condividi link</div>
           <div style="display:flex;gap:7px;">
             <input value="https://nofilterthoughts.it/?join=${g.id}" readonly style="font-size:11px;background:#f8f8f8;color:#888;"/>
             <button class="btn-sm" onclick="copyGroupLink('${g.id}')" style="flex-shrink:0;">${I.Copy}</button>
           </div>
         </div>
         <div class="divider"></div>
-        <button class="btn-o" style="width:100%;color:#cc2222;border-color:#f0d0d0;font-size:12px;" onclick="deleteGroup('${g.id}')">Rimuovi dalla lista</button>
+
+        ${isAdmin ? `
+        <!-- Descrizione — solo admin -->
+        <div style="margin-bottom:13px;">
+          <div class="section-label" style="margin-bottom:6px;">Descrizione</div>
+          <textarea id="gs-desc-${g.id}" rows="2" placeholder="Aggiungi una descrizione..." style="resize:none;font-size:13px;width:100%;box-sizing:border-box;" oninput="updateGroupDesc('${g.id}',this.value)">${escHtml(g.description||"")}</textarea>
+        </div>
+        <div class="divider"></div>
+
+        <!-- Visibilità — solo admin -->
+        <div style="margin-bottom:13px;">
+          <div class="section-label" style="margin-bottom:6px;">Visibilità</div>
+          <div style="display:flex;gap:8px;">
+            <button class="fchip${!g.isPrivate ? " on" : ""}" style="flex:1;text-align:center;" onclick="toggleGroupPrivacy('${g.id}')">${I.Globe} Pubblico</button>
+            <button class="fchip${g.isPrivate ? " on" : ""}" style="flex:1;text-align:center;" onclick="toggleGroupPrivacy('${g.id}')">${I.Lock} Privato</button>
+          </div>
+          <div style="font-size:11px;color:#bbb;margin-top:6px;">${g.isPrivate ? "Solo chi ha il link può entrare." : "Visibile a tutti nella pagina gruppi."}</div>
+        </div>
+        <div class="divider"></div>
+        ` : ""}
+
+        <!-- Esci dal gruppo — tutti -->
+        <button class="btn-o" style="width:100%;font-size:12px;margin-bottom:8px;" onclick="leaveGroup('${g.id}')">Esci dal gruppo</button>
+        ${isAdmin ? `<button class="btn-o" style="width:100%;color:#cc2222;border-color:#f0d0d0;font-size:12px;" onclick="deleteGroup('${g.id}')">Elimina gruppo</button>` : ""}
       </div>
     </div>
   `;
@@ -2962,15 +2978,30 @@
         function enterGroup(g) { state.currentGroupId = g.id; state.currentGroupName = g.name; state.posts = []; state.view = "group-feed"; state.sidebarOpen = false; state.loading = true; render(); loadPosts(g.id).then(() => { state.loading = false; render(); }); }
         function goFeed() { state.currentGroupId = "public"; state.view = "feed"; state.posts = []; state.reactions = {}; state.comments = {}; state.loading = true; render(); loadPosts("public").then(() => { state.loading = false; render(); setupRealtime("public"); }); }
 
-        function createGroup() {
+        async function createGroup() {
             const nameEl = document.getElementById("ng-name");
             const name = ((nameEl ? nameEl.value : "") || state.newGroup.name).trim();
             if (!name) { showToast("Dai un nome.", true); return; }
             const id = genGroupId();
-            const descEl = document.getElementById("ng-desc"); const desc = (descEl ? descEl.value : "") || state.newGroup.description || ""; const g = { id, name, isPrivate: state.newGroup.isPrivate, isAdmin: true, description: desc };
+            const descEl = document.getElementById("ng-desc");
+            const desc = (descEl ? descEl.value : "") || state.newGroup.description || "";
+            const g = { id, name, isPrivate: state.newGroup.isPrivate, isAdmin: true, description: desc };
             const u = [...state.myGroups, g]; saveMyGroups(u); state.myGroups = u;
-            state.newGroup = { name: "", isPrivate: true, description: "" }; state.createOpen = false;
-            enterGroup(g); showToast("Gruppo creato!");
+            state.newGroup = { name: "", isPrivate: true, description: "" };
+            state.createOpen = false;
+            // If public, publish meta post to Supabase so others can discover it
+            if (!g.isPrivate) {
+                await sb.from("posts").insert({
+                    language: LANG,
+                    category: "_GROUP_META_",
+                    mood: "",
+                    author: userName,
+                    text: JSON.stringify({ name, description: desc, isPrivate: false }),
+                    group_id: id
+                });
+            }
+            enterGroup(g);
+            showToast("Gruppo creato!");
         }
         function joinByLink() { const v = document.getElementById("join-input")?.value || ""; joinGroupByIdRaw(v); }
         async function joinGroupByIdRaw(raw) {
@@ -3002,14 +3033,64 @@
             showToast(`Entrato in ${g.name}!`);
             enterGroup(g);
         }
-        function loadPublicGroups() {
-            // Public groups are those in myGroups marked isPrivate: false
-            // (Full discovery requires a groups table on Supabase)
-            state.publicGroups = state.myGroups.filter(g => !g.isPrivate && g.id !== "public");
+        function leaveGroup(gid) {
+            const u = state.myGroups.filter(g => g.id !== gid);
+            saveMyGroups(u); state.myGroups = u;
+            if (state.currentGroupId === gid) goFeed();
+            state.groupSettingsOpen = null;
+            showToast("Sei uscito dal gruppo.");
             render();
         }
+        function loadPublicGroups() {
+            // Show all groups marked isPrivate: false from myGroups
+            // + fetch public groups from Supabase via _GROUP_META_ posts
+            const local = state.myGroups.filter(g => !g.isPrivate && g.id !== "public");
+            state.publicGroups = local;
+            render();
+            // Also fetch from Supabase
+            sb.from("posts")
+                .select("group_id,text,created_at")
+                .eq("language", LANG)
+                .eq("category", "_GROUP_META_")
+                .order("created_at", { ascending: false })
+                .then(({ data }) => {
+                    if (!data) return;
+                    const seen = new Set();
+                    const remote = [];
+                    data.forEach(p => {
+                        if (seen.has(p.group_id)) return;
+                        seen.add(p.group_id);
+                        try {
+                            const meta = JSON.parse(p.text);
+                            if (!meta.isPrivate) remote.push({ id: p.group_id, name: meta.name, description: meta.description || "", isPrivate: false, isAdmin: false });
+                        } catch (_) {}
+                    });
+                    // Merge with local, local takes priority
+                    const localIds = new Set(state.myGroups.map(g => g.id));
+                    const merged = [...state.myGroups.filter(g => !g.isPrivate && g.id !== "public")];
+                    remote.forEach(r => { if (!localIds.has(r.id)) merged.push(r); });
+                    state.publicGroups = merged;
+                    render();
+                });
+        }
         function updateGroupDesc(gid, desc) { const u = state.myGroups.map(g => g.id === gid ? { ...g, description: desc } : g); saveMyGroups(u); state.myGroups = u; }
-        function toggleGroupPrivacy(gid) { const u = state.myGroups.map(g => g.id === gid ? { ...g, isPrivate: !g.isPrivate } : g); saveMyGroups(u); state.myGroups = u; showToast("Aggiornato."); render(); }
+        async function toggleGroupPrivacy(gid) {
+            const u = state.myGroups.map(g => g.id === gid ? { ...g, isPrivate: !g.isPrivate } : g);
+            saveMyGroups(u); state.myGroups = u;
+            const g = state.myGroups.find(x => x.id === gid);
+            if (g && !g.isPrivate) {
+                // Publish meta post so group is discoverable
+                await sb.from("posts").insert({
+                    language: LANG,
+                    category: "_GROUP_META_",
+                    mood: "",
+                    author: userName,
+                    text: JSON.stringify({ name: g.name, description: g.description || "", isPrivate: false }),
+                    group_id: gid
+                });
+            }
+            showToast("Aggiornato."); render();
+        }
         function deleteGroup(gid) { const u = state.myGroups.filter(g => g.id !== gid); saveMyGroups(u); state.myGroups = u; if (state.currentGroupId === gid) goFeed(); state.groupSettingsOpen = null; showToast("Rimosso."); render(); }
         function copyGroupLink(gid) { const url = `https://nofilterthoughts.it/?join=${gid}`; navigator.clipboard.writeText(url).then(() => showToast("Link copiato!")).catch(() => showToast("Copia: " + url)); }
 
