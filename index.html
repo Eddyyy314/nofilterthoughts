@@ -886,6 +886,15 @@
             transform: translateY(-100%);
             opacity: 0;
         }
+        .tiktok-post.exit-down {
+            transform: translateY(100%);
+            opacity: 0;
+        }
+        @keyframes heartPop {
+            0%   { transform: translate(-50%,-50%) scale(0); opacity:1; }
+            50%  { transform: translate(-50%,-50%) scale(1.3); opacity:1; }
+            100% { transform: translate(-50%,-50%) scale(1); opacity:0; }
+        }
 
         /* ── TABLET (>= 640px) ── */
         @media (min-width:640px) {
@@ -1763,7 +1772,7 @@
             sortBy: "newest", filterCat: null, filterMood: null, searchQuery: "",
             filtersOpen: false, sidebarOpen: false,
             createOpen: false, createType: "post",
-            groupSettingsOpen: null,
+            groupSettingsOpen: null, resetConfirmOpen: false,
             toast: null, loading: true, posting: false,
             tiktokOpen: false, tiktokIdx: 0, tiktokDir: null,
             tiktokShowComment: false, tiktokCommentInput: "", tiktokReactPickerOpen: false,
@@ -1771,7 +1780,7 @@
             myPosts: [], myPolls: [], interactedPosts: [],
             newPost: { text: "", mood: "", category: "" },
             newPoll: { question: "", options: ["", ""], category: "" },
-            newGroup: { name: "", isPrivate: true },
+            newGroup: { name: "", isPrivate: true, description: "" },
             newDuel: { topic: "", sideA: "", sideB: "", category: "" },
             challengePost: null,
             realtimeChannel: null,
@@ -2063,7 +2072,8 @@
       </div>
       <p style="font-size:14px;line-height:1.7;margin-bottom:11px;">${escHtml(post.text)}</p>
       <div style="display:flex;gap:5px;flex-wrap:wrap;align-items:center;margin-bottom:${cmtList.length > 0 ? 9 : 0}px;position:relative;">
-        ${topRx.map(({ emoji, count, mine }) => `<button class="rx${mine ? " on" : ""}" onclick="toggleReaction('${post.id}','${emoji}')">${emoji} ${count}</button>`).join("")}
+        ${(() => { const myLike = rxList.find(r => r.emoji === "❤️" && r.reactor_id === deviceId); const likeCount = rxList.filter(r => r.emoji === "❤️").length; return `<button class="rx${myLike ? " on" : ""}" onclick="toggleReaction('${post.id}','❤️')" style="font-size:13px;">❤️${likeCount > 0 ? ` ${likeCount}` : ""}</button>`; })()}
+        ${topRx.filter(r => r.emoji !== "❤️").map(({ emoji, count, mine }) => `<button class="rx${mine ? " on" : ""}" onclick="toggleReaction('${post.id}','${emoji}')">${emoji} ${count}</button>`).join("")}
         <div style="position:relative;display:inline-block;">
           <button class="rx${myReaction ? " on" : ""}" onclick="toggleReactPicker('${escAttr(post.id)}')" style="font-size:12px;">${myReaction ? "✓ react" : "+ react"}</button>
           ${reactPickerOpen ? `
@@ -2335,7 +2345,29 @@
       <div class="section-label">Privacy</div>
       <div style="font-size:12px;color:#bbb;line-height:1.6;">Tutto è anonimo e sparisce dopo 24h. Nessun dato personale raccolto. Il tuo device ID serve solo per reazioni e voti.</div>
     </div>
-    <button class="btn-o" style="width:100%;margin-top:10px;color:#cc2222;border-color:#f0d0d0;font-size:12px;" onclick="resetData()">Resetta tutti i dati</button>
+    <div class="card" style="cursor:default;margin-top:10px;border-color:#f0d0d0;background:#fff8f8;">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+        <span style="font-size:18px;">⚠️</span>
+        <div style="font-size:11px;font-weight:700;color:#cc2222;letter-spacing:1px;">QUALCUNO HA SCOPERTO CHI SEI?</div>
+      </div>
+      <div style="font-size:12px;color:#888;line-height:1.6;margin-bottom:12px;">Se pensi che la tua identità sia stata scoperta, puoi resettare tutti i dati: nickname, gruppi, preferenze. Ricomincerai da zero.</div>
+      <button class="btn-o" style="width:100%;color:#cc2222;border-color:#f0d0d0;font-size:12px;" onclick="state.resetConfirmOpen=true;render()">🔴 Resetta tutti i dati</button>
+    </div>
+    ${s.resetConfirmOpen ? `
+    <div class="overlay" onclick="event.target===this&&(state.resetConfirmOpen=false,render())">
+      <div class="sheet" style="max-width:340px;margin:auto;">
+        <div style="text-align:center;padding:8px 0 16px;">
+          <div style="font-size:36px;margin-bottom:10px;">🚨</div>
+          <div style="font-family:'Bebas Neue',cursive;font-size:22px;letter-spacing:2px;margin-bottom:8px;">SEI SICURO?</div>
+          <div style="font-size:13px;color:#555;line-height:1.6;margin-bottom:20px;">Perderai il tuo nickname, tutti i gruppi e tutte le preferenze. Questa azione è <strong>irreversibile</strong>.</div>
+          <div style="display:flex;gap:10px;">
+            <button class="btn-o" style="flex:1;" onclick="state.resetConfirmOpen=false;render()">Annulla</button>
+            <button class="btn" style="flex:1;background:#cc2222;border-color:#cc2222;" onclick="resetData()">Sì, resetta</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    ` : ""}
   `;
         }
 
@@ -2416,6 +2448,7 @@
             if (s.createType === "group") return `
     <div style="display:flex;flex-direction:column;gap:10px;">
       <input id="ng-name" placeholder="Nome del gruppo..." value="${escHtml(s.newGroup.name)}" oninput="state.newGroup.name=this.value"/>
+      <textarea id="ng-desc" placeholder="Descrizione (opzionale)..." rows="2" oninput="state.newGroup.description=this.value" style="resize:none;font-size:13px;">${escHtml(s.newGroup.description||"")}</textarea>
       <div>
         <div class="section-label" style="margin-bottom:8px;">Visibilità</div>
         <div style="display:flex;gap:8px;">
@@ -2448,7 +2481,13 @@
         <div style="margin-bottom:13px;">
           <div class="section-label">Nome</div>
           <div style="font-size:15px;font-weight:500;">${escHtml(g.name)}</div>
+          ${g.description ? `<div style="font-size:12px;color:#888;margin-top:3px;">${escHtml(g.description)}</div>` : ""}
           <div style="font-size:11px;color:#bbb;">ID: ${escHtml(g.id)}</div>
+        </div>
+        <div class="divider"></div>
+        <div style="margin-bottom:13px;">
+          <div class="section-label">Descrizione</div>
+          <textarea id="gs-desc-${g.id}" rows="2" placeholder="Aggiungi una descrizione..." style="resize:none;font-size:13px;width:100%;box-sizing:border-box;" oninput="updateGroupDesc('${g.id}',this.value)">${escHtml(g.description||"")}</textarea>
         </div>
         <div class="divider"></div>
         <div style="margin-bottom:13px;">
@@ -2596,9 +2635,21 @@
         }
         function closeTiktok() { state.tiktokOpen = false; render(); }
 
-        let ttTouchStartY = null;
+        let ttTouchStartY = null, ttLastTap = 0;
         function ttTouchStart(e) { ttTouchStartY = e.touches[0].clientY; }
-        function ttTouchEnd(e) { if (ttTouchStartY === null) return; const dy = ttTouchStartY - e.changedTouches[0].clientY; if (dy > 60) ttNext(); ttTouchStartY = null; }
+        function ttTouchEnd(e) {
+            if (ttTouchStartY === null) return;
+            const dy = ttTouchStartY - e.changedTouches[0].clientY;
+            const now = Date.now();
+            if (Math.abs(dy) < 15 && now - ttLastTap < 300) {
+                const posts = state.posts.filter(p => !state.hiddenPosts.includes(p.id));
+                if (posts.length) { const post = posts[state.tiktokIdx % posts.length]; ttReact(post.id, "❤️"); showDoubleTapHeart(); }
+            }
+            ttLastTap = now;
+            if (dy > 60) ttNext();
+            else if (dy < -60) ttPrev();
+            ttTouchStartY = null;
+        }
         function ttNext() {
             const posts = state.posts.filter(p => !state.hiddenPosts.includes(p.id));
             if (!posts.length) return;
@@ -2608,6 +2659,23 @@
                 state.tiktokDir = null; state.tiktokShowComment = false; state.tiktokCommentInput = ""; state.tiktokReactPickerOpen = false;
                 render();
             }, 300);
+        }
+        function ttPrev() {
+            const posts = state.posts.filter(p => !state.hiddenPosts.includes(p.id));
+            if (!posts.length) return;
+            state.tiktokDir = "down"; render();
+            setTimeout(() => {
+                state.tiktokIdx = (state.tiktokIdx - 1 + posts.length) % posts.length;
+                state.tiktokDir = null; state.tiktokShowComment = false; state.tiktokCommentInput = ""; state.tiktokReactPickerOpen = false;
+                render();
+            }, 300);
+        }
+        function showDoubleTapHeart() {
+            const h = document.createElement("div");
+            h.textContent = "❤️";
+            h.style.cssText = "position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(0);font-size:80px;z-index:9999;pointer-events:none;animation:heartPop 0.8s ease forwards;";
+            document.body.appendChild(h);
+            setTimeout(() => h.remove(), 800);
         }
         function toggleTtComment() { state.tiktokShowComment = !state.tiktokShowComment; render(); }
         function toggleTtReactPicker() { state.tiktokReactPickerOpen = !state.tiktokReactPickerOpen; render(); }
@@ -2638,7 +2706,7 @@
 
         function hidePost(postId) { const u = [...state.hiddenPosts, postId]; state.hiddenPosts = u; localStorage.setItem("nofilter_hidden", JSON.stringify(u.slice(-500))); render(); }
         function toggleCompact() { const s = { ...state.settings, compactMode: !state.settings.compactMode }; state.settings = s; saveSettings(s); render(); }
-        function resetData() { if (confirm("Sei sicuro? Perderai gruppi e preferenze.")) { localStorage.clear(); window.location.reload(); } }
+        function resetData() { localStorage.clear(); window.location.reload(); }
         function addPollOption() { if (state.newPoll.options.length < 5) { state.newPoll.options.push(""); render(); } }
         function removePollOption(i) { state.newPoll.options = state.newPoll.options.filter((_, idx) => idx !== i); render(); }
 
@@ -2651,13 +2719,14 @@
             const name = ((nameEl ? nameEl.value : "") || state.newGroup.name).trim();
             if (!name) { showToast("Dai un nome.", true); return; }
             const id = genGroupId();
-            const g = { id, name, isPrivate: state.newGroup.isPrivate, isAdmin: true };
+            const descEl = document.getElementById("ng-desc"); const desc = (descEl ? descEl.value : "") || state.newGroup.description || ""; const g = { id, name, isPrivate: state.newGroup.isPrivate, isAdmin: true, description: desc };
             const u = [...state.myGroups, g]; saveMyGroups(u); state.myGroups = u;
-            state.newGroup = { name: "", isPrivate: true }; state.createOpen = false;
+            state.newGroup = { name: "", isPrivate: true, description: "" }; state.createOpen = false;
             enterGroup(g); showToast("Gruppo creato!");
         }
         function joinByLink() { const v = document.getElementById("join-input")?.value || ""; joinGroupByIdRaw(v); }
         function joinGroupByIdRaw(raw) { let id = raw.trim(); try { const u = new URL(id); id = u.searchParams.get("join") || id; } catch (_) { } if (!id) return; const exists = state.myGroups.find(g => g.id === id); if (!exists) { const g = { id, name: id, isPrivate: false, isAdmin: false }; const u = [...state.myGroups, g]; saveMyGroups(u); state.myGroups = u; enterGroup(g); } else enterGroup(exists); }
+        function updateGroupDesc(gid, desc) { const u = state.myGroups.map(g => g.id === gid ? { ...g, description: desc } : g); saveMyGroups(u); state.myGroups = u; }
         function toggleGroupPrivacy(gid) { const u = state.myGroups.map(g => g.id === gid ? { ...g, isPrivate: !g.isPrivate } : g); saveMyGroups(u); state.myGroups = u; showToast("Aggiornato."); render(); }
         function deleteGroup(gid) { const u = state.myGroups.filter(g => g.id !== gid); saveMyGroups(u); state.myGroups = u; if (state.currentGroupId === gid) goFeed(); state.groupSettingsOpen = null; showToast("Rimosso."); render(); }
         function copyGroupLink(gid) { const url = `https://nofilterthoughts.it/?join=${gid}`; navigator.clipboard.writeText(url).then(() => showToast("Link copiato!")).catch(() => showToast("Copia: " + url)); }
