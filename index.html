@@ -1765,6 +1765,8 @@
             posts: [], polls: [], pollVotes: {}, reactions: {}, comments: {},
             duels: [], duelVotes: {},
             hotPosts: [],
+            topAccounts: [],
+            hotTab: "posts",
             expandedComments: new Set(),
             replyingTo: null, replyText: "",
             hiddenPosts: getHidden(),
@@ -1802,7 +1804,6 @@
             const ttitle = document.getElementById("topbar-title");
             const tright = document.getElementById("topbar-right");
             if (ttitle) ttitle.innerHTML = `
-    ${s.view === "group-feed" ? `<button onclick="goFeed()" style="background:none;border:none;color:#999;cursor:pointer;display:flex;padding:4px;transition:color 0.2s;margin-right:2px;">${I.ArrowLeft}</button>` : ""}
     <span id="topbar-logo" style="font-family:'Bebas Neue',cursive;font-size:22px;letter-spacing:3px;">${s.view === "group-feed" ? escHtml(s.currentGroupName.toUpperCase()) : "NO FILTER"}</span>
   `;
             if (tright) tright.innerHTML = s.view === "group-feed" && s.myGroups.find(g => g.id === s.currentGroupId)?.isAdmin
@@ -1821,7 +1822,8 @@
             if (app) {
                 let html = "";
                 if (s.tiktokOpen) { /* tiktok handled below via tiktok-view-container */ }
-                if (isFeed) html = buildSearchBar() + buildFeed();
+                if (s.view === "group-feed") html = buildGroupFeed();
+                else if (s.view === "feed") html = buildSearchBar() + buildFeed();
                 else if (s.view === "polls") html = buildPolls();
                 else if (s.view === "duels") html = buildDuels();
                 else if (s.view === "hot") html = buildHot();
@@ -1903,7 +1905,7 @@
     <button class="lucky-btn" style="margin-top:4px;" onclick="openTiktok();if(!isDesktop())toggleSidebar();">${I.Dice} RANDOM TRIP</button>
     <div class="section-label" style="margin-top:10px;padding:0 2px;">Esplora</div>
     <button class="si${isFeed ? " on" : ""}" onclick="goView('feed');if(!isDesktop())toggleSidebar();">${I.Home} Feed</button>
-    <button class="si${s.view === "hot" ? " on" : ""}" onclick="goView('hot');loadHotPosts();if(!isDesktop())toggleSidebar();">${I.Trophy} Post popolari 24h</button>
+    <button class="si${s.view === "hot" ? " on" : ""}" onclick="goView('hot');loadHotPosts();if(!isDesktop())toggleSidebar();">${I.Trophy} Classifiche</button>
     <button class="si${s.view === "polls" ? " on" : ""}" onclick="goView('polls');if(!isDesktop())toggleSidebar();">${I.Poll} Poll</button>
     <button class="si${s.view === "duels" ? " on" : ""}" onclick="goView('duels');loadDuels();if(!isDesktop())toggleSidebar();">${I.Sword} Duelli</button>
     <div class="section-label" style="margin-top:10px;padding:0 2px;">Il mio</div>
@@ -2023,6 +2025,65 @@
       </div>
     </div>
   `;
+        }
+
+        /* ── Group Feed (chat-style) ── */
+        function buildGroupFeed() {
+            const s = state;
+            const fp = s.posts.filter(p => !s.hiddenPosts.includes(p.id));
+            const g = s.myGroups.find(x => x.id === s.currentGroupId) || { id: s.currentGroupId, name: s.currentGroupName, isPrivate: true };
+            const groupPostInputId = "group-post-input-" + s.currentGroupId;
+            return `
+    <!-- Group description card -->
+    ${g.description ? `
+    <div style="padding:0 2px;margin-bottom:14px;">
+      <p style="font-size:11px;color:#bbb;line-height:1.6;margin:0;">${escHtml(g.description)}</p>
+    </div>
+    ` : g.isAdmin ? `
+    <div style="margin-bottom:12px;">
+      <button style="background:none;border:none;cursor:pointer;font-size:11px;color:#ccc;font-family:'DM Mono',monospace;padding:0;" onclick="openGroupSettings('${g.id}')">+ aggiungi descrizione</button>
+    </div>
+    ` : ""}
+    <!-- Group post bar at top -->
+    <div style="background:#fff;border:1px solid var(--border);border-radius:12px;padding:12px 14px;margin-bottom:12px;display:flex;gap:8px;align-items:flex-end;">
+      <div style="width:34px;height:34px;border-radius:50%;background:#f0f0f0;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;">👻</div>
+      <div style="flex:1;">
+        <textarea id="${groupPostInputId}" rows="2" placeholder="Scrivi qualcosa nel gruppo... (solo i membri vedranno questo)" style="resize:none;font-size:13px;width:100%;border:none;background:transparent;outline:none;font-family:'DM Mono',monospace;padding:0;color:#0a0a0a;" oninput="this.style.height='auto';this.style.height=this.scrollHeight+'px';" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();submitGroupPost('${s.currentGroupId}','${groupPostInputId}');}"></textarea>
+      </div>
+      <button class="btn-sm" onclick="submitGroupPost('${s.currentGroupId}','${groupPostInputId}')" style="flex-shrink:0;align-self:flex-end;">Pubblica</button>
+    </div>
+    ${s.loading ? buildSkeletons(3) : ""}
+    ${!s.loading && fp.length === 0 ? `
+      <div style="text-align:center;padding:60px;color:#bbb;">
+        <div style="font-size:24px;margin-bottom:10px;">💬</div>
+        <div style="font-size:13px;margin-bottom:6px;">Nessun messaggio ancora.</div>
+        <div style="font-size:11px;color:#ccc;">Sii il primo a scrivere qualcosa!</div>
+      </div>
+    ` : ""}
+    ${fp.map((post, i) => buildPostCard(post, i)).join("")}
+  `;
+        }
+
+        async function submitGroupPost(groupId, inputId) {
+            const el = document.getElementById(inputId);
+            const txt = el ? el.value.trim() : "";
+            if (!txt || txt.length < 2) { showToast("Scrivi qualcosa.", true); return; }
+            const prevGroupId = state.currentGroupId;
+            // Ensure we're posting in the right group
+            const { error } = await sb.from("posts").insert({
+                language: LANG,
+                category: "Gruppo",
+                mood: "",
+                author: userName,
+                text: txt,
+                group_id: groupId
+            });
+            if (error) { showToast("Errore: " + error.message, true); return; }
+            if (el) { el.value = ""; el.style.height = "auto"; }
+            showToast("Pubblicato nel gruppo! 💬");
+            // Reload posts for this group
+            await loadPosts(groupId);
+            render();
         }
 
         function buildFeed() {
@@ -2212,43 +2273,108 @@
         /* ── Hot ── */
         function buildHot() {
             const s = state;
+            const tab = s.hotTab || "posts";
             return `
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
-      <span style="font-family:'Bebas Neue',cursive;font-size:20px;letter-spacing:2px;">🔥 TOP 24H</span>
-      <button class="btn-sm" onclick="loadHotPosts()">Aggiorna</button>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+      <span style="font-family:'Bebas Neue',cursive;font-size:20px;letter-spacing:2px;">CLASSIFICHE</span>
+      <button class="btn-sm" onclick="${tab === "posts" ? "loadHotPosts()" : "loadTopAccounts()"}">Aggiorna</button>
     </div>
-    ${s.kingPost ? `
-      <div style="margin-bottom:18px;">
-        <div class="section-label" style="margin-bottom:7px;">👑 RE DI IERI</div>
-        <div class="king-card">
-          <div style="display:flex;align-items:center;gap:7px;margin-bottom:9px;">
-            <span style="font-size:20px;" class="king-shimmer">👑</span>
-            <div style="font-size:10px;color:rgba(255,215,0,0.6);letter-spacing:1px;">${s.kingPost._rxCount} REAZIONI · POST PIÙ AMATO</div>
+
+    <!-- Tabs -->
+    <div style="display:flex;gap:6px;margin-bottom:14px;">
+      <button class="fchip${tab === "posts" ? " on" : ""}" onclick="state.hotTab='posts';render();" style="flex:1;text-align:center;padding:8px 0;">Top Post 24h</button>
+      <button class="fchip${tab === "accounts" ? " on" : ""}" onclick="state.hotTab='accounts';loadTopAccounts();render();" style="flex:1;text-align:center;padding:8px 0;">Top Account 7gg</button>
+    </div>
+
+    ${tab === "posts" ? `
+      ${s.kingPost ? `
+        <div style="margin-bottom:18px;">
+          <div class="section-label" style="margin-bottom:7px;">👑 RE DI IERI</div>
+          <div class="king-card">
+            <div style="display:flex;align-items:center;gap:7px;margin-bottom:9px;">
+              <span style="font-size:20px;" class="king-shimmer">👑</span>
+              <div style="font-size:10px;color:rgba(255,215,0,0.6);letter-spacing:1px;">${s.kingPost._rxCount} REAZIONI · POST PIÙ AMATO</div>
+            </div>
+            ${s.kingPost.category ? `<span class="chip" style="margin-bottom:7px;display:inline-flex;background:#1a1a1a;border-color:#333;color:#666;">${escHtml(s.kingPost.category)}</span>` : ""}
+            <p style="font-size:14px;line-height:1.6;color:#fff;">${escHtml(s.kingPost.text)}</p>
           </div>
-          ${s.kingPost.category ? `<span class="chip" style="margin-bottom:7px;display:inline-flex;background:#1a1a1a;border-color:#333;color:#666;">${escHtml(s.kingPost.category)}</span>` : ""}
-          <p style="font-size:14px;line-height:1.6;color:#fff;">${escHtml(s.kingPost.text)}</p>
         </div>
-      </div>
-    `: ""}
-    <div style="font-size:11px;color:#bbb;margin-bottom:12px;">Classifica globale ultime 24 ore.</div>
-    ${s.hotPosts.length === 0 ? `<div style="text-align:center;padding:60px;color:#bbb;"><div style="font-size:24px;margin-bottom:10px;">—</div><div style="font-size:13px;">Nessun post ancora.</div></div>` : ""}
-    <div style="background:#fff;border:1px solid var(--border);border-radius:14px;overflow:hidden;">
-      ${s.hotPosts.map((post, i) => `
-        <div class="rank-row" style="animation-delay:${i * 0.035}s;border-bottom:${i < s.hotPosts.length - 1 ? "1px solid #f5f5f5" : "none"};border-radius:0;">
-          <div class="rank-num" style="color:${i === 0 ? "#0a0a0a" : i === 1 ? "#555" : i === 2 ? "#888" : "#bbb"};">
-            ${i === 0 ? "①" : i === 1 ? "②" : i === 2 ? "③" : `${i + 1}`}
+      `: ""}
+      <div style="font-size:11px;color:#bbb;margin-bottom:12px;">Classifica globale ultime 24 ore.</div>
+      ${s.hotPosts.length === 0 ? `<div style="text-align:center;padding:60px;color:#bbb;"><div style="font-size:24px;margin-bottom:10px;">—</div><div style="font-size:13px;">Nessun post ancora.</div></div>` : ""}
+      <div style="background:#fff;border:1px solid var(--border);border-radius:14px;overflow:hidden;">
+        ${s.hotPosts.map((post, i) => `
+          <div class="rank-row" style="animation-delay:${i * 0.035}s;border-bottom:${i < s.hotPosts.length - 1 ? "1px solid #f5f5f5" : "none"};border-radius:0;">
+            <div class="rank-num" style="color:${i === 0 ? "#0a0a0a" : i === 1 ? "#555" : i === 2 ? "#888" : "#bbb"};">
+              ${i === 0 ? "①" : i === 1 ? "②" : i === 2 ? "③" : `${i + 1}`}
+            </div>
+            <div style="flex:1;min-width:0;">
+              <p style="font-size:13px;line-height:1.45;color:#0a0a0a;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;">${escHtml(post.text)}</p>
+              <div style="display:flex;gap:6px;margin-top:4px;align-items:center;">
+                ${post.category ? `<span class="chip" style="font-size:10px;">${escHtml(post.category)}</span>` : ""}
+                <span style="font-size:10px;color:#bbb;">${timeAgo(post.created_at)}</span>
+              </div>
+            </div>
+            <div style="flex-shrink:0;font-size:13px;color:#555;font-weight:500;display:flex;align-items:center;gap:4px;">🔥 ${post._rxCount}</div>
           </div>
-          <div style="flex:1;min-width:0;">
-            <p style="font-size:13px;line-height:1.45;color:#0a0a0a;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;">${escHtml(post.text)}</p>
-            <div style="display:flex;gap:6px;margin-top:4px;align-items:center;">
-              ${post.category ? `<span class="chip" style="font-size:10px;">${escHtml(post.category)}</span>` : ""}
-              <span style="font-size:10px;color:#bbb;">${timeAgo(post.created_at)}</span>
+        `).join("")}
+      </div>
+    ` : `
+      <!-- Top Account 7gg -->
+      <div style="font-size:11px;color:#bbb;margin-bottom:12px;">Classifica Unfiltered Score · ultimi 7 giorni.</div>
+      ${!s.topAccounts || s.topAccounts.length === 0 ? `
+        <div style="text-align:center;padding:60px;color:#bbb;">
+          <div style="font-size:24px;margin-bottom:10px;">—</div>
+          <div style="font-size:13px;">Classifica in caricamento...</div>
+        </div>
+      ` : `
+        <!-- Top 1 special card -->
+        ${s.topAccounts.length > 0 ? (() => {
+          const top = s.topAccounts[0];
+          const initials = (top.author || "??").slice(0, 2).toUpperCase();
+          return `
+          <div style="background:#0a0a0a;border-radius:14px;padding:18px;margin-bottom:12px;position:relative;overflow:hidden;">
+            <div style="position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,215,0,0.05) 0%,transparent 60%);pointer-events:none;"></div>
+            <div style="display:flex;align-items:center;gap:12px;position:relative;">
+              <div style="font-family:'Bebas Neue',cursive;font-size:28px;letter-spacing:1px;color:rgba(255,215,0,0.8);width:36px;text-align:center;flex-shrink:0;">①</div>
+              <div style="width:42px;height:42px;border-radius:50%;background:#1a1a1a;border:2px solid rgba(255,215,0,0.3);display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',cursive;font-size:16px;color:#fff;flex-shrink:0;">${initials}</div>
+              <div style="flex:1;min-width:0;">
+                <div style="font-family:'Bebas Neue',cursive;font-size:17px;letter-spacing:1.5px;color:#fff;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escHtml((top.author || "Anonimo").toUpperCase())}</div>
+                <div style="font-size:10px;color:#555;margin-top:2px;">${top.postCount} post · ${top.rxReceived} reazioni rice.</div>
+              </div>
+              <div style="text-align:right;flex-shrink:0;">
+                <div style="font-family:'Bebas Neue',cursive;font-size:24px;letter-spacing:1px;color:rgba(255,215,0,0.8);">${top.score}</div>
+                <div style="font-size:9px;color:#444;letter-spacing:.5px;">UNFILTERED SCORE</div>
+              </div>
             </div>
           </div>
-          <div style="flex-shrink:0;font-size:13px;color:#555;font-weight:500;display:flex;align-items:center;gap:4px;">🔥 ${post._rxCount}</div>
+          `;
+        })() : ""}
+        <!-- Rest of leaderboard -->
+        <div style="background:#fff;border:1px solid var(--border);border-radius:14px;overflow:hidden;">
+          ${s.topAccounts.slice(1).map((acc, i) => {
+            const rank = i + 2;
+            const initials = (acc.author || "??").slice(0, 2).toUpperCase();
+            return `
+            <div class="rank-row" style="animation-delay:${i * 0.04}s;border-bottom:${i < s.topAccounts.length - 2 ? "1px solid #f5f5f5" : "none"};border-radius:0;">
+              <div class="rank-num" style="color:${rank === 2 ? "#555" : rank === 3 ? "#888" : "#ccc"};">
+                ${rank === 2 ? "②" : rank === 3 ? "③" : rank}
+              </div>
+              <div style="width:32px;height:32px;border-radius:50%;background:#f5f5f5;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',cursive;font-size:12px;color:#555;flex-shrink:0;">${initials}</div>
+              <div style="flex:1;min-width:0;">
+                <div style="font-size:13px;font-weight:500;color:#0a0a0a;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escHtml(acc.author || "Anonimo")}</div>
+                <div style="font-size:10px;color:#bbb;margin-top:2px;">${acc.postCount} post · ${acc.rxReceived} rx rice.</div>
+              </div>
+              <div style="flex-shrink:0;text-align:right;">
+                <div style="font-family:'Bebas Neue',cursive;font-size:18px;letter-spacing:.5px;color:#0a0a0a;">${acc.score}</div>
+                <div style="font-size:9px;color:#bbb;">pts</div>
+              </div>
+            </div>
+            `;
+          }).join("")}
         </div>
-      `).join("")}
-    </div>
+      `}
+    `}
   `;
         }
 
@@ -2294,12 +2420,82 @@
         }
 
         /* ── My Activity ── */
+        function calcMyUnfilteredScore() {
+            const s = state;
+            // +2 per ogni reazione ricevuta sui miei post, +1 per ogni post pubblicato nelle ultime 24h
+            let rxReceived = 0;
+            s.myPosts.forEach(p => {
+                const rxList = s.reactions[p.id] || [];
+                rxReceived += rxList.length;
+            });
+            return (rxReceived * 2) + s.myPosts.length;
+        }
+
         function buildMyActivity() {
             const s = state;
+            const initials = userName.slice(0, 2).toUpperCase();
+            const myScore = calcMyUnfilteredScore();
+            const myPostsLast7 = s.myPostsWeek ? s.myPostsWeek.length : s.myPosts.length;
+            const myRxReceived = s.myPosts.reduce((acc, p) => acc + (s.reactions[p.id] || []).length, 0);
+            const myGroups = s.myGroups.length;
+            const joinDate = localStorage.getItem("nofilter_joinDate") || (() => { const d = new Date().toISOString(); localStorage.setItem("nofilter_joinDate", d); return d; })();
+            const joinDaysAgo = Math.floor((Date.now() - new Date(joinDate)) / (1000 * 60 * 60 * 24));
+            const joinLabel = joinDaysAgo === 0 ? "oggi" : joinDaysAgo === 1 ? "ieri" : `${joinDaysAgo}gg fa`;
+
             return `
     <div style="font-family:'Bebas Neue',cursive;font-size:20px;letter-spacing:2px;margin-bottom:14px;">LA MIA ATTIVITÀ</div>
+
+    <!-- Profile Card -->
+    <div style="background:#0a0a0a;border-radius:16px;padding:20px;margin-bottom:10px;position:relative;overflow:hidden;">
+      <div style="position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,0.03) 0%,transparent 60%);pointer-events:none;"></div>
+      <div style="display:flex;align-items:center;gap:14px;position:relative;">
+        <div style="width:56px;height:56px;border-radius:50%;background:#222;border:2px solid #333;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',cursive;font-size:20px;letter-spacing:1px;color:#fff;flex-shrink:0;">${initials}</div>
+        <div style="min-width:0;">
+          <div style="font-family:'Bebas Neue',cursive;font-size:22px;letter-spacing:2px;color:#fff;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escHtml(userName.toUpperCase())}</div>
+          <div style="font-size:11px;color:#555;font-family:'DM Mono',monospace;margin-top:1px;">Membro da ${joinLabel}</div>
+          <div style="font-size:12px;color:#666;font-family:'DM Mono',monospace;margin-top:4px;">ANONIMO</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Unfiltered Score Card -->
+    <div style="background:#fff;border:1px solid var(--border);border-radius:14px;padding:16px;margin-bottom:10px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+        <div style="display:flex;align-items:center;gap:6px;">
+          <span style="font-size:14px;">✦</span>
+          <span style="font-family:'DM Mono',monospace;font-size:13px;font-weight:700;letter-spacing:.5px;">UNFILTERED SCORE</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:4px;">
+          <span style="font-family:'Bebas Neue',cursive;font-size:22px;letter-spacing:1px;">${myScore}</span>
+          <span style="font-size:11px;color:#bbb;">pts</span>
+        </div>
+      </div>
+      <div style="height:4px;background:#f0f0f0;border-radius:2px;overflow:hidden;margin-bottom:10px;">
+        <div style="height:100%;background:#0a0a0a;border-radius:2px;width:${Math.min(100, (myScore / Math.max(1, myScore + 20)) * 100)}%;transition:width 0.6s cubic-bezier(.22,1,.36,1);"></div>
+      </div>
+      <div style="font-size:11px;color:#bbb;line-height:1.7;">
+        +2 per ogni reazione ricevuta · +1 per ogni post
+      </div>
+    </div>
+
+    <!-- Stats 3 boxes -->
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:16px;">
+      <div style="background:#fff;border:1px solid var(--border);border-radius:12px;padding:14px 10px;text-align:center;">
+        <div style="font-family:'Bebas Neue',cursive;font-size:26px;letter-spacing:1px;">${s.myPosts.length}</div>
+        <div style="font-size:10px;color:#bbb;font-family:'DM Mono',monospace;margin-top:2px;">post (24h)</div>
+      </div>
+      <div style="background:#fff;border:1px solid var(--border);border-radius:12px;padding:14px 10px;text-align:center;">
+        <div style="font-family:'Bebas Neue',cursive;font-size:26px;letter-spacing:1px;">${myRxReceived}</div>
+        <div style="font-size:10px;color:#bbb;font-family:'DM Mono',monospace;margin-top:2px;">reazioni rice.</div>
+      </div>
+      <div style="background:#fff;border:1px solid var(--border);border-radius:12px;padding:14px 10px;text-align:center;">
+        <div style="font-family:'Bebas Neue',cursive;font-size:26px;letter-spacing:1px;">${myGroups}</div>
+        <div style="font-size:10px;color:#bbb;font-family:'DM Mono',monospace;margin-top:2px;">gruppi</div>
+      </div>
+    </div>
+
     ${s.myPosts.length > 0 ? `
-      <div class="section-label">Post attivi</div>
+      <div class="section-label" style="margin-bottom:8px;">Post attivi</div>
       ${s.myPosts.map(p => `
         <div class="card click" onclick="openTiktok()">
           <div style="display:flex;justify-content:space-between;margin-bottom:5px;">
@@ -2307,11 +2503,14 @@
             <span style="font-size:10px;color:#bbb;display:flex;align-items:center;gap:3px;">${I.ClockSm} ${expiresIn(p.created_at)}</span>
           </div>
           <p style="font-size:13px;line-height:1.55;">${escHtml(p.text)}</p>
+          <div style="font-size:10px;color:#bbb;margin-top:6px;display:flex;align-items:center;gap:4px;">
+            🔥 ${(s.reactions[p.id] || []).length} reazioni
+          </div>
         </div>
       `).join("")}
     `: ""}
     ${s.interactedPosts.length > 0 ? `
-      <div class="section-label" style="margin-top:16px;">Ho interagito</div>
+      <div class="section-label" style="margin-top:16px;margin-bottom:8px;">Ho interagito</div>
       ${s.interactedPosts.map(p => `
         <div class="card click" onclick="openTiktok()">
           <div style="display:flex;gap:4px;margin-bottom:5px;">${p.category ? `<span class="chip">${escHtml(p.category)}</span>` : ""}</div>
@@ -2320,7 +2519,13 @@
         </div>
       `).join("")}
     `: ""}
-    ${s.myPosts.length === 0 && s.myPolls.length === 0 && s.interactedPosts.length === 0 ? `<div style="text-align:center;padding:60px;color:#bbb;"><div style="font-size:24px;margin-bottom:10px;">—</div><div style="font-size:13px;">Nessuna attività nelle ultime 24h.</div></div>` : ""}
+    ${s.myPosts.length === 0 && s.myPolls.length === 0 && s.interactedPosts.length === 0 ? `
+      <div style="text-align:center;padding:40px;color:#bbb;">
+        <div style="font-size:24px;margin-bottom:10px;">—</div>
+        <div style="font-size:13px;">Nessuna attività nelle ultime 24h.</div>
+        <button class="btn" style="margin-top:16px;" onclick="openCreate()">Pubblica qualcosa</button>
+      </div>
+    ` : ""}
   `;
         }
 
@@ -2609,7 +2814,16 @@
         }
 
         function toggleSidebar() { state.sidebarOpen = !state.sidebarOpen; render(); }
-        function goView(v) { state.prevView = state.view; state.view = v; npStart(); setTimeout(npDone, 400); render(); }
+        function goView(v) { 
+            state.prevView = state.view; 
+            // If coming from group-feed and going to feed, reset to public properly
+            if (v === "feed" && state.view === "group-feed") { goFeed(); return; }
+            state.view = v; 
+            npStart(); setTimeout(npDone, 400); 
+            if (v === "hot") { loadHotPosts(); loadKingPost(); } 
+            if (v === "my-activity") loadMyActivity(); 
+            render(); 
+        }
         function openCreate(type = "post") { state.createType = type; state.createOpen = true; render(); }
         function closeCreate() { state.createOpen = false; render(); }
         function setCreateType(t) { state.createType = t; render(); }
@@ -2712,7 +2926,7 @@
 
         function enterGroupById(id) { const g = state.myGroups.find(x => x.id === id) || { id, name: id }; enterGroup(g); }
         function enterGroup(g) { state.currentGroupId = g.id; state.currentGroupName = g.name; state.posts = []; state.view = "group-feed"; state.sidebarOpen = false; state.loading = true; render(); loadPosts(g.id).then(() => { state.loading = false; render(); }); }
-        function goFeed() { state.currentGroupId = "public"; state.view = "feed"; state.posts = []; state.loading = true; render(); loadPosts("public").then(() => { state.loading = false; render(); }); }
+        function goFeed() { state.currentGroupId = "public"; state.view = "feed"; state.posts = []; state.reactions = {}; state.comments = {}; state.loading = true; render(); loadPosts("public").then(() => { state.loading = false; render(); setupRealtime("public"); }); }
 
         function createGroup() {
             const nameEl = document.getElementById("ng-name");
@@ -2804,6 +3018,48 @@
         async function loadPolls() { const { data } = await sb.from("polls").select("id,created_at,expires_at,language,category,question,options,creator_id").eq("language", LANG).neq("category", "DUEL").gt("expires_at", new Date().toISOString()).order("created_at", { ascending: false }); if (data) { state.polls = data.map(p => ({ ...p, id: String(p.id) })); if (data.length) { const ids = state.polls.map(p => p.id); const { data: vs } = await sb.from("poll_votes").select("poll_id,option_index,voter_id").in("poll_id", ids); if (vs) { const m = {}; ids.forEach(id => { m[id] = { votes: [], myVote: null }; }); vs.forEach(v => { v.poll_id = String(v.poll_id); if (!m[v.poll_id]) return; m[v.poll_id].votes[v.option_index] = (m[v.poll_id].votes[v.option_index] || 0) + 1; if (v.voter_id === deviceId) m[v.poll_id].myVote = v.option_index; }); state.pollVotes = m; } } } }
         async function loadDuels() { const { data } = await sb.from("polls").select("id,created_at,expires_at,language,category,question,options,creator_id").eq("language", LANG).eq("category", "DUEL").gt("expires_at", new Date().toISOString()).order("created_at", { ascending: false }); if (data) { state.duels = data.map(d => ({ ...d, id: String(d.id) })); if (data.length) { const ids = state.duels.map(d => d.id); const { data: vs } = await sb.from("poll_votes").select("poll_id,option_index,voter_id").in("poll_id", ids); if (vs) { const m = {}; ids.forEach(id => { m[id] = { votes: [0, 0], myVote: null }; }); vs.forEach(v => { v.poll_id = String(v.poll_id); if (!m[v.poll_id]) return; m[v.poll_id].votes[v.option_index] = (m[v.poll_id].votes[v.option_index] || 0) + 1; if (v.voter_id === deviceId) m[v.poll_id].myVote = v.option_index; }); state.duelVotes = m; } } } }
         async function loadHotPosts() { const cutoff = new Date(Date.now() - 24 * 3600 * 1000).toISOString(); const { data: p } = await sb.from("posts").select("id,created_at,language,category,mood,author,text,group_id").eq("language", LANG).eq("group_id", "public").gte("created_at", cutoff); if (!p || !p.length) { state.hotPosts = []; render(); return; } const ids = p.map(x => String(x.id)); const { data: rx } = await sb.from("reactions").select("post_id").in("post_id", ids); const counts = {}; ids.forEach(id => { counts[id] = 0; }); if (rx) rx.forEach(r => { r.post_id = String(r.post_id); counts[r.post_id] = (counts[r.post_id] || 0) + 1; }); const sorted = p.map(x => ({ ...x, id: String(x.id) })).sort((a, b) => (counts[b.id] || 0) - (counts[a.id] || 0)).slice(0, 20); sorted.forEach(post => { post._rxCount = counts[post.id] || 0; }); state.hotPosts = sorted; if (sorted.length) { const topIds = sorted.map(x => x.id); const { data: rxFull } = await sb.from("reactions").select("id,post_id,emoji,reactor_id").in("post_id", topIds); if (rxFull) { const m = {}; rxFull.forEach(r => { r.id = String(r.id); r.post_id = String(r.post_id); if (!m[r.post_id]) m[r.post_id] = []; m[r.post_id].push(r); }); state.reactions = { ...state.reactions, ...m }; } } render(); }
+        async function loadTopAccounts() {
+            const cutoff7 = new Date(Date.now() - 7 * 24 * 3600 * 1000).toISOString();
+            // Load all public posts from last 7 days
+            const { data: posts7 } = await sb.from("posts")
+                .select("id,author,created_at")
+                .eq("language", LANG)
+                .eq("group_id", "public")
+                .gte("created_at", cutoff7);
+            if (!posts7 || !posts7.length) { state.topAccounts = []; render(); return; }
+
+            // Group by author
+            const authorMap = {};
+            posts7.forEach(p => {
+                const id = String(p.id);
+                if (!authorMap[p.author]) authorMap[p.author] = { author: p.author, postIds: [], postCount: 0, rxReceived: 0 };
+                authorMap[p.author].postIds.push(id);
+                authorMap[p.author].postCount++;
+            });
+
+            // Load reactions for all post ids
+            const allIds = posts7.map(p => String(p.id));
+            const { data: allRx } = await sb.from("reactions").select("post_id").in("post_id", allIds);
+            if (allRx) {
+                // build postId -> author map
+                const pidAuthor = {};
+                posts7.forEach(p => { pidAuthor[String(p.id)] = p.author; });
+                allRx.forEach(r => {
+                    const auth = pidAuthor[String(r.post_id)];
+                    if (auth && authorMap[auth]) authorMap[auth].rxReceived++;
+                });
+            }
+
+            // Compute score and sort
+            const ranked = Object.values(authorMap).map(a => ({
+                ...a,
+                score: a.rxReceived * 2 + a.postCount
+            })).sort((a, b) => b.score - a.score).slice(0, 20);
+
+            state.topAccounts = ranked;
+            render();
+        }
+
         async function loadKingPost() { const todayStart = new Date(); todayStart.setHours(0, 0, 0, 0); const yesterdayStart = new Date(todayStart - 24 * 3600 * 1000); const stored = localStorage.getItem("nofilter_king"); if (stored) { try { const k = JSON.parse(stored); if (k.date === todayStart.toDateString()) { state.kingPost = k.post; return; } } catch (_) { } } const { data: p } = await sb.from("posts").select("id,created_at,language,category,mood,text,group_id").eq("language", LANG).eq("group_id", "public").gte("created_at", yesterdayStart.toISOString()).lt("created_at", todayStart.toISOString()); if (!p || !p.length) return; const ids = p.map(x => String(x.id)); const { data: rx } = await sb.from("reactions").select("post_id").in("post_id", ids); const counts = {}; ids.forEach(id => { counts[id] = 0; }); if (rx) rx.forEach(r => { r.post_id = String(r.post_id); counts[r.post_id] = (counts[r.post_id] || 0) + 1; }); const king = p.map(x => ({ ...x, id: String(x.id) })).sort((a, b) => (counts[b.id] || 0) - (counts[a.id] || 0))[0]; if (king) { king._rxCount = counts[king.id] || 0; state.kingPost = king; localStorage.setItem("nofilter_king", JSON.stringify({ date: todayStart.toDateString(), post: king })); } }
         async function loadMyActivity() { const cutoff = new Date(Date.now() - 24 * 3600 * 1000).toISOString(); const { data: mp } = await sb.from("posts").select("id,created_at,category,mood,text,group_id").eq("author", userName).gte("created_at", cutoff).order("created_at", { ascending: false }); if (mp) state.myPosts = mp.map(x => ({ ...x, id: String(x.id) })); const { data: mpl } = await sb.from("polls").select("id,created_at,expires_at,question,options,category").eq("creator_id", deviceId).neq("category", "DUEL").gt("expires_at", new Date().toISOString()); if (mpl) state.myPolls = mpl.map(x => ({ ...x, id: String(x.id) })); const reactedIds = getMyReacted().map(String); if (reactedIds.length) { const { data: rp } = await sb.from("posts").select("id,created_at,category,mood,text,group_id,author").in("id", reactedIds.slice(-50)).gte("created_at", cutoff); if (rp) state.interactedPosts = rp.map(x => ({ ...x, id: String(x.id) })); } render(); }
 
