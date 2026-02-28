@@ -1767,6 +1767,7 @@
             hotPosts: [],
             topAccounts: [],
             hotTab: "posts",
+            publicGroups: [],
             expandedComments: new Set(),
             replyingTo: null, replyText: "",
             hiddenPosts: getHidden(),
@@ -2381,41 +2382,73 @@
         /* ── Groups ── */
         function buildGroups() {
             const s = state;
+            const myGroupIds = new Set(s.myGroups.map(g => g.id));
+            const discoverGroups = (s.publicGroups || []).filter(g => !myGroupIds.has(g.id));
             return `
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
       <span style="font-family:'Bebas Neue',cursive;font-size:20px;letter-spacing:2px;">GRUPPI</span>
       <button class="btn-sm" onclick="openCreate('group')">+ Crea</button>
     </div>
-    ${s.myGroups.length === 0 ? `
-      <div style="text-align:center;padding:60px;color:#bbb;">
+
+    ${s.myGroups.length > 0 ? `
+      <div class="section-label" style="margin-bottom:8px;">I miei gruppi</div>
+      ${s.myGroups.map(g => `
+        <div class="group-card" onclick="enterGroupById('${g.id}')">
+          <div>
+            <div style="display:flex;align-items:center;gap:7px;margin-bottom:3px;">
+              <span style="font-size:14px;font-weight:500;">${escHtml(g.name)}</span>
+              <span class="badge">${g.isPrivate ? I.Lock + " Privato" : I.Globe + " Pubblico"}</span>
+              ${g.isAdmin ? `<span class="badge">admin</span>` : ""}
+            </div>
+            ${g.description ? `<div style="font-size:11px;color:#aaa;margin-top:2px;">${escHtml(g.description)}</div>` : ""}
+          </div>
+          <div style="display:flex;gap:7px;align-items:center;">
+            ${g.isAdmin ? `<button style="background:none;border:none;cursor:pointer;color:#bbb;display:flex;padding:4px;" onclick="event.stopPropagation();openGroupSettings('${g.id}');">${I.Settings}</button>` : ""}
+            ${I.Chevron}
+          </div>
+        </div>
+      `).join("")}
+    ` : `
+      <div style="text-align:center;padding:40px;color:#bbb;">
         <div style="font-size:24px;margin-bottom:10px;">—</div>
-        <div style="font-size:13px;margin-bottom:14px;">Nessun gruppo ancora.</div>
+        <div style="font-size:13px;margin-bottom:14px;">Non sei ancora in nessun gruppo.</div>
         <button class="btn" onclick="openCreate('group')">Crea il primo gruppo</button>
       </div>
-    `: ""}
-    ${s.myGroups.map(g => `
-      <div class="group-card" onclick="enterGroupById('${g.id}')">
-        <div>
-          <div style="display:flex;align-items:center;gap:7px;margin-bottom:3px;">
-            <span style="font-size:14px;font-weight:500;">${escHtml(g.name)}</span>
-            <span class="badge">${g.isPrivate ? I.Lock + " Privato" : I.Globe + " Pubblico"}</span>
-            ${g.isAdmin ? `<span class="badge">admin</span>` : ""}
-          </div>
-          <div style="font-size:11px;color:#ccc;">${escHtml(g.id)}</div>
-        </div>
-        <div style="display:flex;gap:7px;align-items:center;">
-          ${g.isAdmin ? `<button style="background:none;border:none;cursor:pointer;color:#bbb;display:flex;padding:4px;" onclick="event.stopPropagation();openGroupSettings('${g.id}');">${I.Settings}</button>` : ""}
-          ${I.Chevron}
-        </div>
-      </div>
-    `).join("")}
+    `}
+
+    <!-- Entra con link / ID -->
     <div style="margin-top:16px;padding:14px;background:#fff;border-radius:12px;border:1px solid var(--border);">
-      <div class="section-label" style="margin-bottom:8px;">Entra con un link</div>
+      <div class="section-label" style="margin-bottom:8px;">Entra con un link o ID</div>
       <div style="display:flex;gap:7px;">
-        <input id="join-input" placeholder="Incolla link o ID..." onkeydown="if(event.key==='Enter')joinByLink()" style="font-size:12px;padding:8px 11px;"/>
+        <input id="join-input" placeholder="Incolla link o ID gruppo..." onkeydown="if(event.key==='Enter')joinByLink()" style="font-size:12px;padding:8px 11px;"/>
         <button class="btn-sm" onclick="joinByLink()" style="flex-shrink:0;">Entra</button>
       </div>
+      <div style="font-size:11px;color:#ccc;margin-top:7px;">I gruppi privati sono accessibili solo con link o ID.</div>
     </div>
+
+    <!-- Scopri gruppi pubblici -->
+    ${discoverGroups.length > 0 ? `
+      <div style="margin-top:20px;">
+        <div class="section-label" style="margin-bottom:8px;">Scopri · gruppi pubblici</div>
+        ${discoverGroups.map(g => `
+          <div class="group-card" onclick="joinPublicGroup(${JSON.stringify({ id: g.id, name: g.name, isPrivate: false, isAdmin: false, description: g.description || '' })})">
+            <div style="flex:1;min-width:0;">
+              <div style="display:flex;align-items:center;gap:7px;margin-bottom:3px;">
+                <span style="font-size:14px;font-weight:500;">${escHtml(g.name)}</span>
+                <span class="badge">${I.Globe} Pubblico</span>
+              </div>
+              ${g.description ? `<div style="font-size:11px;color:#aaa;margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escHtml(g.description)}</div>` : ""}
+            </div>
+            <button class="btn-sm" style="flex-shrink:0;" onclick="event.stopPropagation();joinPublicGroup(${JSON.stringify({ id: g.id, name: g.name, isPrivate: false, isAdmin: false, description: g.description || '' })})">Entra</button>
+          </div>
+        `).join("")}
+      </div>
+    ` : s.publicGroups.length === 0 ? `
+      <div style="margin-top:20px;">
+        <div class="section-label" style="margin-bottom:8px;">Scopri · gruppi pubblici</div>
+        <div style="text-align:center;padding:30px;color:#ccc;font-size:12px;">Nessun gruppo pubblico disponibile.</div>
+      </div>
+    ` : ""}
   `;
         }
 
@@ -2822,6 +2855,7 @@
             npStart(); setTimeout(npDone, 400); 
             if (v === "hot") { loadHotPosts(); loadKingPost(); } 
             if (v === "my-activity") loadMyActivity(); 
+            if (v === "groups") loadPublicGroups();
             render(); 
         }
         function openCreate(type = "post") { state.createType = type; state.createOpen = true; render(); }
@@ -2939,7 +2973,41 @@
             enterGroup(g); showToast("Gruppo creato!");
         }
         function joinByLink() { const v = document.getElementById("join-input")?.value || ""; joinGroupByIdRaw(v); }
-        function joinGroupByIdRaw(raw) { let id = raw.trim(); try { const u = new URL(id); id = u.searchParams.get("join") || id; } catch (_) { } if (!id) return; const exists = state.myGroups.find(g => g.id === id); if (!exists) { const g = { id, name: id, isPrivate: false, isAdmin: false }; const u = [...state.myGroups, g]; saveMyGroups(u); state.myGroups = u; enterGroup(g); } else enterGroup(exists); }
+        async function joinGroupByIdRaw(raw) {
+            let id = raw.trim();
+            try { const u = new URL(id); id = u.searchParams.get("join") || id; } catch (_) { }
+            if (!id) { showToast("Inserisci un link o un ID.", true); return; }
+            // Check if already in group
+            const already = state.myGroups.find(g => g.id === id);
+            if (already) { enterGroup(already); return; }
+            // Validate: must match room-XXXXXX format
+            if (!id.match(/^room-[a-z0-9]{6}$/)) {
+                showToast("ID o link non valido.", true);
+                return;
+            }
+            // Verify the group has at least one post on Supabase
+            const { data } = await sb.from("posts").select("id,group_id").eq("group_id", id).limit(1);
+            if (!data || data.length === 0) {
+                showToast("Gruppo non trovato.", true);
+                return;
+            }
+            const g = { id, name: id, isPrivate: true, isAdmin: false };
+            const u = [...state.myGroups, g]; saveMyGroups(u); state.myGroups = u;
+            enterGroup(g);
+        }
+        function joinPublicGroup(g) {
+            const already = state.myGroups.find(x => x.id === g.id);
+            if (already) { enterGroup(already); return; }
+            const u = [...state.myGroups, g]; saveMyGroups(u); state.myGroups = u;
+            showToast(`Entrato in ${g.name}!`);
+            enterGroup(g);
+        }
+        function loadPublicGroups() {
+            // Public groups are those in myGroups marked isPrivate: false
+            // (Full discovery requires a groups table on Supabase)
+            state.publicGroups = state.myGroups.filter(g => !g.isPrivate && g.id !== "public");
+            render();
+        }
         function updateGroupDesc(gid, desc) { const u = state.myGroups.map(g => g.id === gid ? { ...g, description: desc } : g); saveMyGroups(u); state.myGroups = u; }
         function toggleGroupPrivacy(gid) { const u = state.myGroups.map(g => g.id === gid ? { ...g, isPrivate: !g.isPrivate } : g); saveMyGroups(u); state.myGroups = u; showToast("Aggiornato."); render(); }
         function deleteGroup(gid) { const u = state.myGroups.filter(g => g.id !== gid); saveMyGroups(u); state.myGroups = u; if (state.currentGroupId === gid) goFeed(); state.groupSettingsOpen = null; showToast("Rimosso."); render(); }
