@@ -890,6 +890,20 @@
             transform: translateY(100%);
             opacity: 0;
         }
+        .tiktok-post.enter-from-bottom {
+            animation: tt-enter-bottom 0.38s cubic-bezier(.22, 1, .36, 1);
+        }
+        .tiktok-post.enter-from-top {
+            animation: tt-enter-top 0.38s cubic-bezier(.22, 1, .36, 1);
+        }
+        @keyframes tt-enter-bottom {
+            from { transform: translateY(100%); opacity: 0; }
+            to   { transform: translateY(0);    opacity: 1; }
+        }
+        @keyframes tt-enter-top {
+            from { transform: translateY(-100%); opacity: 0; }
+            to   { transform: translateY(0);     opacity: 1; }
+        }
         @keyframes heartPop {
             0%   { transform: translate(-50%,-50%) scale(0); opacity:1; }
             50%  { transform: translate(-50%,-50%) scale(1.3); opacity:1; }
@@ -1260,7 +1274,6 @@
             background: #0a0a0a;
             transform: translateX(-50%);
             border-radius: 0 0 4px 4px;
-            animation: slide-right 0.25s cubic-bezier(.22, 1, .36, 1);
         }
 
         /* Reaction float animation */
@@ -2431,7 +2444,7 @@
       <div style="margin-top:20px;">
         <div class="section-label" style="margin-bottom:8px;">Scopri · gruppi pubblici</div>
         ${discoverGroups.map(g => `
-          <div class="group-card" onclick="joinPublicGroup(${JSON.stringify({ id: g.id, name: g.name, isPrivate: false, isAdmin: false, description: g.description || '' })})">
+          <div class="group-card" onclick="joinPublicGroupById('${escAttr(g.id)}')">
             <div style="flex:1;min-width:0;">
               <div style="display:flex;align-items:center;gap:7px;margin-bottom:3px;">
                 <span style="font-size:14px;font-weight:500;">${escHtml(g.name)}</span>
@@ -2439,7 +2452,7 @@
               </div>
               ${g.description ? `<div style="font-size:11px;color:#aaa;margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escHtml(g.description)}</div>` : ""}
             </div>
-            <button class="btn-sm" style="flex-shrink:0;" onclick="event.stopPropagation();joinPublicGroup(${JSON.stringify({ id: g.id, name: g.name, isPrivate: false, isAdmin: false, description: g.description || '' })})">Entra</button>
+            <button class="btn-sm" style="flex-shrink:0;" onclick="event.stopPropagation();joinPublicGroupById('${escAttr(g.id)}')">Entra</button>
           </div>
         `).join("")}
       </div>
@@ -2807,7 +2820,7 @@
             const textSize = post.text.length > 200 ? 15 : post.text.length > 100 ? 17 : 19;
             return `
     <div class="tiktok-view" ontouchstart="ttTouchStart(event)" ontouchend="ttTouchEnd(event)">
-      <div class="tiktok-post${s.tiktokDir === "up" ? " exit-up" : ""}">
+      <div class="tiktok-post${s.tiktokDir === "up" ? " exit-up" : s.tiktokDir === "down" ? " exit-down" : s.tiktokDir === "enter-bottom" ? " enter-from-bottom" : s.tiktokDir === "enter-top" ? " enter-from-top" : ""}">
         <div style="position:absolute;top:0;left:0;right:0;height:100%;background:linear-gradient(to bottom,rgba(0,0,0,0.2) 0%,transparent 30%,transparent 50%,rgba(0,0,0,0.7) 100%);"></div>
         <div style="position:absolute;top:0;left:0;right:0;padding:18px 20px;display:flex;align-items:center;justify-content:space-between;z-index:2;">
           <div style="font-family:'Bebas Neue',cursive;font-size:17px;letter-spacing:3px;color:#fff;">NO FILTER</div>
@@ -2841,8 +2854,16 @@
             <button onclick="ttChallenge('${post.id}')" style="background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);color:rgba(255,255,255,0.6);padding:8px 12px;border-radius:9px;font-size:12px;cursor:pointer;font-family:'DM Mono',monospace;display:flex;align-items:center;gap:5px;transition:all 0.2s;">${I.Sword}</button>
           </div>
           ${s.tiktokShowComment ? `
+            <div style="background:rgba(0,0,0,0.45);border-radius:12px;padding:10px 12px;margin-bottom:10px;max-height:150px;overflow-y:auto;animation:su 0.2s ease;">
+              ${postComments.length > 0 ? postComments.map(c => `
+                <div style="margin-bottom:8px;border-bottom:1px solid rgba(255,255,255,0.07);padding-bottom:8px;">
+                  <div style="font-size:10px;color:rgba(255,255,255,0.35);margin-bottom:2px;">${escHtml(c.author)} · ${timeAgo(c.created_at)}</div>
+                  <div style="font-size:13px;color:rgba(255,255,255,0.82);line-height:1.45;">${escHtml(c.text)}</div>
+                </div>
+              `).join("") : `<div style="font-size:12px;color:rgba(255,255,255,0.3);text-align:center;padding:6px 0;">Nessun commento ancora.</div>`}
+            </div>
             <div style="display:flex;gap:6px;animation:su 0.2s ease;">
-              <input id="tt-comment" placeholder="Commenta..." value="${escHtml(s.tiktokCommentInput)}" oninput="state.tiktokCommentInput=this.value" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();ttSubmitComment('${post.id}');}" autofocus style="background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.15);color:#fff;font-size:12px;padding:9px 12px;border-radius:8px;"/>
+              <input id="tt-comment" placeholder="Scrivi un commento..." value="${escHtml(s.tiktokCommentInput)}" oninput="state.tiktokCommentInput=this.value" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();ttSubmitComment('${post.id}');}" autofocus style="background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.15);color:#fff;font-size:12px;padding:9px 12px;border-radius:8px;"/>
               <button class="btn-sm" onclick="ttSubmitComment('${post.id}')" style="flex-shrink:0;background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.2);">→</button>
             </div>
           `: ""}
@@ -2907,7 +2928,13 @@
             const now = Date.now();
             if (Math.abs(dy) < 15 && now - ttLastTap < 300) {
                 const posts = state.posts.filter(p => !state.hiddenPosts.includes(p.id));
-                if (posts.length) { const post = posts[state.tiktokIdx % posts.length]; ttReact(post.id, "❤️"); showDoubleTapHeart(); }
+                if (posts.length) {
+                    const post = posts[state.tiktokIdx % posts.length];
+                    ttReact(post.id, "❤️");
+                    const tapX = e.changedTouches[0].clientX;
+                    const tapY = e.changedTouches[0].clientY;
+                    showDoubleTapHeart(tapX, tapY);
+                }
             }
             ttLastTap = now;
             if (dy > 60) ttNext();
@@ -2920,7 +2947,7 @@
             state.tiktokDir = "up"; render();
             setTimeout(() => {
                 state.tiktokIdx = (state.tiktokIdx + 1) % posts.length;
-                state.tiktokDir = null; state.tiktokShowComment = false; state.tiktokCommentInput = ""; state.tiktokReactPickerOpen = false;
+                state.tiktokDir = "enter-bottom"; state.tiktokShowComment = false; state.tiktokCommentInput = ""; state.tiktokReactPickerOpen = false;
                 render();
             }, 300);
         }
@@ -2930,14 +2957,14 @@
             state.tiktokDir = "down"; render();
             setTimeout(() => {
                 state.tiktokIdx = (state.tiktokIdx - 1 + posts.length) % posts.length;
-                state.tiktokDir = null; state.tiktokShowComment = false; state.tiktokCommentInput = ""; state.tiktokReactPickerOpen = false;
+                state.tiktokDir = "enter-top"; state.tiktokShowComment = false; state.tiktokCommentInput = ""; state.tiktokReactPickerOpen = false;
                 render();
             }, 300);
         }
-        function showDoubleTapHeart() {
+        function showDoubleTapHeart(x, y) {
             const h = document.createElement("div");
-            h.textContent = "❤️";
-            h.style.cssText = "position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(0);font-size:80px;z-index:9999;pointer-events:none;animation:heartPop 0.8s ease forwards;";
+            h.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#ff3b6e" width="80" height="80"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>`;
+            h.style.cssText = `position:fixed;left:${x}px;top:${y}px;transform:translate(-50%,-50%) scale(0);z-index:9999;pointer-events:none;filter:drop-shadow(0 0 12px rgba(255,59,110,0.6));animation:heartPop 0.8s ease forwards;`;
             document.body.appendChild(h);
             setTimeout(() => h.remove(), 800);
         }
@@ -3025,6 +3052,10 @@
             const g = { id, name: id, isPrivate: true, isAdmin: false };
             const u = [...state.myGroups, g]; saveMyGroups(u); state.myGroups = u;
             enterGroup(g);
+        }
+        function joinPublicGroupById(id) {
+            const g = (state.publicGroups || []).find(x => x.id === id) || { id, name: id, isPrivate: false, isAdmin: false };
+            joinPublicGroup(g);
         }
         function joinPublicGroup(g) {
             const already = state.myGroups.find(x => x.id === g.id);
