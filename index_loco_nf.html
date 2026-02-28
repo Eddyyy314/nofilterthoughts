@@ -2935,6 +2935,9 @@
                     const tapY = e.changedTouches[0].clientY;
                     showDoubleTapHeart(tapX, tapY);
                 }
+                ttLastTap = now;
+                ttTouchStartY = null;
+                return; // stop here, don't trigger swipe
             }
             ttLastTap = now;
             if (dy > 60) ttNext();
