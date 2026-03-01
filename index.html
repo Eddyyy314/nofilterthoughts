@@ -1894,8 +1894,7 @@
                     document.body.appendChild(ttv);
                 }
                 ttv.innerHTML = buildTiktok();
-                ttTouchStartY = null;
-            } else if (ttv) { ttv.remove(); ttTouchStartY = null; }
+            } else if (ttv) ttv.remove();
 
             // Toast
             let et = document.getElementById("toast-el");
@@ -2837,7 +2836,7 @@
           </div>
           <p style="font-size:${textSize}px;line-height:1.55;color:#fff;font-family:'DM Mono',monospace;margin-bottom:16px;font-weight:${post.text.length < 60 ? 500 : 400};">${escHtml(post.text)}</p>
           <div style="font-size:10px;color:rgba(255,255,255,0.3);margin-bottom:18px;display:flex;align-items:center;gap:5px;">${I.ClockSm} ${timeAgo(post.created_at)} · scade tra ${expiresIn(post.created_at)}</div>
-          <div ontouchstart="event.stopPropagation()" style="display:flex;gap:7px;flex-wrap:wrap;align-items:center;margin-bottom:13px;position:relative;">
+          <div style="display:flex;gap:7px;flex-wrap:wrap;align-items:center;margin-bottom:13px;position:relative;">
             ${topRx.map(({ emoji, count, mine }) => `<button onclick="ttReact('${post.id}','${emoji}')" style="background:${mine ? "#fff" : "rgba(255,255,255,0.08)"};border:1px solid ${mine ? "#fff" : "rgba(255,255,255,0.15)"};color:${mine ? "#000" : "#fff"};padding:6px 12px;border-radius:18px;font-size:13px;cursor:pointer;display:flex;align-items:center;gap:4px;transition:all 0.2s;font-family:'DM Mono',monospace;">${emoji} ${count}</button>`).join("")}
             <div style="position:relative;">
               <button onclick="toggleTtReactPicker()" style="background:${myRx ? "#fff" : "rgba(255,255,255,0.08)"};border:1px solid ${myRx ? "#fff" : "rgba(255,255,255,0.2)"};color:${myRx ? "#000" : "rgba(255,255,255,0.7)"};padding:6px 14px;border-radius:18px;font-size:12px;cursor:pointer;font-family:'DM Mono',monospace;transition:all 0.2s;">${myRx ? "✓ react" : "+ react"}</button>
@@ -2849,13 +2848,13 @@
               `: ""}
             </div>
           </div>
-          <div style="display:flex;gap:8px;margin-bottom:${s.tiktokShowComment ? 14 : 0}px;" ontouchstart="event.stopPropagation()">
+          <div style="display:flex;gap:8px;margin-bottom:${s.tiktokShowComment ? 14 : 0}px;">
             <button onclick="toggleTtComment()" style="background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);color:rgba(255,255,255,0.7);padding:8px 16px;border-radius:9px;font-size:12px;cursor:pointer;font-family:'DM Mono',monospace;display:flex;align-items:center;gap:6px;transition:all 0.2s;">${I.Msg} ${postComments.length > 0 ? postComments.length + " commenti" : "Commenta"}</button>
             <button onclick="ttHide('${post.id}')" style="background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);color:rgba(255,255,255,0.4);padding:8px 12px;border-radius:9px;font-size:12px;cursor:pointer;font-family:'DM Mono',monospace;display:flex;align-items:center;gap:5px;transition:all 0.2s;">${I.EyeOff}</button>
             <button onclick="ttChallenge('${post.id}')" style="background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);color:rgba(255,255,255,0.6);padding:8px 12px;border-radius:9px;font-size:12px;cursor:pointer;font-family:'DM Mono',monospace;display:flex;align-items:center;gap:5px;transition:all 0.2s;">${I.Sword}</button>
           </div>
           ${s.tiktokShowComment ? `
-            <div ontouchstart="event.stopPropagation()" ontouchmove="event.stopPropagation()" style="background:rgba(0,0,0,0.45);border-radius:12px;padding:10px 12px;margin-bottom:10px;max-height:150px;overflow-y:auto;animation:su 0.2s ease;">
+            <div style="background:rgba(0,0,0,0.45);border-radius:12px;padding:10px 12px;margin-bottom:10px;max-height:150px;overflow-y:auto;animation:su 0.2s ease;">
               ${postComments.length > 0 ? postComments.map(c => `
                 <div style="margin-bottom:8px;border-bottom:1px solid rgba(255,255,255,0.07);padding-bottom:8px;">
                   <div style="font-size:10px;color:rgba(255,255,255,0.35);margin-bottom:2px;">${escHtml(c.author)} · ${timeAgo(c.created_at)}</div>
@@ -2863,7 +2862,7 @@
                 </div>
               `).join("") : `<div style="font-size:12px;color:rgba(255,255,255,0.3);text-align:center;padding:6px 0;">Nessun commento ancora.</div>`}
             </div>
-            <div ontouchstart="event.stopPropagation()" style="display:flex;gap:6px;animation:su 0.2s ease;">
+            <div style="display:flex;gap:6px;animation:su 0.2s ease;">
               <input id="tt-comment" placeholder="Scrivi un commento..." value="${escHtml(s.tiktokCommentInput)}" oninput="state.tiktokCommentInput=this.value" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();ttSubmitComment('${post.id}');}" autofocus style="background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.15);color:#fff;font-size:12px;padding:9px 12px;border-radius:8px;"/>
               <button class="btn-sm" onclick="ttSubmitComment('${post.id}')" style="flex-shrink:0;background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.2);">→</button>
             </div>
@@ -2921,27 +2920,32 @@
         }
         function closeTiktok() { state.tiktokOpen = false; render(); }
 
-        let ttTouchStartY = null, ttLastTap = 0;
+        let ttTouchStartY = null, ttLastTap = 0, ttScrolling = false;
         function ttTouchStart(e) {
-            // Ignora touch su bottoni, input ecc. — solo lo sfondo swipeable
+            // Non registrare touch su elementi interattivi
             if (e.target.closest("button,input,textarea,a")) return;
+            // Blocca input se stiamo animando uno scroll
+            if (ttScrolling) return;
             ttTouchStartY = e.touches[0].clientY;
         }
         function ttTouchEnd(e) {
             if (ttTouchStartY === null) return;
             const dy = ttTouchStartY - e.changedTouches[0].clientY;
             const now = Date.now();
-            const isSwipe = Math.abs(dy) > 60;
-            if (isSwipe) {
-                // Swipe: naviga e resetta timer double tap
+            ttTouchStartY = null;
+
+            if (Math.abs(dy) > 60) {
+                // Swipe - blocca nuovi touch per 750ms (durata animazione)
+                ttScrolling = true;
                 ttLastTap = 0;
-                ttTouchStartY = null;
-                if (dy > 60) ttNext();
+                setTimeout(() => { ttScrolling = false; }, 750);
+                if (dy > 0) ttNext();
                 else ttPrev();
                 return;
             }
+
             if (Math.abs(dy) < 15) {
-                // Tap sul background: gestisci double tap
+                // Tap sul background: double tap = like
                 if (ttLastTap > 0 && now - ttLastTap < 300) {
                     const posts = state.posts.filter(p => !state.hiddenPosts.includes(p.id));
                     if (posts.length) {
@@ -2949,12 +2953,11 @@
                         ttReact(post.id, "❤️");
                         showDoubleTapHeart(e.changedTouches[0].clientX, e.changedTouches[0].clientY);
                     }
-                    ttLastTap = 0; // reset dopo double tap
+                    ttLastTap = 0;
                 } else {
                     ttLastTap = now;
                 }
             }
-            ttTouchStartY = null;
         }
         function ttNext() {
             const posts = state.posts.filter(p => !state.hiddenPosts.includes(p.id));
@@ -2964,6 +2967,8 @@
                 state.tiktokIdx = (state.tiktokIdx + 1) % posts.length;
                 state.tiktokDir = "enter-bottom"; state.tiktokShowComment = false; state.tiktokCommentInput = ""; state.tiktokReactPickerOpen = false;
                 render();
+                // Resetta dir dopo animazione: evita che render successivi rianimino il post
+                setTimeout(() => { state.tiktokDir = null; }, 400);
             }, 300);
         }
         function ttPrev() {
@@ -2974,6 +2979,8 @@
                 state.tiktokIdx = (state.tiktokIdx - 1 + posts.length) % posts.length;
                 state.tiktokDir = "enter-top"; state.tiktokShowComment = false; state.tiktokCommentInput = ""; state.tiktokReactPickerOpen = false;
                 render();
+                // Resetta dir dopo animazione: evita che render successivi rianimino il post
+                setTimeout(() => { state.tiktokDir = null; }, 400);
             }, 300);
         }
         function showDoubleTapHeart(x, y) {
