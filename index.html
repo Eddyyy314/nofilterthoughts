@@ -2920,25 +2920,35 @@
         }
         function closeTiktok() { state.tiktokOpen = false; render(); }
 
-        let ttTouchStartY = null, ttLastTap = 0;
-        function ttTouchStart(e) { ttTouchStartY = e.touches[0].clientY; }
+        let ttTouchStartY = null, ttLastTap = 0, ttTouchStartTime = 0;
+        function ttTouchStart(e) { ttTouchStartY = e.touches[0].clientY; ttTouchStartTime = Date.now(); }
         function ttTouchEnd(e) {
             if (ttTouchStartY === null) return;
             const dy = ttTouchStartY - e.changedTouches[0].clientY;
             const now = Date.now();
-            if (Math.abs(dy) < 15 && now - ttLastTap < 300) {
-                const posts = state.posts.filter(p => !state.hiddenPosts.includes(p.id));
-                if (posts.length) {
-                    const post = posts[state.tiktokIdx % posts.length];
-                    ttReact(post.id, "❤️");
-                    const tapX = e.changedTouches[0].clientX;
-                    const tapY = e.changedTouches[0].clientY;
-                    showDoubleTapHeart(tapX, tapY);
+            const isSwipe = Math.abs(dy) > 60;
+            const isQuickTap = (now - ttTouchStartTime) < 250; // tap breve, non long-press
+            if (!isSwipe && isQuickTap) {
+                if (Math.abs(dy) < 15 && now - ttLastTap < 300 && ttLastTap > 0) {
+                    // Vero double tap: attiva il like
+                    const posts = state.posts.filter(p => !state.hiddenPosts.includes(p.id));
+                    if (posts.length) {
+                        const post = posts[state.tiktokIdx % posts.length];
+                        ttReact(post.id, "❤️");
+                        const tapX = e.changedTouches[0].clientX;
+                        const tapY = e.changedTouches[0].clientY;
+                        showDoubleTapHeart(tapX, tapY);
+                    }
+                    ttLastTap = 0; // reset dopo double tap per evitare triplo tap
+                } else {
+                    ttLastTap = now;
                 }
+            } else {
+                // Swipe o long-press: resetta il timer del tap per non sporcare il double tap
+                ttLastTap = 0;
             }
-            ttLastTap = now;
-            if (dy > 60) ttNext();
-            else if (dy < -60) ttPrev();
+            if (isSwipe && dy > 60) ttNext();
+            else if (isSwipe && dy < -60) ttPrev();
             ttTouchStartY = null;
         }
         function ttNext() {
