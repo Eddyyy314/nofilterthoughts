@@ -2819,7 +2819,7 @@
             const topRx = REACTIONS.map(e => ({ emoji: e, count: rxList.filter(r => r.emoji === e).length, mine: rxList.some(r => r.emoji === e && r.reactor_id === deviceId) })).filter(r => r.count > 0).sort((a, b) => b.count - a.count).slice(0, 4);
             const textSize = post.text.length > 200 ? 15 : post.text.length > 100 ? 17 : 19;
             return `
-    <div class="tiktok-view" ontouchstart="ttTouchStart(event)" ontouchend="ttTouchEnd(event)">
+    <div class="tiktok-view" id="tiktok-view-inner">
       <div class="tiktok-post${s.tiktokDir === "up" ? " exit-up" : s.tiktokDir === "down" ? " exit-down" : s.tiktokDir === "enter-bottom" ? " enter-from-bottom" : s.tiktokDir === "enter-top" ? " enter-from-top" : ""}">
         <div style="position:absolute;top:0;left:0;right:0;height:100%;background:linear-gradient(to bottom,rgba(0,0,0,0.2) 0%,transparent 30%,transparent 50%,rgba(0,0,0,0.7) 100%);"></div>
         <div style="position:absolute;top:0;left:0;right:0;padding:18px 20px;display:flex;align-items:center;justify-content:space-between;z-index:2;">
@@ -2920,45 +2920,52 @@
         }
         function closeTiktok() { state.tiktokOpen = false; render(); }
 
-        let ttTouchStartY = null, ttLastTap = 0, ttScrolling = false;
+        let ttTouchStartY = null, ttLastTap = 0, ttLocked = false;
+
         function ttTouchStart(e) {
-            // Non registrare touch su elementi interattivi
             if (e.target.closest("button,input,textarea,a")) return;
-            // Blocca input se stiamo animando uno scroll
-            if (ttScrolling) return;
+            if (ttLocked) return;
             ttTouchStartY = e.touches[0].clientY;
         }
         function ttTouchEnd(e) {
             if (ttTouchStartY === null) return;
+            if (e.target.closest("button,input,textarea,a")) { ttTouchStartY = null; return; }
             const dy = ttTouchStartY - e.changedTouches[0].clientY;
             const now = Date.now();
             ttTouchStartY = null;
 
             if (Math.abs(dy) > 60) {
-                // Swipe - blocca nuovi touch per 750ms (durata animazione)
-                ttScrolling = true;
                 ttLastTap = 0;
-                setTimeout(() => { ttScrolling = false; }, 750);
+                ttLocked = true;
+                setTimeout(() => { ttLocked = false; }, 800);
                 if (dy > 0) ttNext();
                 else ttPrev();
                 return;
             }
-
             if (Math.abs(dy) < 15) {
-                // Tap sul background: double tap = like
                 if (ttLastTap > 0 && now - ttLastTap < 300) {
+                    ttLastTap = 0;
                     const posts = state.posts.filter(p => !state.hiddenPosts.includes(p.id));
                     if (posts.length) {
                         const post = posts[state.tiktokIdx % posts.length];
                         ttReact(post.id, "❤️");
                         showDoubleTapHeart(e.changedTouches[0].clientX, e.changedTouches[0].clientY);
                     }
-                    ttLastTap = 0;
                 } else {
                     ttLastTap = now;
                 }
             }
         }
+
+        // Attacca i listener UNA VOLTA SOLA al body — sopravvivono ai re-render
+        document.addEventListener("touchstart", function(e) {
+            if (!state.tiktokOpen) return;
+            if (e.target.closest("#tiktok-view-container")) ttTouchStart(e);
+        }, { passive: true });
+        document.addEventListener("touchend", function(e) {
+            if (!state.tiktokOpen) return;
+            if (e.target.closest("#tiktok-view-container")) ttTouchEnd(e);
+        }, { passive: true });
         function ttNext() {
             const posts = state.posts.filter(p => !state.hiddenPosts.includes(p.id));
             if (!posts.length) return;
@@ -2967,7 +2974,6 @@
                 state.tiktokIdx = (state.tiktokIdx + 1) % posts.length;
                 state.tiktokDir = "enter-bottom"; state.tiktokShowComment = false; state.tiktokCommentInput = ""; state.tiktokReactPickerOpen = false;
                 render();
-                // Resetta dir dopo animazione: evita che render successivi rianimino il post
                 setTimeout(() => { state.tiktokDir = null; }, 400);
             }, 300);
         }
@@ -2979,7 +2985,6 @@
                 state.tiktokIdx = (state.tiktokIdx - 1 + posts.length) % posts.length;
                 state.tiktokDir = "enter-top"; state.tiktokShowComment = false; state.tiktokCommentInput = ""; state.tiktokReactPickerOpen = false;
                 render();
-                // Resetta dir dopo animazione: evita che render successivi rianimino il post
                 setTimeout(() => { state.tiktokDir = null; }, 400);
             }, 300);
         }
