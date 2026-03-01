@@ -2824,7 +2824,7 @@
         <div style="position:absolute;top:0;left:0;right:0;height:100%;background:linear-gradient(to bottom,rgba(0,0,0,0.2) 0%,transparent 30%,transparent 50%,rgba(0,0,0,0.7) 100%);"></div>
         <div style="position:absolute;top:0;left:0;right:0;padding:18px 20px;display:flex;align-items:center;justify-content:space-between;z-index:2;">
           <div style="font-family:'Bebas Neue',cursive;font-size:17px;letter-spacing:3px;color:#fff;">NO FILTER</div>
-          <button onclick="closeTiktok()" style="background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.2);border-radius:8px;color:rgba(255,255,255,0.8);font-family:'DM Mono',monospace;font-size:12px;padding:6px 12px;cursor:pointer;backdrop-filter:blur(4px);transition:all 0.2s;">${I.X} chiudi</button>
+          <button ontouchstart="event.stopPropagation()" onclick="closeTiktok()" style="background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.2);border-radius:8px;color:rgba(255,255,255,0.8);font-family:'DM Mono',monospace;font-size:12px;padding:6px 12px;cursor:pointer;backdrop-filter:blur(4px);transition:all 0.2s;">${I.X} chiudi</button>
         </div>
         <div style="position:absolute;top:50%;right:20px;transform:translateY(-50%);display:flex;flex-direction:column;align-items:center;gap:4px;z-index:2;">
           <div style="font-size:11px;color:rgba(255,255,255,0.3);font-family:'DM Mono',monospace;">${(s.tiktokIdx % posts.length) + 1}/${posts.length}</div>
@@ -2836,7 +2836,7 @@
           </div>
           <p style="font-size:${textSize}px;line-height:1.55;color:#fff;font-family:'DM Mono',monospace;margin-bottom:16px;font-weight:${post.text.length < 60 ? 500 : 400};">${escHtml(post.text)}</p>
           <div style="font-size:10px;color:rgba(255,255,255,0.3);margin-bottom:18px;display:flex;align-items:center;gap:5px;">${I.ClockSm} ${timeAgo(post.created_at)} · scade tra ${expiresIn(post.created_at)}</div>
-          <div style="display:flex;gap:7px;flex-wrap:wrap;align-items:center;margin-bottom:13px;position:relative;">
+          <div ontouchstart="event.stopPropagation()" style="display:flex;gap:7px;flex-wrap:wrap;align-items:center;margin-bottom:13px;position:relative;">
             ${topRx.map(({ emoji, count, mine }) => `<button onclick="ttReact('${post.id}','${emoji}')" style="background:${mine ? "#fff" : "rgba(255,255,255,0.08)"};border:1px solid ${mine ? "#fff" : "rgba(255,255,255,0.15)"};color:${mine ? "#000" : "#fff"};padding:6px 12px;border-radius:18px;font-size:13px;cursor:pointer;display:flex;align-items:center;gap:4px;transition:all 0.2s;font-family:'DM Mono',monospace;">${emoji} ${count}</button>`).join("")}
             <div style="position:relative;">
               <button onclick="toggleTtReactPicker()" style="background:${myRx ? "#fff" : "rgba(255,255,255,0.08)"};border:1px solid ${myRx ? "#fff" : "rgba(255,255,255,0.2)"};color:${myRx ? "#000" : "rgba(255,255,255,0.7)"};padding:6px 14px;border-radius:18px;font-size:12px;cursor:pointer;font-family:'DM Mono',monospace;transition:all 0.2s;">${myRx ? "✓ react" : "+ react"}</button>
@@ -2848,13 +2848,13 @@
               `: ""}
             </div>
           </div>
-          <div style="display:flex;gap:8px;margin-bottom:${s.tiktokShowComment ? 14 : 0}px;">
+          <div ontouchstart="event.stopPropagation()" style="display:flex;gap:8px;margin-bottom:${s.tiktokShowComment ? 14 : 0}px;">
             <button onclick="toggleTtComment()" style="background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);color:rgba(255,255,255,0.7);padding:8px 16px;border-radius:9px;font-size:12px;cursor:pointer;font-family:'DM Mono',monospace;display:flex;align-items:center;gap:6px;transition:all 0.2s;">${I.Msg} ${postComments.length > 0 ? postComments.length + " commenti" : "Commenta"}</button>
             <button onclick="ttHide('${post.id}')" style="background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);color:rgba(255,255,255,0.4);padding:8px 12px;border-radius:9px;font-size:12px;cursor:pointer;font-family:'DM Mono',monospace;display:flex;align-items:center;gap:5px;transition:all 0.2s;">${I.EyeOff}</button>
             <button onclick="ttChallenge('${post.id}')" style="background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);color:rgba(255,255,255,0.6);padding:8px 12px;border-radius:9px;font-size:12px;cursor:pointer;font-family:'DM Mono',monospace;display:flex;align-items:center;gap:5px;transition:all 0.2s;">${I.Sword}</button>
           </div>
           ${s.tiktokShowComment ? `
-            <div style="background:rgba(0,0,0,0.45);border-radius:12px;padding:10px 12px;margin-bottom:10px;max-height:150px;overflow-y:auto;animation:su 0.2s ease;">
+            <div ontouchstart="event.stopPropagation()" ontouchmove="event.stopPropagation()" style="background:rgba(0,0,0,0.45);border-radius:12px;padding:10px 12px;margin-bottom:10px;max-height:150px;overflow-y:auto;animation:su 0.2s ease;">
               ${postComments.length > 0 ? postComments.map(c => `
                 <div style="margin-bottom:8px;border-bottom:1px solid rgba(255,255,255,0.07);padding-bottom:8px;">
                   <div style="font-size:10px;color:rgba(255,255,255,0.35);margin-bottom:2px;">${escHtml(c.author)} · ${timeAgo(c.created_at)}</div>
@@ -2862,14 +2862,14 @@
                 </div>
               `).join("") : `<div style="font-size:12px;color:rgba(255,255,255,0.3);text-align:center;padding:6px 0;">Nessun commento ancora.</div>`}
             </div>
-            <div style="display:flex;gap:6px;animation:su 0.2s ease;">
+            <div ontouchstart="event.stopPropagation()" style="display:flex;gap:6px;animation:su 0.2s ease;">
               <input id="tt-comment" placeholder="Scrivi un commento..." value="${escHtml(s.tiktokCommentInput)}" oninput="state.tiktokCommentInput=this.value" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();ttSubmitComment('${post.id}');}" autofocus style="background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.15);color:#fff;font-size:12px;padding:9px 12px;border-radius:8px;"/>
               <button class="btn-sm" onclick="ttSubmitComment('${post.id}')" style="flex-shrink:0;background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.2);">→</button>
             </div>
           `: ""}
         </div>
         <div style="position:absolute;bottom:32px;right:24px;z-index:2;">
-          <button onclick="ttNext()" style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);border-radius:12px;padding:11px 18px;color:rgba(255,255,255,0.5);font-family:'DM Mono',monospace;font-size:11px;cursor:pointer;display:flex;align-items:center;gap:5px;backdrop-filter:blur(4px);transition:all 0.2s;letter-spacing:.5px;">SKIP ↑</button>
+          <button ontouchstart="event.stopPropagation()" onclick="ttNext()" style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);border-radius:12px;padding:11px 18px;color:rgba(255,255,255,0.5);font-family:'DM Mono',monospace;font-size:11px;cursor:pointer;display:flex;align-items:center;gap:5px;backdrop-filter:blur(4px);transition:all 0.2s;letter-spacing:.5px;">SKIP ↑</button>
         </div>
       </div>
     </div>
@@ -2920,35 +2920,34 @@
         }
         function closeTiktok() { state.tiktokOpen = false; render(); }
 
-        let ttTouchStartY = null, ttLastTap = 0, ttTouchStartTime = 0;
-        function ttTouchStart(e) { ttTouchStartY = e.touches[0].clientY; ttTouchStartTime = Date.now(); }
+        let ttTouchStartY = null, ttLastTap = 0;
+        function ttTouchStart(e) {
+            // Solo registra se il touch parte su sfondo (non su elementi interattivi)
+            if (e.target.closest("button,input,textarea,a")) return;
+            ttTouchStartY = e.touches[0].clientY;
+        }
         function ttTouchEnd(e) {
             if (ttTouchStartY === null) return;
             const dy = ttTouchStartY - e.changedTouches[0].clientY;
             const now = Date.now();
             const isSwipe = Math.abs(dy) > 60;
-            const isQuickTap = (now - ttTouchStartTime) < 250; // tap breve, non long-press
-            if (!isSwipe && isQuickTap) {
-                if (Math.abs(dy) < 15 && now - ttLastTap < 300 && ttLastTap > 0) {
-                    // Vero double tap: attiva il like
+            if (isSwipe) {
+                ttLastTap = 0;
+                if (dy > 60) ttNext();
+                else ttPrev();
+            } else if (Math.abs(dy) < 15) {
+                if (ttLastTap > 0 && now - ttLastTap < 300) {
                     const posts = state.posts.filter(p => !state.hiddenPosts.includes(p.id));
                     if (posts.length) {
                         const post = posts[state.tiktokIdx % posts.length];
                         ttReact(post.id, "❤️");
-                        const tapX = e.changedTouches[0].clientX;
-                        const tapY = e.changedTouches[0].clientY;
-                        showDoubleTapHeart(tapX, tapY);
+                        showDoubleTapHeart(e.changedTouches[0].clientX, e.changedTouches[0].clientY);
                     }
-                    ttLastTap = 0; // reset dopo double tap per evitare triplo tap
+                    ttLastTap = 0;
                 } else {
                     ttLastTap = now;
                 }
-            } else {
-                // Swipe o long-press: resetta il timer del tap per non sporcare il double tap
-                ttLastTap = 0;
             }
-            if (isSwipe && dy > 60) ttNext();
-            else if (isSwipe && dy < -60) ttPrev();
             ttTouchStartY = null;
         }
         function ttNext() {
