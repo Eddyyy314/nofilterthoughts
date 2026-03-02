@@ -1361,33 +1361,6 @@
       box-shadow: 0 2px 20px rgba(0, 0, 0, 0.06);
     }
 
-    /* ── Custom Cursor ── */
-    @media (min-width:900px) {
-      #custom-cursor {
-        position: fixed;
-        width: 10px;
-        height: 10px;
-        border-radius: 50%;
-        background: #0a0a0a;
-        pointer-events: none;
-        z-index: 99999;
-        mix-blend-mode: multiply;
-        transition: transform 0.12s ease, opacity 0.2s, width 0.2s, height 0.2s;
-        transform: translate(-50%, -50%);
-        opacity: 0;
-      }
-
-      #custom-cursor.visible {
-        opacity: 1;
-      }
-
-      #custom-cursor.big {
-        width: 28px;
-        height: 28px;
-        opacity: 0.18;
-      }
-    }
-
     /* ── GDPR Cookie Banner ── */
     #gdpr-banner {
       position: fixed;
@@ -1625,9 +1598,6 @@
 
   <!-- Progress bar -->
   <div id="nprogress"></div>
-
-  <!-- Custom cursor (desktop) -->
-  <div id="custom-cursor"></div>
 
   <!-- Background decorative streaks -->
   <div id="bg-streaks"></div>
@@ -2539,13 +2509,17 @@
     /* ── My Activity ── */
     function calcMyUnfilteredScore() {
       const s = state;
-      // +2 per ogni reazione ricevuta sui miei post, +1 per ogni post pubblicato nelle ultime 24h
+      // +2 per ogni reazione ricevuta sui miei post, +1 per ogni post pubblicato nelle ultime 24h, +1.5 per ogni reazione ricevuta sui miei commenti
       let rxReceived = 0;
       s.myPosts.forEach(p => {
         const rxList = s.reactions[p.id] || [];
         rxReceived += rxList.length;
       });
-      return (rxReceived * 2) + s.myPosts.length;
+      let commentRxReceived = 0;
+      (s.myComments || []).forEach(c => {
+        commentRxReceived += (s.commentReactions[c.id] || []).length;
+      });
+      return Math.round(rxReceived * 2 + s.myPosts.length + commentRxReceived * 1.5);
     }
 
     function buildMyActivity() {
@@ -2591,7 +2565,7 @@
         <div style="height:100%;background:#0a0a0a;border-radius:2px;width:${Math.min(100, (myScore / Math.max(1, myScore + 20)) * 100)}%;transition:width 0.6s cubic-bezier(.22,1,.36,1);"></div>
       </div>
       <div style="font-size:11px;color:#bbb;line-height:1.7;">
-        +2 per ogni reazione ricevuta · +1 per ogni post
+        +2 per ogni reazione ricevuta · +1 per ogni post · +1.5 per reazioni ai commenti
       </div>
     </div>
 
@@ -3392,63 +3366,68 @@
 
       // Group by author
       const authorMap = {};
+      const pidAuthor = {};
       posts7.forEach(p => {
         const id = String(p.id);
+        pidAuthor[id] = p.author;
         if (!authorMap[p.author]) authorMap[p.author] = { author: p.author, postIds: [], postCount: 0, rxReceived: 0, commentRxReceived: 0 };
         authorMap[p.author].postIds.push(id);
         authorMap[p.author].postCount++;
       });
 
+      const allIds = Object.keys(pidAuthor);
+
       // Load reactions for all post ids
-      const allIds = posts7.map(p => String(p.id));
       const { data: allRx } = await sb.from("reactions").select("post_id").in("post_id", allIds);
       if (allRx) {
-        // build postId -> author map
-        const pidAuthor = {};
-        posts7.forEach(p => { pidAuthor[String(p.id)] = p.author; });
         allRx.forEach(r => {
           const auth = pidAuthor[String(r.post_id)];
           if (auth && authorMap[auth]) authorMap[auth].rxReceived++;
         });
       }
 
-      // Load comments and their reactions - reactions on comments also boost the commenter's score
-      // AND give a small boost to the original post author (interaction engagement)
+      // Load comments in these posts (no date filter on comments — we want all comments on these posts)
       const { data: allComments } = await sb.from("comments")
         .select("id,post_id,author")
-        .in("post_id", allIds)
-        .gte("created_at", cutoff7);
+        .in("post_id", allIds);
 
       if (allComments && allComments.length) {
-        const commentIds = allComments.map(c => String(c.id));
-        const pidAuthor = {};
-        posts7.forEach(p => { pidAuthor[String(p.id)] = p.author; });
         const cidAuthor = {};
-        allComments.forEach(c => { cidAuthor[String(c.id)] = c.author; });
-
-        // Ensure commenters are in authorMap
+        const cidPostId = {};
         allComments.forEach(c => {
+          const cid = String(c.id);
+          cidAuthor[cid] = c.author;
+          cidPostId[cid] = String(c.post_id);
+          // Ensure commenters exist in authorMap (they can earn points too)
           if (!authorMap[c.author]) authorMap[c.author] = { author: c.author, postIds: [], postCount: 0, rxReceived: 0, commentRxReceived: 0 };
         });
 
-        const { data: crData } = await sb.from("comment_reactions").select("comment_id,post_id").in("post_id", allIds);
-        if (crData) {
-          crData.forEach(r => {
-            const commenterId = cidAuthor[String(r.comment_id)];
-            const postAuthor = pidAuthor[String(r.post_id)];
-            // Reaction on comment → boosts commenter score
-            if (commenterId && authorMap[commenterId]) authorMap[commenterId].commentRxReceived++;
-            // Also small boost to post author for engagement on their post
-            if (postAuthor && authorMap[postAuthor]) authorMap[postAuthor].rxReceived += 0.5;
-          });
+        const commentIds = Object.keys(cidAuthor);
+        if (commentIds.length) {
+          // Load comment reactions by comment_id (more reliable than post_id)
+          const { data: crData } = await sb.from("comment_reactions").select("comment_id,post_id").in("comment_id", commentIds);
+          if (crData) {
+            crData.forEach(r => {
+              const cid = String(r.comment_id);
+              const commenterAuthor = cidAuthor[cid];
+              const postId = cidPostId[cid] || String(r.post_id);
+              const postAuthor = pidAuthor[postId];
+              // Reaction on comment → boosts commenter score
+              if (commenterAuthor && authorMap[commenterAuthor]) authorMap[commenterAuthor].commentRxReceived++;
+              // Also small boost to post author for engagement on their post
+              if (postAuthor && authorMap[postAuthor] && postAuthor !== commenterAuthor) {
+                authorMap[postAuthor].rxReceived += 0.5;
+              }
+            });
+          }
         }
       }
 
-      // Compute score and sort: post reactions × 2, post count × 1, comment reactions × 1.5, comment rx on own post × 0.5 (already added above)
+      // Score: post reactions × 2, post count × 1, comment reactions × 1.5
       const ranked = Object.values(authorMap).map(a => ({
         ...a,
         score: Math.round(a.rxReceived * 2 + a.postCount + (a.commentRxReceived || 0) * 1.5)
-      })).sort((a, b) => b.score - a.score).slice(0, 20);
+      })).filter(a => a.score > 0 || a.postCount > 0).sort((a, b) => b.score - a.score).slice(0, 20);
 
       state.topAccounts = ranked;
       render();
@@ -3485,24 +3464,6 @@
     function gdprAccept() { localStorage.setItem("nf_gdpr", "accepted"); document.getElementById("gdpr-banner").style.display = "none"; }
     function gdprReject() { localStorage.setItem("nf_gdpr", "essential"); document.getElementById("gdpr-banner").style.display = "none"; }
     function initGDPR() { if (!localStorage.getItem("nf_gdpr")) { setTimeout(() => { const b = document.getElementById("gdpr-banner"); if (b) b.style.display = "flex"; }, 1200); } }
-
-    /* ── Custom Cursor ── */
-    (function initCursor() {
-      if (window.innerWidth < 900) return;
-      const c = document.getElementById("custom-cursor");
-      if (!c) return;
-      let mx = 0, my = 0, cx = 0, cy = 0;
-      document.addEventListener("mousemove", e => {
-        mx = e.clientX; my = e.clientY;
-        c.classList.add("visible");
-      });
-      function loop() { cx += (mx - cx) * 0.18; cy += (my - cy) * 0.18; c.style.left = cx + "px"; c.style.top = cy + "px"; requestAnimationFrame(loop); }
-      loop();
-      document.addEventListener("mouseover", e => {
-        if (e.target.closest("button") || e.target.closest("a") || e.target.closest("[onclick]")) c.classList.add("big");
-        else c.classList.remove("big");
-      });
-    })();
 
     /* ── Ripple Effect on buttons ── */
     document.addEventListener("click", function (e) {
