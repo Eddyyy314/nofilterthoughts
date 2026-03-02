@@ -2286,7 +2286,7 @@
       <span style="font-family:'Bebas Neue',cursive;font-size:20px;letter-spacing:2px;">⚔️ DUELLI</span>
       <button class="btn-sm" onclick="openCreate('duel')">+ Lancia</button>
     </div>
-    <div style="font-size:11px;color:#bbb;margin-bottom:14px;">Vota il lato che senti tuo. I duelli scadono in 24h.</div>
+    <div style="font-size:11px;color:#bbb;margin-bottom:14px;">Vota il lato che senti tuo. </div>
     ${s.duels.length === 0 ? `<div style="text-align:center;padding:60px;color:#bbb;"><div style="font-size:24px;margin-bottom:10px;">—</div><div style="font-size:13px;">Nessun duello attivo. Lanciane uno.</div></div>` : ""}
     ${s.duels.map((d, i) => buildDuelCard(d, i)).join("")}
   `;
