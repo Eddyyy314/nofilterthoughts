@@ -2857,12 +2857,12 @@
       return `
     <div class="overlay" onclick="event.target===this&&cancelReportPost()">
       <div class="sheet ${isDesk ? "sheet-desktop" : "sheet-mobile"}" onclick="event.stopPropagation()" style="max-width:380px;text-align:center;">
-        <div style="font-size:28px;margin-bottom:10px;">🚩</div>
+        <div style="width:48px;height:48px;border-radius:50%;background:#f5f5f5;border:1px solid #e8e8e8;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;color:#555;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"></path><line x1="4" y1="22" x2="4" y2="15"></line></svg></div>
         <div style="font-family:'Bebas Neue',cursive;font-size:18px;letter-spacing:1.5px;margin-bottom:8px;">SEGNALA POST</div>
-        <p style="font-size:13px;color:#555;line-height:1.6;margin-bottom:20px;">Sei sicuro di voler segnalare questo post? Non lo vedrai più.<br><span style="font-size:11px;color:#bbb;">A 10 segnalazioni il post viene rimosso automaticamente.</span></p>
+        <p style="font-size:13px;color:#555;line-height:1.6;margin-bottom:20px;">Sei sicuro di voler segnalare questo post? Non lo vedrai più.</p>
         <div style="display:flex;gap:8px;">
           <button class="btn-o" style="flex:1;" onclick="cancelReportPost()">Annulla</button>
-          <button class="btn" style="flex:2;background:#cc2222;" onclick="confirmReportPost('${postId}')">🚩 Segnala</button>
+          <button class="btn" style="flex:2;background:#cc2222;" onclick="confirmReportPost('${postId}')">${I.Flag} Segnala</button>
         </div>
       </div>
     </div>
@@ -3099,7 +3099,23 @@
     function toggleCommentReactPicker(commentId) { state.reactPickerComment = state.reactPickerComment === commentId ? null : commentId; render(); }
     async function commentReactAndClose(postId, commentId, emoji) { await toggleCommentReactionAsync(postId, commentId, emoji); state.reactPickerComment = null; render(); }
     async function toggleCommentReaction(postId, commentId, emoji) { await toggleCommentReactionAsync(postId, commentId, emoji); render(); }
-    async function toggleCommentReactionAsync(postId, commentId, emoji) { const myRx = (state.commentReactions[commentId] || []).find(r => r.reactor_id === deviceId && r.emoji === emoji); if (myRx) await sb.from("comment_reactions").delete().eq("id", myRx.id); else await sb.from("comment_reactions").insert({ comment_id: commentId, post_id: postId, emoji, reactor_id: deviceId }); }
+    async function toggleCommentReactionAsync(postId, commentId, emoji) {
+      const myRx = (state.commentReactions[commentId] || []).find(r => r.reactor_id === deviceId && r.emoji === emoji);
+      if (myRx) {
+        state.commentReactions = { ...state.commentReactions, [commentId]: (state.commentReactions[commentId] || []).filter(r => r.id !== myRx.id) };
+        render();
+        await sb.from("comment_reactions").delete().eq("id", myRx.id);
+      } else {
+        const tempId = "tmp_" + Date.now();
+        state.commentReactions = { ...state.commentReactions, [commentId]: [...(state.commentReactions[commentId] || []), { id: tempId, comment_id: commentId, post_id: postId, emoji, reactor_id: deviceId }] };
+        render();
+        const { data } = await sb.from("comment_reactions").insert({ comment_id: commentId, post_id: postId, emoji, reactor_id: deviceId }).select().single();
+        if (data) {
+          state.commentReactions = { ...state.commentReactions, [commentId]: (state.commentReactions[commentId] || []).map(r => r.id === tempId ? { ...data, id: String(data.id), comment_id: String(data.comment_id) } : r) };
+          render();
+        }
+      }
+    }
     function setReplyingTo(postId, commentId, author) { if (state.replyingTo?.postId === postId && state.replyingTo?.commentId === commentId) state.replyingTo = null; else { state.replyingTo = { postId, commentId, author }; state.replyText = ""; } render(); if (state.replyingTo) setTimeout(() => { const el = document.getElementById("reply-" + commentId); if (el) el.focus(); }, 50); }
 
     async function submitReply(postId, commentId) {
@@ -3136,11 +3152,11 @@
           await sb.from("posts").delete().eq("id", postId);
         }
       } catch(e) { /* table might not exist yet, just ignore */ }
-      showToast("Post segnalato 🚩");
+      showToast("Post segnalato.");
       render();
     }
     function cancelReportPost() { state.reportConfirmPostId = null; render(); }
-    function reportComment(commentId) { const u = [...state.reportedComments, commentId]; state.reportedComments = u; localStorage.setItem("nofilter_reported_comments", JSON.stringify(u.slice(-500))); showToast("Commento segnalato 🚩"); render(); }
+    function reportComment(commentId) { const u = [...state.reportedComments, commentId]; state.reportedComments = u; localStorage.setItem("nofilter_reported_comments", JSON.stringify(u.slice(-500))); showToast("Commento segnalato."); render(); }
     function toggleCompact() { const s = { ...state.settings, compactMode: !state.settings.compactMode }; state.settings = s; saveSettings(s); render(); }
     function resetData() { localStorage.clear(); window.location.reload(); }
     function addPollOption() { if (state.newPoll.options.length < 5) { state.newPoll.options.push(""); render(); } }
@@ -3323,7 +3339,28 @@
     async function votePoll(pollId, optIdx) { const pv = state.pollVotes[pollId]; if (pv?.myVote !== null && pv?.myVote !== undefined) return; const { error } = await sb.from("poll_votes").insert({ poll_id: pollId, option_index: optIdx, voter_id: deviceId }); if (error) showToast("Errore voto.", true); }
     async function voteDuel(duelId, side) { const dv = state.duelVotes[duelId]; if (dv?.myVote !== null && dv?.myVote !== undefined) return; const { error } = await sb.from("poll_votes").insert({ poll_id: duelId, option_index: side, voter_id: deviceId }); if (error) showToast("Errore.", true); }
 
-    async function toggleReactionAsync(postId, emoji) { const myRx = (state.reactions[postId] || []).find(r => r.reactor_id === deviceId && r.emoji === emoji); if (myRx) await sb.from("reactions").delete().eq("id", myRx.id); else { await sb.from("reactions").insert({ post_id: postId, emoji, reactor_id: deviceId }); addMyReacted(postId); } }
+    async function toggleReactionAsync(postId, emoji) {
+      const myRx = (state.reactions[postId] || []).find(r => r.reactor_id === deviceId && r.emoji === emoji);
+      if (myRx) {
+        // Optimistic remove
+        state.reactions = { ...state.reactions, [postId]: (state.reactions[postId] || []).filter(r => r.id !== myRx.id) };
+        render();
+        await sb.from("reactions").delete().eq("id", myRx.id);
+      } else {
+        // Optimistic add
+        const tempId = "tmp_" + Date.now();
+        const newRx = { id: tempId, post_id: postId, emoji, reactor_id: deviceId };
+        state.reactions = { ...state.reactions, [postId]: [...(state.reactions[postId] || []), newRx] };
+        addMyReacted(postId);
+        render();
+        const { data } = await sb.from("reactions").insert({ post_id: postId, emoji, reactor_id: deviceId }).select().single();
+        if (data) {
+          // Replace temp with real record
+          state.reactions = { ...state.reactions, [postId]: (state.reactions[postId] || []).map(r => r.id === tempId ? { ...data, id: String(data.id), post_id: String(data.post_id) } : r) };
+          render();
+        }
+      }
+    }
     async function addCommentAsync(postId, text) { if (!text.trim() || text.trim().length < 2) return false; const post = state.posts.find(p => p.id === postId) || state.hotPosts.find(p => p.id === postId); if (!post) return false; const { error } = await sb.from("comments").insert({ post_id: postId, group_id: state.currentGroupId, language: post.language || LANG, category: post.category, mood: post.mood, author: userName, text: text.trim(), commenter_id: deviceId }); if (error) { showToast("Errore commento.", true); return false; } return true; }
 
     function showToast(msg, err = false) { state.toast = { msg, err }; render(); setTimeout(() => { state.toast = null; render(); }, 2600); }
