@@ -1596,6 +1596,156 @@
 
 <body>
 
+  <!-- ── INTRO ANIMATION OVERLAY ── -->
+  <div id="nf-intro">
+    <div id="nf-intro-text"></div>
+  </div>
+
+  <style>
+    #nf-intro {
+      position: fixed;
+      inset: 0;
+      background: #000;
+      z-index: 99999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      pointer-events: all;
+      transition: background 0.55s ease, opacity 0.55s ease;
+    }
+    #nf-intro.invert {
+      background: #fff;
+    }
+    #nf-intro.fade-out {
+      opacity: 0;
+      pointer-events: none;
+    }
+    #nf-intro-text {
+      font-family: 'Bebas Neue', cursive;
+      font-size: clamp(48px, 12vw, 120px);
+      letter-spacing: 0.12em;
+      color: #fff;
+      transition: color 0.55s ease;
+      user-select: none;
+      will-change: color;
+    }
+    #nf-intro.invert #nf-intro-text {
+      color: #000;
+    }
+  </style>
+
+  <script>
+  (function() {
+    // ── Skip if already seen this session ──
+    if (sessionStorage.getItem("nf_intro_seen")) {
+      document.getElementById("nf-intro").remove();
+      return;
+    }
+    sessionStorage.setItem("nf_intro_seen", "1");
+
+    const GLITCH_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ#@!?*%&=+~^<>/\\|";
+    const TARGET = "NO FILTER";
+    const el = document.getElementById("nf-intro-text");
+    const overlay = document.getElementById("nf-intro");
+
+    let frame;
+    const rnd = () => GLITCH_CHARS[Math.floor(Math.random() * GLITCH_CHARS.length)];
+
+    let startTime = null;
+    const CHAOS_DURATION = 900;
+    const RESOLVE_DURATION = 1100;
+
+    function animatePhase1(ts) {
+      if (!startTime) startTime = ts;
+      const elapsed = ts - startTime;
+      const len = TARGET.length + Math.floor(Math.random() * 3) - 1;
+      el.textContent = Array.from({length: Math.max(6, len)}, rnd).join("");
+      if (elapsed < CHAOS_DURATION) {
+        frame = requestAnimationFrame(animatePhase1);
+      } else {
+        startTime = null;
+        frame = requestAnimationFrame(animatePhase2);
+      }
+    }
+
+    function animatePhase2(ts) {
+      if (!startTime) startTime = ts;
+      const elapsed = ts - startTime;
+      const progress = Math.min(elapsed / RESOLVE_DURATION, 1);
+      const numResolved = Math.floor(progress * TARGET.length);
+      let display = "";
+      for (let i = 0; i < TARGET.length; i++) {
+        display += i < numResolved ? TARGET[i] : (TARGET[i] === " " ? " " : rnd());
+      }
+      el.textContent = display;
+      if (progress < 1) {
+        frame = requestAnimationFrame(animatePhase2);
+      } else {
+        el.textContent = TARGET;
+        // Short pause, then invert
+        setTimeout(() => {
+          overlay.classList.add("invert");
+          // After invert settles, fly the text to the topbar logo position
+          setTimeout(() => flyToLogo(), 400);
+        }, 200);
+      }
+    }
+
+    function flyToLogo() {
+      // Get destination: the topbar logo element
+      const logoEl = document.getElementById("topbar-logo");
+
+      // Current center of intro text
+      const fromRect = el.getBoundingClientRect();
+
+      // Destination rect — wait for render, topbar-logo might not exist yet
+      // so we approximate: top-left, ~22px font, padding 14px
+      let toX, toY, toSize;
+      if (logoEl) {
+        const toRect = logoEl.getBoundingClientRect();
+        toX = toRect.left + toRect.width / 2;
+        toY = toRect.top + toRect.height / 2;
+        toSize = 22; // topbar logo font size
+      } else {
+        toX = 80;
+        toY = 28;
+        toSize = 22;
+      }
+
+      const fromX = fromRect.left + fromRect.width / 2;
+      const fromY = fromRect.top + fromRect.height / 2;
+      const fromSize = parseFloat(getComputedStyle(el).fontSize);
+
+      // Switch el to absolute positioning for the fly
+      el.style.position = "fixed";
+      el.style.left = fromX + "px";
+      el.style.top = fromY + "px";
+      el.style.transform = "translate(-50%, -50%)";
+      el.style.margin = "0";
+      el.style.transition = "left 0.55s cubic-bezier(.4,0,.2,1), top 0.55s cubic-bezier(.4,0,.2,1), font-size 0.55s cubic-bezier(.4,0,.2,1), opacity 0.55s ease";
+
+      // Force reflow then trigger animation
+      void el.offsetWidth;
+
+      el.style.left = toX + "px";
+      el.style.top = toY + "px";
+      el.style.fontSize = toSize + "px";
+      el.style.letterSpacing = "3px";
+      el.style.opacity = "0";
+
+      // Fade out overlay simultaneously
+      overlay.style.transition = "opacity 0.55s ease";
+      overlay.style.opacity = "0";
+
+      setTimeout(() => {
+        overlay.remove();
+      }, 600);
+    }
+
+    frame = requestAnimationFrame(animatePhase1);
+  })();
+  </script>
+
   <!-- Progress bar -->
   <div id="nprogress"></div>
 
