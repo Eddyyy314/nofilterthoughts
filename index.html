@@ -1554,6 +1554,35 @@
             animation: title-hard 0.45s steps(2) forwards;
         }
 
+        /* ── Logo swap in strip ── */
+        #strip-logo-swap {
+            display: none;
+            width: 72px;
+            height: 72px;
+            color: #0a0a0a;
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+        }
+        #strip-logo-swap.visible {
+            display: block;
+        }
+        @keyframes logo-glitch {
+            0%   { transform: translate(-50%,-50%) skewX(0deg);   opacity: 1;   filter: none; }
+            10%  { transform: translate(-53%,-50%) skewX(-8deg);  opacity: 0.7; filter: drop-shadow(3px 0 #ff003c) drop-shadow(-3px 0 #00eeff); }
+            20%  { transform: translate(-47%,-50%) skewX(6deg);   opacity: 0.9; filter: drop-shadow(-2px 0 #ff003c); }
+            35%  { transform: translate(-50%,-51%) skewX(-3deg);  opacity: 0.8; filter: drop-shadow(2px 0 #00eeff); }
+            50%  { transform: translate(-52%,-49%) skewX(5deg);   opacity: 1;   filter: drop-shadow(4px 0 #ff003c) drop-shadow(-4px 0 #00eeff); }
+            65%  { transform: translate(-49%,-50%) skewX(-2deg);  opacity: 0.85;filter: none; }
+            80%  { transform: translate(-51%,-50%) skewX(3deg);   opacity: 0.9; filter: drop-shadow(1px 0 #00eeff); }
+            100% { transform: translate(-50%,-50%) skewX(0deg);   opacity: 1;   filter: none; }
+        }
+        #strip-logo-swap.visible {
+            animation: logo-glitch 0.18s steps(1) infinite;
+        }
+
         @keyframes title-hard {
             0% {
                 transform: translate(-5px, 2px) skewX(-7deg);
@@ -1898,22 +1927,34 @@
             animation: nf-after-hard 0.6s steps(2) forwards;
         }
 
-        /* Loading skeleton */
+        /* Loading skeleton (kept for compatibility) */
         .skeleton {
             background: linear-gradient(90deg, #f0f0f0 25%, #e8e8e8 50%, #f0f0f0 75%);
             background-size: 200% 100%;
             animation: skeleton-wave 1.5s infinite;
             border-radius: 6px;
         }
-
         @keyframes skeleton-wave {
-            0% {
-                background-position: 200% center;
-            }
+            0% { background-position: 200% center; }
+            100% { background-position: -200% center; }
+        }
 
-            100% {
-                background-position: -200% center;
-            }
+        /* ── Logo loader ── */
+        .nf-loader {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 60px 20px;
+        }
+        .nf-loader svg {
+            width: 160px;
+            height: 160px;
+            animation: nf-pulse 1.4s ease-in-out infinite;
+        }
+        @keyframes nf-pulse {
+            0%   { opacity: 1;    transform: scale(1); }
+            50%  { opacity: 0.25; transform: scale(0.88); }
+            100% { opacity: 1;    transform: scale(1); }
         }
 
         /* Progress bar top (loading) */
@@ -2039,7 +2080,27 @@
 
     <!-- ── INTRO ANIMATION OVERLAY ── -->
     <div id="nf-intro">
-        <div id="nf-intro-text"></div>
+      <!-- Logo SVG phase -->
+      <div id="nf-intro-logo">
+        <svg id="nf-intro-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 3464 3464">
+          <g transform="translate(0,3464) scale(0.1,-0.1)" fill="currentColor" stroke="none">
+            <path d="M11366 22614 c-15 -14 -16 -515 -16 -5364 l0 -5350 23 -15 c21 -13 659 -15 6020 -13 4904 3 5998 5 6009 16 11 11 14 650 16 3470 1 1901 0 3484 -3 3517 -3 33 -10 67 -14 74 -11 17 -877 19 -894 2 -8 -8 -11 -579 -12 -1981 l-2 -1971 -22 -22 -22 -22 -3952 -3 c-2173 -1 -3966 0 -3984 3 -17 3 -41 13 -53 23 l-21 17 1 2255 c0 2000 2 2256 16 2270 13 13 571 15 5105 15 5038 0 5091 0 5105 -20 12 -16 14 -333 12 -2273 l-3 -2254 -24 -19 c-22 -18 -43 -19 -321 -19 -230 0 -300 -3 -308 -13 -17 -20 -19 -852 -2 -872 11 -13 105 -15 781 -15 749 0 769 0 779 19 7 14 10 1025 10 3195 0 3129 0 3175 -19 3186 -13 7 -365 10 -1069 10 -1003 0 -1050 1 -1065 18 -16 17 -17 105 -17 1066 0 703 -3 1054 -10 1067 -11 19 -89 19 -6020 19 -5449 0 -6010 -1 -6024 -16z m11109 -917 c22 -31 25 -118 23 -674 -3 -469 -5 -534 -19 -548 -14 -14 -427 -16 -4470 -16 -2810 1 -4460 -3 -4469 -9 -13 -8 -15 -373 -15 -3187 0 -1748 3 -3186 7 -3195 7 -17 228 -18 4452 -18 2759 0 4454 -4 4469 -9 14 -6 29 -20 34 -33 4 -13 7 -223 5 -468 -1 -245 -3 -507 -2 -583 0 -124 -2 -139 -20 -157 -20 -20 -33 -20 -5094 -20 -4841 0 -5075 1 -5096 18 l-22 17 2 4435 c0 3042 4 4438 11 4446 6 7 23 14 37 16 15 2 2305 3 5090 3 4912 0 5064 -1 5077 -18z"/>
+          </g>
+        </svg>
+        <!-- RGB ghost copies for glitch effect -->
+        <svg id="nf-intro-svg-r" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 3464 3464" aria-hidden="true">
+          <g transform="translate(0,3464) scale(0.1,-0.1)" fill="#ff003c" stroke="none">
+            <path d="M11366 22614 c-15 -14 -16 -515 -16 -5364 l0 -5350 23 -15 c21 -13 659 -15 6020 -13 4904 3 5998 5 6009 16 11 11 14 650 16 3470 1 1901 0 3484 -3 3517 -3 33 -10 67 -14 74 -11 17 -877 19 -894 2 -8 -8 -11 -579 -12 -1981 l-2 -1971 -22 -22 -22 -22 -3952 -3 c-2173 -1 -3966 0 -3984 3 -17 3 -41 13 -53 23 l-21 17 1 2255 c0 2000 2 2256 16 2270 13 13 571 15 5105 15 5038 0 5091 0 5105 -20 12 -16 14 -333 12 -2273 l-3 -2254 -24 -19 c-22 -18 -43 -19 -321 -19 -230 0 -300 -3 -308 -13 -17 -20 -19 -852 -2 -872 11 -13 105 -15 781 -15 749 0 769 0 779 19 7 14 10 1025 10 3195 0 3129 0 3175 -19 3186 -13 7 -365 10 -1069 10 -1003 0 -1050 1 -1065 18 -16 17 -17 105 -17 1066 0 703 -3 1054 -10 1067 -11 19 -89 19 -6020 19 -5449 0 -6010 -1 -6024 -16z m11109 -917 c22 -31 25 -118 23 -674 -3 -469 -5 -534 -19 -548 -14 -14 -427 -16 -4470 -16 -2810 1 -4460 -3 -4469 -9 -13 -8 -15 -373 -15 -3187 0 -1748 3 -3186 7 -3195 7 -17 228 -18 4452 -18 2759 0 4454 -4 4469 -9 14 -6 29 -20 34 -33 4 -13 7 -223 5 -468 -1 -245 -3 -507 -2 -583 0 -124 -2 -139 -20 -157 -20 -20 -33 -20 -5094 -20 -4841 0 -5075 1 -5096 18 l-22 17 2 4435 c0 3042 4 4438 11 4446 6 7 23 14 37 16 15 2 2305 3 5090 3 4912 0 5064 -1 5077 -18z"/>
+          </g>
+        </svg>
+        <svg id="nf-intro-svg-c" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 3464 3464" aria-hidden="true">
+          <g transform="translate(0,3464) scale(0.1,-0.1)" fill="#00eeff" stroke="none">
+            <path d="M11366 22614 c-15 -14 -16 -515 -16 -5364 l0 -5350 23 -15 c21 -13 659 -15 6020 -13 4904 3 5998 5 6009 16 11 11 14 650 16 3470 1 1901 0 3484 -3 3517 -3 33 -10 67 -14 74 -11 17 -877 19 -894 2 -8 -8 -11 -579 -12 -1981 l-2 -1971 -22 -22 -22 -22 -3952 -3 c-2173 -1 -3966 0 -3984 3 -17 3 -41 13 -53 23 l-21 17 1 2255 c0 2000 2 2256 16 2270 13 13 571 15 5105 15 5038 0 5091 0 5105 -20 12 -16 14 -333 12 -2273 l-3 -2254 -24 -19 c-22 -18 -43 -19 -321 -19 -230 0 -300 -3 -308 -13 -17 -20 -19 -852 -2 -872 11 -13 105 -15 781 -15 749 0 769 0 779 19 7 14 10 1025 10 3195 0 3129 0 3175 -19 3186 -13 7 -365 10 -1069 10 -1003 0 -1050 1 -1065 18 -16 17 -17 105 -17 1066 0 703 -3 1054 -10 1067 -11 19 -89 19 -6020 19 -5449 0 -6010 -1 -6024 -16z m11109 -917 c22 -31 25 -118 23 -674 -3 -469 -5 -534 -19 -548 -14 -14 -427 -16 -4470 -16 -2810 1 -4460 -3 -4469 -9 -13 -8 -15 -373 -15 -3187 0 -1748 3 -3186 7 -3195 7 -17 228 -18 4452 -18 2759 0 4454 -4 4469 -9 14 -6 29 -20 34 -33 4 -13 7 -223 5 -468 -1 -245 -3 -507 -2 -583 0 -124 -2 -139 -20 -157 -20 -20 -33 -20 -5094 -20 -4841 0 -5075 1 -5096 18 l-22 17 2 4435 c0 3042 4 4438 11 4446 6 7 23 14 37 16 15 2 2305 3 5090 3 4912 0 5064 -1 5077 -18z"/>
+          </g>
+        </svg>
+      </div>
+      <!-- Text phase -->
+      <div id="nf-intro-text"></div>
     </div>
 
     <style>
@@ -2052,18 +2113,81 @@
             align-items: center;
             justify-content: center;
             pointer-events: all;
-            transition: background 0.55s ease, opacity 0.55s ease;
+            transition: background 0.5s ease, opacity 0.4s ease;
+            overflow: hidden;
+        }
+        #nf-intro.invert { background: #fff; }
+
+        /* ── Logo wrapper ── */
+        #nf-intro-logo {
+            position: absolute;
+            width: clamp(160px, 30vw, 280px);
+            height: clamp(160px, 30vw, 280px);
+        }
+        #nf-intro-logo svg {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+        }
+        #nf-intro-svg   { color: #fff; opacity: 1; }
+        #nf-intro-svg-r { opacity: 0; }
+        #nf-intro-svg-c { opacity: 0; }
+
+        /* Pulse on entry */
+        @keyframes intro-pulse {
+            0%,100% { transform: scale(1);    opacity: 1; }
+            50%      { transform: scale(0.93); opacity: 0.6; }
+        }
+        #nf-intro-logo.pulsing #nf-intro-svg {
+            animation: intro-pulse 0.9s ease-in-out infinite;
         }
 
-        #nf-intro.invert {
-            background: #fff;
+        /* Violent explode-glitch before morph */
+        @keyframes logo-explode {
+            0%   { transform: translate(0,0)      skewX(0deg)  scale(1);    opacity:1; }
+            8%   { transform: translate(-8px,3px) skewX(-12deg) scale(1.04); opacity:.8; }
+            16%  { transform: translate(10px,-4px) skewX(9deg)  scale(0.96); opacity:.9; }
+            24%  { transform: translate(-5px,6px) skewX(-6deg) scale(1.08); opacity:.7; }
+            32%  { transform: translate(7px,-2px) skewX(8deg)  scale(0.94); opacity:.85; }
+            40%  { transform: translate(-10px,4px) skewX(-10deg) scale(1.05); opacity:.6; }
+            50%  { transform: translate(6px,-5px) skewX(7deg)  scale(1.1);  opacity:.4; }
+            60%  { transform: translate(-4px,3px) skewX(-5deg) scale(0.9);  opacity:.3; }
+            75%  { transform: translate(3px,-2px) skewX(3deg)  scale(0.7);  opacity:.2; }
+            90%  { transform: translate(-2px,1px) skewX(-2deg) scale(0.4);  opacity:.1; }
+            100% { transform: translate(0,0)      skewX(0deg)  scale(0);    opacity:0; }
+        }
+        #nf-intro-logo.exploding #nf-intro-svg {
+            animation: logo-explode 0.75s steps(3) forwards;
+        }
+        @keyframes rgb-r-anim {
+            0%   { transform: translate(0,0);     opacity:0; }
+            10%  { transform: translate(-14px,2px); opacity:0.7; }
+            25%  { transform: translate(10px,-5px); opacity:0.5; }
+            40%  { transform: translate(-18px,4px); opacity:0.8; }
+            55%  { transform: translate(8px,-3px);  opacity:0.4; }
+            70%  { transform: translate(-6px,2px);  opacity:0.6; }
+            85%  { transform: translate(4px,-1px);  opacity:0.2; }
+            100% { transform: translate(0,0);     opacity:0; }
+        }
+        @keyframes rgb-c-anim {
+            0%   { transform: translate(0,0);     opacity:0; }
+            10%  { transform: translate(16px,-3px); opacity:0.6; }
+            25%  { transform: translate(-12px,6px); opacity:0.5; }
+            40%  { transform: translate(20px,-4px); opacity:0.7; }
+            55%  { transform: translate(-10px,3px); opacity:0.4; }
+            70%  { transform: translate(8px,-2px);  opacity:0.5; }
+            85%  { transform: translate(-3px,1px);  opacity:0.2; }
+            100% { transform: translate(0,0);     opacity:0; }
+        }
+        #nf-intro-logo.exploding #nf-intro-svg-r {
+            animation: rgb-r-anim 0.75s steps(3) forwards;
+        }
+        #nf-intro-logo.exploding #nf-intro-svg-c {
+            animation: rgb-c-anim 0.75s steps(3) forwards;
         }
 
-        #nf-intro.fade-out {
-            opacity: 0;
-            pointer-events: none;
-        }
-
+        /* Text phase */
         #nf-intro-text {
             font-family: 'Bebas Neue', cursive;
             font-size: clamp(48px, 12vw, 120px);
@@ -2071,12 +2195,12 @@
             color: #fff;
             transition: color 0.45s ease;
             user-select: none;
+            position: absolute;
+            opacity: 0;
             will-change: transform, font-size, left, top;
         }
-
-        #nf-intro.invert #nf-intro-text {
-            color: #0a0a0a;
-        }
+        #nf-intro-text.visible { opacity: 1; }
+        #nf-intro.invert #nf-intro-text { color: #0a0a0a; }
     </style>
 
     <script>
@@ -2089,62 +2213,68 @@
 
             const GLITCH_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ#@!?*%&=+~^<>/\|";
             const TARGET = "NO FILTER";
-            const el = document.getElementById("nf-intro-text");
-            const overlay = document.getElementById("nf-intro");
-
-            let frame;
+            const overlay  = document.getElementById("nf-intro");
+            const logoWrap = document.getElementById("nf-intro-logo");
+            const el       = document.getElementById("nf-intro-text");
             const rnd = () => GLITCH_CHARS[Math.floor(Math.random() * GLITCH_CHARS.length)];
-            let startTime = null;
 
-            // ── FASTER: chaos 380ms, resolve 900ms ──
-            const CHAOS_DURATION = 380;
-            const RESOLVE_DURATION = 900;
+            // ── PHASE 1: Logo pulses for 1.2s ──
+            logoWrap.classList.add("pulsing");
 
-            function animatePhase1(ts) {
-                if (!startTime) startTime = ts;
-                const elapsed = ts - startTime;
-                const len = TARGET.length + Math.floor(Math.random() * 3) - 1;
-                el.textContent = Array.from({ length: Math.max(6, len) }, rnd).join("");
-                if (elapsed < CHAOS_DURATION) {
-                    frame = requestAnimationFrame(animatePhase1);
-                } else {
-                    startTime = null;
-                    frame = requestAnimationFrame(animatePhase2);
+            setTimeout(() => {
+                // ── PHASE 2: Explode logo → chaos text appears simultaneously ──
+                logoWrap.classList.remove("pulsing");
+                logoWrap.classList.add("exploding");
+
+                // Chaos text fades in during explosion
+                el.classList.add("visible");
+                let chaosFrame;
+                let chaosStart = null;
+                const CHAOS = 750;
+                function chaos(ts) {
+                    if (!chaosStart) chaosStart = ts;
+                    const len = TARGET.length + Math.floor(Math.random() * 3) - 1;
+                    el.textContent = Array.from({ length: Math.max(6, len) }, rnd).join("");
+                    if (ts - chaosStart < CHAOS) chaosFrame = requestAnimationFrame(chaos);
+                    else {
+                        chaosStart = null;
+                        requestAnimationFrame(resolve);
+                    }
                 }
-            }
+                requestAnimationFrame(chaos);
 
-            function animatePhase2(ts) {
-                if (!startTime) startTime = ts;
-                const elapsed = ts - startTime;
-                const progress = Math.min(elapsed / RESOLVE_DURATION, 1);
-                const numResolved = Math.floor(progress * TARGET.length);
-                let display = "";
-                for (let i = 0; i < TARGET.length; i++) {
-                    display += i < numResolved ? TARGET[i] : (TARGET[i] === " " ? " " : rnd());
+                // ── PHASE 3: Resolve chars one by one ──
+                const RESOLVE = 900;
+                let resolveStart = null;
+                function resolve(ts) {
+                    if (!resolveStart) resolveStart = ts;
+                    const progress = Math.min((ts - resolveStart) / RESOLVE, 1);
+                    const numResolved = Math.floor(progress * TARGET.length);
+                    let display = "";
+                    for (let i = 0; i < TARGET.length; i++) {
+                        display += i < numResolved ? TARGET[i] : (TARGET[i] === " " ? " " : rnd());
+                    }
+                    el.textContent = display;
+                    if (progress < 1) {
+                        requestAnimationFrame(resolve);
+                    } else {
+                        el.textContent = TARGET;
+                        // ── PHASE 4: Invert bg → fly text to header ──
+                        setTimeout(() => {
+                            overlay.classList.add("invert");
+                            setTimeout(() => flyToHeader(), 350);
+                        }, 180);
+                    }
                 }
-                el.textContent = display;
-                if (progress < 1) {
-                    frame = requestAnimationFrame(animatePhase2);
-                } else {
-                    el.textContent = TARGET;
-                    // Invert bg, then fly
-                    setTimeout(() => {
-                        overlay.classList.add("invert");
-                        setTimeout(() => flyToLogo(), 350);
-                    }, 180);
-                }
-            }
 
-            function flyToLogo() {
+            }, 1200);
+
+            function flyToHeader() {
                 const isMobile = window.innerWidth < 900;
                 const fromRect = el.getBoundingClientRect();
                 const fromX = fromRect.left + fromRect.width / 2;
                 const fromY = fromRect.top + fromRect.height / 2;
 
-                // ── Compute destination ──
-                // On mobile: #topbar-logo exists and is measurable
-                // On desktop: #strip-title is under the overlay so getBoundingClientRect
-                //   returns 0,0. Instead we calculate from the signal-bar geometry directly.
                 let toX, toY, toSize, toSpacing;
                 if (isMobile) {
                     const logoEl = document.getElementById("topbar-logo");
@@ -2159,28 +2289,22 @@
                         toX = window.innerWidth / 2; toY = 28; toSize = 22; toSpacing = "3px";
                     }
                 } else {
-                    // Desktop: signal-bar is sticky at top:0, height 68px → center Y = 34px
-                    // strip-title is centered horizontally in the full page width
-                    // We read its CSS font-size/letter-spacing directly (element exists, just covered)
                     const titleEl = document.getElementById("strip-title");
                     const cs = titleEl ? getComputedStyle(titleEl) : null;
                     toSize = cs ? parseFloat(cs.fontSize) : 38;
                     toSpacing = cs ? cs.letterSpacing : "9px";
                     toX = window.innerWidth / 2;
-                    // signal-bar height: read it
                     const bar = document.getElementById("signal-bar");
-                    const barH = bar ? bar.offsetHeight : 68;
-                    toY = barH / 2; // vertical center of signal-bar
+                    toY = (bar ? bar.offsetHeight : 68) / 2;
                 }
 
-                // Pin el at current center
                 el.style.position = "fixed";
                 el.style.left = fromX + "px";
                 el.style.top = fromY + "px";
                 el.style.transform = "translate(-50%, -50%)";
                 el.style.margin = "0";
                 el.style.whiteSpace = "nowrap";
-                el.style.zIndex = "100000"; // above overlay
+                el.style.zIndex = "100000";
 
                 const FLY = 0.52;
                 el.style.transition = [
@@ -2189,7 +2313,6 @@
                     `font-size ${FLY}s cubic-bezier(.4,0,.2,1)`,
                     `letter-spacing ${FLY}s cubic-bezier(.4,0,.2,1)`
                 ].join(", ");
-
                 void el.offsetWidth;
 
                 el.style.left = toX + "px";
@@ -2197,11 +2320,7 @@
                 el.style.fontSize = toSize + "px";
                 el.style.letterSpacing = toSpacing;
 
-                // Once text has landed → fade out overlay
-                // strip-title is already populated underneath (buildSpans ran at init)
-                // We fade the flying el simultaneously with the overlay
                 setTimeout(() => {
-                    // Fade overlay AND flying text together
                     overlay.style.transition = "opacity 0.4s ease";
                     overlay.style.opacity = "0";
                     overlay.style.pointerEvents = "none";
@@ -2210,8 +2329,6 @@
                     setTimeout(() => overlay.remove(), 450);
                 }, FLY * 1000 + 30);
             }
-
-            frame = requestAnimationFrame(animatePhase1);
         })();
     </script>
 
@@ -2225,6 +2342,7 @@
     <div id="signal-bar">
         <div id="strip-title-wrap">
             <span id="strip-title" onmouseenter="scrambleTitle()">NO FILTER</span>
+            <div id="strip-logo-swap"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 3464 3464"><g transform="translate(0,3464) scale(0.1,-0.1)" fill="currentColor" stroke="none"><path d="M11366 22614 c-15 -14 -16 -515 -16 -5364 l0 -5350 23 -15 c21 -13 659 -15 6020 -13 4904 3 5998 5 6009 16 11 11 14 650 16 3470 1 1901 0 3484 -3 3517 -3 33 -10 67 -14 74 -11 17 -877 19 -894 2 -8 -8 -11 -579 -12 -1981 l-2 -1971 -22 -22 -22 -22 -3952 -3 c-2173 -1 -3966 0 -3984 3 -17 3 -41 13 -53 23 l-21 17 1 2255 c0 2000 2 2256 16 2270 13 13 571 15 5105 15 5038 0 5091 0 5105 -20 12 -16 14 -333 12 -2273 l-3 -2254 -24 -19 c-22 -18 -43 -19 -321 -19 -230 0 -300 -3 -308 -13 -17 -20 -19 -852 -2 -872 11 -13 105 -15 781 -15 749 0 769 0 779 19 7 14 10 1025 10 3195 0 3129 0 3175 -19 3186 -13 7 -365 10 -1069 10 -1003 0 -1050 1 -1065 18 -16 17 -17 105 -17 1066 0 703 -3 1054 -10 1067 -11 19 -89 19 -6020 19 -5449 0 -6010 -1 -6024 -16z m11109 -917 c22 -31 25 -118 23 -674 -3 -469 -5 -534 -19 -548 -14 -14 -427 -16 -4470 -16 -2810 1 -4460 -3 -4469 -9 -13 -8 -15 -373 -15 -3187 0 -1748 3 -3186 7 -3195 7 -17 228 -18 4452 -18 2759 0 4454 -4 4469 -9 14 -6 29 -20 34 -33 4 -13 7 -223 5 -468 -1 -245 -3 -507 -2 -583 0 -124 -2 -139 -20 -157 -20 -20 -33 -20 -5094 -20 -4841 0 -5075 1 -5096 18 l-22 17 2 4435 c0 3042 4 4438 11 4446 6 7 23 14 37 16 15 2 2305 3 5090 3 4912 0 5064 -1 5077 -18z"/></g></svg></div>
             <button id="strip-settings-btn" onclick="openGroupSettings(window._currentGroupId||'')">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                     stroke-linecap="round">
@@ -2448,7 +2566,7 @@
             publicGroups: [],
             expandedComments: new Set(),
             replyingTo: null, replyText: "",
-            reportedPosts: getReported(), reportedComments: JSON.parse(localStorage.getItem("nofilter_reported_comments") || "[]"),
+            reportedPosts: getReported(), reportedComments: JSON.parse(localStorage.getItem("nofilter_reported_comments") || "[]"), reportedGroups: JSON.parse(localStorage.getItem("nofilter_reported_groups") || "[]"), groupInfoOpen: null,
             reactPickerPost: null, reactPickerComment: null,
             sortBy: "newest", filterCat: null, filterMood: null, searchQuery: "",
             filtersOpen: false, sidebarOpen: false,
@@ -2464,7 +2582,7 @@
             newGroup: { name: "", isPrivate: true, description: "" },
             newDuel: { topic: "", sideA: "", sideB: "", category: "" },
             challengePost: null,
-            reportConfirmPostId: null,
+            reportConfirmPostId: null, reportGroupConfirmId: null,
             deleteConfirmPostId: null,
             deleteConfirmCommentId: null,
             realtimeChannel: null,
@@ -2558,6 +2676,8 @@
             if (s.groupSettingsOpen) sheetHtml = buildGroupSettingsSheet();
             if (s.challengePost) sheetHtml = buildChallengeSheet();
             if (s.reportConfirmPostId) sheetHtml = buildReportConfirmSheet(s.reportConfirmPostId);
+            if (s.groupInfoOpen) sheetHtml = buildGroupInfoSheet(s.groupInfoOpen);
+            if (s.reportGroupConfirmId) sheetHtml = buildReportGroupConfirmSheet(s.reportGroupConfirmId);
             if (sheetHtml) {
                 const div = document.createElement("div");
                 div.id = "sheet-container";
@@ -2729,17 +2849,35 @@
             const g = s.myGroups.find(x => x.id === s.currentGroupId) || { id: s.currentGroupId, name: s.currentGroupName, isPrivate: true };
             const groupPostInputId = "group-post-input-" + s.currentGroupId;
             return `
-    <!-- Group banner con nome e tasto esci -->
-    <div style="background:#0a0a0a;border-radius:12px;padding:13px 16px;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;gap:12px;">
-      <div style="display:flex;flex-direction:column;gap:2px;min-width:0;">
-        <span style="font-size:9px;letter-spacing:2px;color:#666;text-transform:uppercase;font-family:'DM Mono',monospace;">Gruppo privato</span>
-        <span style="font-family:'Bebas Neue',cursive;font-size:18px;letter-spacing:2px;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${escHtml(g.name)}</span>
-        ${g.description ? `<span style="font-size:11px;color:#888;margin-top:2px;line-height:1.4;">${escHtml(g.description)}</span>` : ""}
+    <!-- Group banner con nome e azioni -->
+    <div style="background:#0a0a0a;border-radius:12px;padding:13px 16px;margin-bottom:14px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;">
+        <div style="display:flex;flex-direction:column;gap:2px;min-width:0;">
+          <span style="font-size:9px;letter-spacing:2px;color:#666;text-transform:uppercase;font-family:'DM Mono',monospace;">${g.isPrivate ? "Gruppo privato" : "Gruppo pubblico"}</span>
+          <span style="font-family:'Bebas Neue',cursive;font-size:18px;letter-spacing:2px;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${escHtml(g.name)}</span>
+          ${g.description ? `<span style="font-size:11px;color:#888;margin-top:2px;line-height:1.4;">${escHtml(g.description)}</span>` : ""}
+        </div>
+        <!-- Azioni gruppo -->
+        <div style="display:flex;align-items:center;gap:6px;flex-shrink:0;">
+          <!-- Info -->
+          <button onclick="showGroupInfo('${escAttr(g.id)}')" title="Informazioni" style="background:#1a1a1a;border:1px solid #333;color:#aaa;border-radius:8px;padding:7px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background 0.2s;" onmouseover="this.style.background='#222'" onmouseout="this.style.background='#1a1a1a'">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="8" stroke-width="3" stroke-linecap="round"/><line x1="12" y1="12" x2="12" y2="16"/></svg>
+          </button>
+          <!-- Condividi -->
+          <button onclick="shareGroup('${escAttr(g.id)}','${escAttr(g.name)}')" title="Condividi" style="background:#1a1a1a;border:1px solid #333;color:#aaa;border-radius:8px;padding:7px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background 0.2s;" onmouseover="this.style.background='#222'" onmouseout="this.style.background='#1a1a1a'">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+          </button>
+          <!-- Segnala -->
+          <button onclick="reportGroup('${escAttr(g.id)}')" title="Segnala gruppo" style="background:#1a1a1a;border:1px solid #333;color:#aaa;border-radius:8px;padding:7px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background 0.2s;" onmouseover="this.style.background='#222'" onmouseout="this.style.background='#1a1a1a'">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>
+          </button>
+          <!-- Esci -->
+          <button onclick="leaveGroup('${escAttr(g.id)}')" title="Esci dal gruppo" style="background:#1a1a1a;border:1px solid #333;color:#e05050;border-radius:8px;padding:7px 13px;font-family:'DM Mono',monospace;font-size:11px;cursor:pointer;display:flex;align-items:center;gap:6px;white-space:nowrap;transition:background 0.2s;" onmouseover="this.style.background='#222'" onmouseout="this.style.background='#1a1a1a'">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+            Esci
+          </button>
+        </div>
       </div>
-      <button onclick="leaveGroup('${g.id}')" style="flex-shrink:0;background:#1a1a1a;border:1px solid #333;color:#e05050;border-radius:8px;padding:7px 13px;font-family:'DM Mono',monospace;font-size:11px;cursor:pointer;display:flex;align-items:center;gap:6px;white-space:nowrap;">
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-        Esci dal gruppo
-      </button>
     </div>
     ${g.isAdmin && !g.description ? `
     <div style="margin-bottom:12px;">
@@ -2924,7 +3062,7 @@
       <span style="font-family:'Bebas Neue',cursive;font-size:20px;letter-spacing:2px;">POLL</span>
       <button class="btn-sm" onclick="openCreate('poll')">+ Nuovo</button>
     </div>
-    ${s.loading ? `<div style="text-align:center;padding:60px;color:#ccc;font-size:13px;">Caricamento...</div>` : ""}
+    ${s.loading ? `<div class="nf-loader"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 3464 3464"><g transform="translate(0,3464) scale(0.1,-0.1)" fill="#0a0a0a" stroke="none"><path d="M11366 22614 c-15 -14 -16 -515 -16 -5364 l0 -5350 23 -15 c21 -13 659 -15 6020 -13 4904 3 5998 5 6009 16 11 11 14 650 16 3470 1 1901 0 3484 -3 3517 -3 33 -10 67 -14 74 -11 17 -877 19 -894 2 -8 -8 -11 -579 -12 -1981 l-2 -1971 -22 -22 -22 -22 -3952 -3 c-2173 -1 -3966 0 -3984 3 -17 3 -41 13 -53 23 l-21 17 1 2255 c0 2000 2 2256 16 2270 13 13 571 15 5105 15 5038 0 5091 0 5105 -20 12 -16 14 -333 12 -2273 l-3 -2254 -24 -19 c-22 -18 -43 -19 -321 -19 -230 0 -300 -3 -308 -13 -17 -20 -19 -852 -2 -872 11 -13 105 -15 781 -15 749 0 769 0 779 19 7 14 10 1025 10 3195 0 3129 0 3175 -19 3186 -13 7 -365 10 -1069 10 -1003 0 -1050 1 -1065 18 -16 17 -17 105 -17 1066 0 703 -3 1054 -10 1067 -11 19 -89 19 -6020 19 -5449 0 -6010 -1 -6024 -16z m11109 -917 c22 -31 25 -118 23 -674 -3 -469 -5 -534 -19 -548 -14 -14 -427 -16 -4470 -16 -2810 1 -4460 -3 -4469 -9 -13 -8 -15 -373 -15 -3187 0 -1748 3 -3186 7 -3195 7 -17 228 -18 4452 -18 2759 0 4454 -4 4469 -9 14 -6 29 -20 34 -33 4 -13 7 -223 5 -468 -1 -245 -3 -507 -2 -583 0 -124 -2 -139 -20 -157 -20 -20 -33 -20 -5094 -20 -4841 0 -5075 1 -5096 18 l-22 17 2 4435 c0 3042 4 4438 11 4446 6 7 23 14 37 16 15 2 2305 3 5090 3 4912 0 5064 -1 5077 -18z"/></g></svg></div>` : ""}
     ${!s.loading && s.polls.length === 0 ? `<div style="text-align:center;padding:60px;color:#bbb;"><div style="font-size:24px;margin-bottom:10px;">—</div><div style="font-size:13px;">Nessun poll attivo.</div></div>` : ""}
     ${s.polls.map((p, i) => buildPollCard(p, i)).join("")}
   `;
@@ -3977,6 +4115,107 @@
             showToast(`Entrato in ${escHtml(g.name)}!`);
             enterGroup(g);
         }
+        /* ── Info gruppo ── */
+        function showGroupInfo(groupId) {
+            state.groupInfoOpen = groupId;
+            render();
+        }
+        function buildGroupInfoSheet(groupId) {
+            const g = state.myGroups.find(x => x.id === groupId) || { id: groupId, name: groupId, isPrivate: true, description: "" };
+            const postCount = (state.posts || []).filter(p => p.category !== "_GROUP_META_").length;
+            return `
+            <div class="overlay" onclick="if(event.target===this){state.groupInfoOpen=null;render();}">
+              <div class="sheet" style="max-width:480px;width:100%;">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;">
+                  <span style="font-family:'Bebas Neue',cursive;font-size:20px;letter-spacing:2px;">INFO GRUPPO</span>
+                  <button onclick="state.groupInfoOpen=null;render();" style="background:none;border:none;cursor:pointer;color:#aaa;font-size:20px;line-height:1;">✕</button>
+                </div>
+                <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;">
+                  <div style="width:48px;height:48px;border-radius:50%;background:#0a0a0a;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+                  </div>
+                  <div>
+                    <div style="font-family:'Bebas Neue',cursive;font-size:22px;letter-spacing:2px;">${escHtml(g.name)}</div>
+                    <div style="font-size:11px;color:#aaa;font-family:'DM Mono',monospace;">${g.isPrivate ? "🔒 Privato" : "🌐 Pubblico"} · ${postCount} post</div>
+                  </div>
+                </div>
+                ${g.description ? `<div style="font-size:13px;color:#555;line-height:1.6;margin-bottom:14px;padding:10px 12px;background:#f8f8f8;border-radius:8px;">${escHtml(g.description)}</div>` : ""}
+                <div style="font-size:10px;color:#aaa;font-family:'DM Mono',monospace;letter-spacing:1px;margin-bottom:5px;">ID GRUPPO</div>
+                <div style="font-size:12px;color:#555;font-family:'DM Mono',monospace;background:#f8f8f8;padding:9px 12px;border-radius:8px;margin-bottom:16px;word-break:break-all;">${escHtml(g.id)}</div>
+                <button class="btn" style="width:100%;margin-bottom:8px;" onclick="shareGroup('${escAttr(g.id)}','${escAttr(g.name)}')">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="margin-right:6px;"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+                  Condividi link
+                </button>
+              </div>
+            </div>`;
+        }
+
+        /* ── Condividi gruppo ── */
+        async function shareGroup(groupId, groupName) {
+            const link = `https://nofilterthoughts.it/?join=${groupId}`;
+            if (navigator.share) {
+                try {
+                    await navigator.share({ title: `Unisciti a "${groupName}" su NO FILTER`, url: link });
+                    return;
+                } catch (_) {}
+            }
+            // Fallback: copia negli appunti
+            try {
+                await navigator.clipboard.writeText(link);
+                showToast("Link copiato negli appunti! 🔗");
+            } catch (_) {
+                showToast("Link: " + link);
+            }
+        }
+
+        /* ── Segnala gruppo ── */
+        function reportGroup(groupId) {
+            if ((state.reportedGroups || []).includes(groupId)) {
+                showToast("Gruppo già segnalato.", true); return;
+            }
+            state.reportGroupConfirmId = groupId;
+            render();
+        }
+        function cancelReportGroup() { state.reportGroupConfirmId = null; render(); }
+        async function confirmReportGroup(groupId) {
+            const g = state.myGroups.find(x => x.id === groupId) || { id: groupId, name: groupId };
+            state.reportGroupConfirmId = null;
+            const updated = [...(state.reportedGroups || []), groupId];
+            state.reportedGroups = updated;
+            localStorage.setItem("nofilter_reported_groups", JSON.stringify(updated));
+            render();
+            await sb.from("group_reports").insert({
+                group_id: groupId,
+                group_name: g.name || groupId,
+                reported_by: userName,
+                reported_at: new Date().toISOString()
+            }).catch(() => {});
+            showToast("Gruppo segnalato. Grazie.");
+        }
+        function buildReportGroupConfirmSheet(groupId) {
+            const g = state.myGroups.find(x => x.id === groupId) || { id: groupId, name: groupId };
+            const isDesk = isDesktop();
+            return `
+    <div class="overlay" onclick="event.target===this&&cancelReportGroup()">
+      <div class="sheet ${isDesk ? "sheet-desktop" : "sheet-mobile"}" onclick="event.stopPropagation()" style="max-width:380px;text-align:center;">
+        <div style="width:48px;height:48px;border-radius:50%;background:#f5f5f5;border:1px solid #e8e8e8;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;color:#555;">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>
+        </div>
+        <div style="font-family:'Bebas Neue',cursive;font-size:18px;letter-spacing:1.5px;margin-bottom:6px;">SEGNALA GRUPPO</div>
+        <p style="font-size:13px;color:#555;line-height:1.6;margin-bottom:4px;">Stai per segnalare il gruppo</p>
+        <p style="font-family:'Bebas Neue',cursive;font-size:16px;letter-spacing:1px;margin-bottom:16px;">${escHtml(g.name)}</p>
+        <p style="font-size:12px;color:#aaa;line-height:1.5;margin-bottom:20px;">La segnalazione verrà inviata ai moderatori per una revisione.</p>
+        <div style="display:flex;gap:8px;">
+          <button class="btn-o" style="flex:1;" onclick="cancelReportGroup()">Annulla</button>
+          <button class="btn" style="flex:2;background:#cc2222;" onclick="confirmReportGroup('${escAttr(groupId)}')">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="margin-right:5px;"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>
+            Segnala
+          </button>
+        </div>
+      </div>
+    </div>`;
+        }
+
         function leaveGroup(gid) {
             const u = state.myGroups.filter(g => g.id !== gid);
             saveMyGroups(u); state.myGroups = u;
@@ -4320,17 +4559,7 @@
 
         /* ── Skeleton loading for feed ── */
         function buildSkeletons(n = 3) {
-            return Array.from({ length: n }, () => `
-    <div class="card" style="cursor:default;margin-bottom:10px;">
-      <div style="display:flex;gap:6px;margin-bottom:10px;">
-        <div class="skeleton" style="width:60px;height:18px;"></div>
-        <div class="skeleton" style="width:40px;height:18px;"></div>
-      </div>
-      <div class="skeleton" style="width:100%;height:14px;margin-bottom:7px;"></div>
-      <div class="skeleton" style="width:80%;height:14px;margin-bottom:7px;"></div>
-      <div class="skeleton" style="width:60%;height:14px;"></div>
-    </div>
-  `).join("");
+            return `<div class="nf-loader"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 3464 3464"><g transform="translate(0,3464) scale(0.1,-0.1)" fill="#0a0a0a" stroke="none"><path d="M11366 22614 c-15 -14 -16 -515 -16 -5364 l0 -5350 23 -15 c21 -13 659 -15 6020 -13 4904 3 5998 5 6009 16 11 11 14 650 16 3470 1 1901 0 3484 -3 3517 -3 33 -10 67 -14 74 -11 17 -877 19 -894 2 -8 -8 -11 -579 -12 -1981 l-2 -1971 -22 -22 -22 -22 -3952 -3 c-2173 -1 -3966 0 -3984 3 -17 3 -41 13 -53 23 l-21 17 1 2255 c0 2000 2 2256 16 2270 13 13 571 15 5105 15 5038 0 5091 0 5105 -20 12 -16 14 -333 12 -2273 l-3 -2254 -24 -19 c-22 -18 -43 -19 -321 -19 -230 0 -300 -3 -308 -13 -17 -20 -19 -852 -2 -872 11 -13 105 -15 781 -15 749 0 769 0 779 19 7 14 10 1025 10 3195 0 3129 0 3175 -19 3186 -13 7 -365 10 -1069 10 -1003 0 -1050 1 -1065 18 -16 17 -17 105 -17 1066 0 703 -3 1054 -10 1067 -11 19 -89 19 -6020 19 -5449 0 -6010 -1 -6024 -16z m11109 -917 c22 -31 25 -118 23 -674 -3 -469 -5 -534 -19 -548 -14 -14 -427 -16 -4470 -16 -2810 1 -4460 -3 -4469 -9 -13 -8 -15 -373 -15 -3187 0 -1748 3 -3186 7 -3195 7 -17 228 -18 4452 -18 2759 0 4454 -4 4469 -9 14 -6 29 -20 34 -33 4 -13 7 -223 5 -468 -1 -245 -3 -507 -2 -583 0 -124 -2 -139 -20 -157 -20 -20 -33 -20 -5094 -20 -4841 0 -5075 1 -5096 18 l-22 17 2 4435 c0 3042 4 4438 11 4446 6 7 23 14 37 16 15 2 2305 3 5090 3 4912 0 5064 -1 5077 -18z"/></g></svg></div>`;
         }
 
 
@@ -4464,14 +4693,52 @@
             // Auto glitch loop: every 2-4s alternates soft/hard
             // Only runs on desktop (signal-bar visible); mobile topbar-logo has its own scramble
             let lastHard = 0;
+            let lastLogoSwap = 0;
+            const LOGO_SWAP_INTERVAL = 15000; // ogni 15s
+            const LOGO_SWAP_DURATION = 2000;  // dura 2s
+            let logoSwapping = false;
+
+            function doLogoSwap() {
+                if (logoSwapping || scrambling || window.innerWidth < 900) return;
+                logoSwapping = true;
+                const title = document.getElementById("strip-title");
+                const logo  = document.getElementById("strip-logo-swap");
+                if (!title || !logo) { logoSwapping = false; return; }
+
+                // Glitch out the title
+                title.classList.add("hard-glitching");
+                setTimeout(() => {
+                    title.style.opacity = "0";
+                    title.classList.remove("hard-glitching");
+                    logo.classList.add("visible");
+                }, 300);
+
+                // After LOGO_SWAP_DURATION, glitch back to title
+                setTimeout(() => {
+                    logo.classList.remove("visible");
+                    title.style.opacity = "";
+                    title.classList.add("hard-glitching");
+                    setTimeout(() => {
+                        title.classList.remove("hard-glitching");
+                        logoSwapping = false;
+                        lastLogoSwap = Date.now();
+                    }, 480);
+                }, 300 + LOGO_SWAP_DURATION);
+            }
+
             function autoGlitch() {
                 const delay = 2000 + Math.random() * 2000;
                 setTimeout(() => {
-                    if (!scrambling && window.innerWidth >= 900) {
+                    if (!scrambling && window.innerWidth >= 900 && !logoSwapping) {
                         const now = Date.now();
-                        const doHard = (now - lastHard > 6000) && Math.random() > 0.5;
-                        if (doHard) { hardGlitch(); lastHard = now; }
-                        else softGlitch();
+                        // Every 15s: logo swap instead of normal glitch
+                        if (now - lastLogoSwap >= LOGO_SWAP_INTERVAL) {
+                            doLogoSwap();
+                        } else {
+                            const doHard = (now - lastHard > 6000) && Math.random() > 0.5;
+                            if (doHard) { hardGlitch(); lastHard = now; }
+                            else softGlitch();
+                        }
                     }
                     autoGlitch();
                 }, delay);
