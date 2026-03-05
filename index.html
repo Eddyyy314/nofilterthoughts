@@ -25,7 +25,7 @@
             --sidebar-w: 260px;
             --content-max: 680px;
             --nav-h: 56px;
-            --header-h: 56px;
+            --header-h: 44px;
             --transition: 0.28s cubic-bezier(.22, 1, .36, 1);
         }
 
@@ -1432,17 +1432,23 @@
 
         /* ── Glitch strip ── */
         /* ── NO FILTER header bar ── */
+        /* signal-bar: hidden on mobile (topbar handles it), desktop only */
         #signal-bar {
-            width: 100%;
-            background: #fff;
-            border-bottom: 1px solid #eee;
-            height: 68px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: sticky;
-            top: 0;
-            z-index: 100;
+            display: none;
+        }
+        @media (min-width: 900px) {
+            #signal-bar {
+                display: flex;
+                width: 100%;
+                background: #fff;
+                border-bottom: 1px solid #eee;
+                height: 68px;
+                align-items: center;
+                justify-content: center;
+                position: sticky;
+                top: 0;
+                z-index: 100;
+            }
         }
 
         #strip-title-wrap {
@@ -1640,8 +1646,8 @@
         /* ── NO FILTER Logo ── */
         .nf-logo {
             font-family: 'Bebas Neue', cursive;
-            font-size: 36px;
-            letter-spacing: 9px;
+            font-size: 26px;
+            letter-spacing: 6px;
             color: #0a0a0a;
             cursor: pointer;
             display: inline-block;
@@ -1656,7 +1662,7 @@
             top: 0;
             left: 0;
             font-family: 'Bebas Neue', cursive;
-            font-size: 36px;
+            font-size: 26px;
             letter-spacing: 9px;
             pointer-events: none;
             opacity: 0;
@@ -2130,57 +2136,79 @@
             }
 
             function flyToLogo() {
-                // Target: #strip-title in the header
-                const logoEl = document.getElementById("strip-title");
+                const isMobile = window.innerWidth < 900;
                 const fromRect = el.getBoundingClientRect();
-
-                let toX, toY, toSize, toSpacing;
-                if (logoEl) {
-                    const toRect = logoEl.getBoundingClientRect();
-                    toX = toRect.left + toRect.width / 2;
-                    toY = toRect.top + toRect.height / 2;
-                    // Match exact computed size of strip-title
-                    const cs = getComputedStyle(logoEl);
-                    toSize = parseFloat(cs.fontSize);
-                    toSpacing = cs.letterSpacing;
-                } else {
-                    // fallback: top-center
-                    toX = window.innerWidth / 2;
-                    toY = 34;
-                    toSize = 38;
-                    toSpacing = "9px";
-                }
-
                 const fromX = fromRect.left + fromRect.width / 2;
                 const fromY = fromRect.top + fromRect.height / 2;
 
-                // Pin el with fixed positioning at current spot
+                // ── Compute destination ──
+                // On mobile: #topbar-logo exists and is measurable
+                // On desktop: #strip-title is under the overlay so getBoundingClientRect
+                //   returns 0,0. Instead we calculate from the signal-bar geometry directly.
+                let toX, toY, toSize, toSpacing;
+                if (isMobile) {
+                    const logoEl = document.getElementById("topbar-logo");
+                    if (logoEl) {
+                        const r = logoEl.getBoundingClientRect();
+                        toX = r.left + r.width / 2;
+                        toY = r.top + r.height / 2;
+                        const cs = getComputedStyle(logoEl);
+                        toSize = parseFloat(cs.fontSize);
+                        toSpacing = cs.letterSpacing;
+                    } else {
+                        toX = window.innerWidth / 2; toY = 28; toSize = 22; toSpacing = "3px";
+                    }
+                } else {
+                    // Desktop: signal-bar is sticky at top:0, height 68px → center Y = 34px
+                    // strip-title is centered horizontally in the full page width
+                    // We read its CSS font-size/letter-spacing directly (element exists, just covered)
+                    const titleEl = document.getElementById("strip-title");
+                    const cs = titleEl ? getComputedStyle(titleEl) : null;
+                    toSize = cs ? parseFloat(cs.fontSize) : 38;
+                    toSpacing = cs ? cs.letterSpacing : "9px";
+                    toX = window.innerWidth / 2;
+                    // signal-bar height: read it
+                    const bar = document.getElementById("signal-bar");
+                    const barH = bar ? bar.offsetHeight : 68;
+                    toY = barH / 2; // vertical center of signal-bar
+                }
+
+                // Pin el at current center
                 el.style.position = "fixed";
                 el.style.left = fromX + "px";
                 el.style.top = fromY + "px";
                 el.style.transform = "translate(-50%, -50%)";
                 el.style.margin = "0";
                 el.style.whiteSpace = "nowrap";
+                el.style.zIndex = "100000"; // above overlay
 
-                // Transition: position + size together, then fade
                 const FLY = 0.52;
-                el.style.transition = `left ${FLY}s cubic-bezier(.4,0,.2,1), top ${FLY}s cubic-bezier(.4,0,.2,1), font-size ${FLY}s cubic-bezier(.4,0,.2,1), letter-spacing ${FLY}s cubic-bezier(.4,0,.2,1)`;
+                el.style.transition = [
+                    `left ${FLY}s cubic-bezier(.4,0,.2,1)`,
+                    `top ${FLY}s cubic-bezier(.4,0,.2,1)`,
+                    `font-size ${FLY}s cubic-bezier(.4,0,.2,1)`,
+                    `letter-spacing ${FLY}s cubic-bezier(.4,0,.2,1)`
+                ].join(", ");
 
                 void el.offsetWidth;
 
-                // Animate to destination size & position
                 el.style.left = toX + "px";
                 el.style.top = toY + "px";
                 el.style.fontSize = toSize + "px";
                 el.style.letterSpacing = toSpacing;
 
-                // After fly lands: fade out overlay to reveal page
+                // Once text has landed → fade out overlay
+                // strip-title is already populated underneath (buildSpans ran at init)
+                // We fade the flying el simultaneously with the overlay
                 setTimeout(() => {
-                    overlay.style.transition = "opacity 0.45s ease";
+                    // Fade overlay AND flying text together
+                    overlay.style.transition = "opacity 0.4s ease";
                     overlay.style.opacity = "0";
                     overlay.style.pointerEvents = "none";
-                    setTimeout(() => overlay.remove(), 480);
-                }, FLY * 1000 + 60);
+                    el.style.transition = "opacity 0.4s ease";
+                    el.style.opacity = "0";
+                    setTimeout(() => overlay.remove(), 450);
+                }, FLY * 1000 + 30);
             }
 
             frame = requestAnimationFrame(animatePhase1);
@@ -2228,6 +2256,7 @@
                     </svg>
                 </button>
                 <div id="topbar-title" style="flex:1;display:flex;align-items:center;justify-content:center;gap:6px;">
+                  <span id="topbar-logo" class="nf-logo">NO FILTER</span>
                 </div>
                 <div id="topbar-right" style="width:36px;display:flex;justify-content:flex-end;"></div>
             </div>
@@ -2456,12 +2485,20 @@
             // Topbar
             const ttitle = document.getElementById("topbar-title");
             const tright = document.getElementById("topbar-right");
-            if (ttitle) ttitle.innerHTML = s.view === "group-feed"
-                ? `<div style="display:flex;align-items:center;gap:10px;">
-             <span id="topbar-logo" style="font-family:'Bebas Neue',cursive;font-size:28px;letter-spacing:5px;">${escHtml(s.currentGroupName.toUpperCase())}</span>
-             <button onclick="openGroupSettings('${s.currentGroupId}')" style="background:none;border:none;color:#aaa;cursor:pointer;display:flex;">${I.Settings}</button>
-           </div>`
-                : `<span id="topbar-logo" class="nf-logo" data-text="NO FILTER">NO FILTER</span>`;
+            if (ttitle) {
+                if (s.view === "group-feed") {
+                    ttitle.innerHTML = `<div style="display:flex;flex-direction:column;gap:1px;align-items:center;">
+                        <span style="font-size:9px;letter-spacing:2px;color:#aaa;font-family:'DM Mono',monospace;text-transform:uppercase;">Gruppo</span>
+                        <span id="topbar-logo" style="font-family:'Bebas Neue',cursive;font-size:24px;letter-spacing:4px;">${escHtml(s.currentGroupName.toUpperCase())}</span>
+                    </div>`;
+                } else {
+                    // Only rewrite if not already showing NO FILTER (avoid destroying the element)
+                    const existing = document.getElementById("topbar-logo");
+                    if (!existing || existing.textContent.trim() !== "NO FILTER") {
+                        ttitle.innerHTML = `<span id="topbar-logo" class="nf-logo">NO FILTER</span>`;
+                    }
+                }
+            }
             if (tright) tright.innerHTML = "";
 
             // Left sidebar (desktop)
@@ -4425,11 +4462,12 @@
             };
 
             // Auto glitch loop: every 2-4s alternates soft/hard
+            // Only runs on desktop (signal-bar visible); mobile topbar-logo has its own scramble
             let lastHard = 0;
             function autoGlitch() {
                 const delay = 2000 + Math.random() * 2000;
                 setTimeout(() => {
-                    if (!scrambling) {
+                    if (!scrambling && window.innerWidth >= 900) {
                         const now = Date.now();
                         const doHard = (now - lastHard > 6000) && Math.random() > 0.5;
                         if (doHard) { hardGlitch(); lastHard = now; }
@@ -4439,7 +4477,7 @@
                 }, delay);
             }
 
-            // Init
+            // Build spans immediately so strip-title is always populated
             buildSpans(TARGET);
             autoGlitch();
         })();
