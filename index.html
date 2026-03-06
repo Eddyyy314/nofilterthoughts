@@ -1108,10 +1108,10 @@
       opacity: 0;
     }
 
-    /* ── RESPONSIVE ── */
+    /* ── RESPONSIVE TABLET ── */
     @media (max-width: 900px) {
       nav {
-        padding: 16px 20px;
+        padding: 14px 20px;
       }
 
       #hero {
@@ -1122,19 +1122,12 @@
         grid-template-columns: 1fr 1fr;
       }
 
-      .b1,
-      .b2,
-      .b3,
-      .b4,
-      .b5,
-      .b6 {
+      .b1, .b2, .b3, .b4, .b5, .b6 {
         grid-column: span 2;
         grid-row: span 1;
       }
 
-      #features,
-      #referral,
-      .manifesto {
+      #features, #referral, .manifesto {
         padding-left: 20px;
         padding-right: 20px;
       }
@@ -1149,31 +1142,276 @@
         flex-direction: column;
         gap: 14px;
         text-align: center;
+        padding: 28px 20px;
       }
     }
 
+    /* ── RESPONSIVE MOBILE ── */
     @media (max-width: 560px) {
-      .bento {
-        grid-template-columns: 1fr;
+
+      /* NAV: nascondi nav-live, tieni logo e CTA */
+      nav {
+        padding: 13px 16px;
       }
 
-      .b1,
-      .b2,
-      .b3,
-      .b4,
-      .b5,
-      .b6 {
+      .nav-live {
+        display: none;
+      }
+
+      .nav-cta {
+        font-size: 10px;
+        padding: 8px 14px;
+        letter-spacing: 1px;
+      }
+
+      /* HERO */
+      #hero {
+        padding: 90px 16px 50px;
+        min-height: auto;
+      }
+
+      .hero-eyebrow {
+        font-size: 9px;
+        letter-spacing: 2.5px;
+        margin-bottom: 20px;
+      }
+
+      h1 {
+        font-size: clamp(72px, 22vw, 120px);
+      }
+
+      .hero-sub {
+        font-size: 14px;
+        margin-bottom: 32px;
+      }
+
+      /* WAITLIST BOX */
+      .waitlist-wrap {
+        width: 100%;
+        max-width: 100%;
+      }
+
+      .waitlist-box {
+        padding: 22px 18px;
+        border-radius: 16px;
+      }
+
+      .counter-row {
+        margin-bottom: 14px;
+      }
+
+      .c-num {
+        font-size: 34px;
+      }
+
+      .c-label {
+        font-size: 8px;
+      }
+
+      /* INPUT ROW: vertical stack */
+      .input-row {
+        flex-direction: column;
+        gap: 8px;
+        margin-bottom: 10px;
+      }
+
+      .email-in {
+        width: 100%;
+        padding: 14px 16px;
+        font-size: 16px; /* evita zoom iOS */
+        border-radius: 12px;
+      }
+
+      .cta-btn {
+        width: 100%;
+        padding: 14px 20px;
+        font-size: 12px;
+        letter-spacing: 2px;
+        border-radius: 12px;
+        text-align: center;
+      }
+
+      .box-note {
+        font-size: 9px;
+      }
+
+      /* DEMO POST */
+      .demo-strip {
+        max-width: 100%;
+      }
+
+      .demo-post {
+        padding: 16px 14px;
+      }
+
+      /* BENTO */
+      .bento {
+        grid-template-columns: 1fr;
+        gap: 8px;
+      }
+
+      .b1, .b2, .b3, .b4, .b5, .b6 {
         grid-column: span 1;
       }
 
-      .input-row {
+      .bc {
+        padding: 20px 18px;
+      }
+
+      .bc-big-num {
+        font-size: 48px;
+      }
+
+      .bc-title {
+        font-size: 15px;
+      }
+
+      .bc-desc {
+        font-size: 12px;
+      }
+
+      /* MANIFESTO */
+      .manifesto {
+        flex-direction: column;
+        gap: 8px;
+        padding: 0 16px 60px;
+      }
+
+      .manif-item {
+        padding: 18px 16px;
+      }
+
+      /* REFERRAL */
+      #referral {
+        padding: 10px 16px 60px;
+      }
+
+      .ref-box {
+        grid-template-columns: 1fr;
+        gap: 32px;
+        padding: 24px 20px;
+        border-radius: 16px;
+      }
+
+      .ref-title {
+        font-size: 42px;
+      }
+
+      .ref-desc {
+        font-size: 13px;
+      }
+
+      .ref-link-row {
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      .ref-link-box {
+        font-size: 10px;
+        padding: 12px 12px;
+      }
+
+      .ref-copy-btn {
+        width: 100%;
+        text-align: center;
+        padding: 13px;
+      }
+
+      /* CHECK POSIZIONE: stack verticale */
+      #check-email-in {
+        font-size: 16px !important; /* evita zoom iOS */
+      }
+
+      /* TIER LIST */
+      .tier {
+        padding: 12px 14px;
+        gap: 10px;
+      }
+
+      .tier-n {
+        font-size: 22px;
+        width: 26px;
+      }
+
+      .tier-name {
+        font-size: 13px;
+      }
+
+      .tier-badge {
+        font-size: 8px;
+        padding: 3px 8px;
+      }
+
+      /* FEATURES SECTION */
+      #features {
+        padding: 60px 16px 40px;
+      }
+
+      /* FOOTER */
+      footer {
+        flex-direction: column;
+        gap: 10px;
+        text-align: center;
+        padding: 24px 16px;
+      }
+
+      .footer-mono {
+        font-size: 9px;
+      }
+
+      /* TOAST */
+      .toast {
+        bottom: 16px;
+        font-size: 10px;
+        padding: 11px 20px;
+        max-width: 88vw;
+        white-space: normal;
+        text-align: center;
+        border-radius: 8px;
+      }
+    }
+
+    /* Fix per iPhone: evita zoom su focus input */
+    @media (max-width: 560px) and (hover: none) {
+      input[type="email"], input[type="text"] {
+        font-size: 16px !important;
+      }
+    }
+
+    .check-pos-row {
+      display: flex;
+      gap: 8px;
+    }
+
+    .check-pos-btn {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 10px;
+      padding: 11px 18px;
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--fg);
+      cursor: crosshair;
+      white-space: nowrap;
+      transition: all 0.2s;
+    }
+
+    @media (max-width: 560px) {
+      .check-pos-row {
         flex-direction: column;
       }
 
-      .manifesto {
-        flex-direction: column;
+      .check-pos-btn {
+        width: 100%;
+        padding: 13px;
+        text-align: center;
+        font-size: 11px;
+        letter-spacing: 2px;
       }
     }
+
   </style>
 </head>
 
@@ -1410,11 +1648,10 @@
           <!-- CHECK POSIZIONE -->
           <div style="margin-top:36px;border-top:1px solid rgba(255,255,255,0.06);padding-top:28px;">
             <div style="font-family:var(--mono);font-size:9px;letter-spacing:3px;color:var(--muted);text-transform:uppercase;margin-bottom:12px;">GIÀ IN LISTA? CONTROLLA IL TUO POSTO →</div>
-            <div style="display:flex;gap:8px;">
+            <div class="check-pos-row">
               <input id="check-email-in" type="email" placeholder="la tua mail" autocomplete="email"
                 style="flex:1;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:11px 14px;font-family:var(--mono);font-size:12px;color:var(--fg);outline:none;letter-spacing:0.3px;transition:border-color 0.2s;" />
-              <button onclick="checkPosition()"
-                style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:11px 18px;font-family:var(--mono);font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--fg);cursor:crosshair;white-space:nowrap;transition:all 0.2s;"
+              <button onclick="checkPosition()" class="check-pos-btn"
                 onmouseover="this.style.borderColor='rgba(255,87,51,0.4)';this.style.color='var(--orange)'"
                 onmouseout="this.style.borderColor='rgba(255,255,255,0.1)';this.style.color='var(--fg)'">VERIFICA →</button>
             </div>
