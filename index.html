@@ -2005,8 +2005,7 @@
           const data = await r.json();
           if (data && data.length > 0) {
             const row = data[0];
-            const effPos = calcEffectivePosition(row.position, row.referral_count || 0);
-            // Carica lo stato localmente così la sezione referral si attiva
+            // Salva stato → renderReferralSection() mostrerà ref-post completo con link e tutto
             saveUserState({
               email: v,
               ref_code: row.ref_code,
@@ -2014,8 +2013,7 @@
               referral_count: row.referral_count || 0
             });
             renderReferralSection();
-            res_el.style.color = 'var(--acid)';
-            res_el.textContent = `✓ SEI #${effPos} — BENVENUTO/A DI RITORNO`;
+            showToast('✓ BENTORNATO/A — SEI ANCORA IN LISTA');
             setTimeout(() => {
               document.getElementById('referral').scrollIntoView({ behavior: 'smooth', block: 'center' });
             }, 400);
