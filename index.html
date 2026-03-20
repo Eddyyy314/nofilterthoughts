@@ -2596,6 +2596,14 @@
 
         /* ── Render ── */
         function render() {
+            // Preserve active comment/reply input values and focus before DOM is rewritten
+            const _savedInputs = {};
+            let _focusedInputId = null;
+            document.querySelectorAll("input[id^='comment-'], input[id^='reply-']").forEach(el => {
+                if (el.value) _savedInputs[el.id] = el.value;
+                if (document.activeElement === el) _focusedInputId = el.id;
+            });
+
             const s = state;
             const isFeed = s.view === "feed" || s.view === "group-feed";
             const viewChanged = s.view !== _lastRenderedView;
@@ -2646,6 +2654,18 @@
                     _lastRenderedView = s.view;
                 } else {
                     app.innerHTML = html;
+                }
+            }
+
+            // Restore comment/reply input values and focus after DOM rewrite
+            if (Object.keys(_savedInputs).length || _focusedInputId) {
+                Object.entries(_savedInputs).forEach(([id, val]) => {
+                    const el = document.getElementById(id);
+                    if (el) el.value = val;
+                });
+                if (_focusedInputId) {
+                    const el = document.getElementById(_focusedInputId);
+                    if (el) { el.focus(); const len = el.value.length; el.setSelectionRange(len, len); }
                 }
             }
 
@@ -4466,10 +4486,11 @@
             if (state.realtimeChannel) sb.removeChannel(state.realtimeChannel);
             const ch = sb.channel("nf-rt-" + groupId)
                 .on("postgres_changes", { event: "INSERT", schema: "public", table: "posts" }, p => { const post = p.new; post.id = String(post.id); if (post.language !== LANG || post.group_id !== state.currentGroupId) return; state.posts = [post, ...state.posts]; render(); })
-                .on("postgres_changes", { event: "INSERT", schema: "public", table: "reactions" }, p => { const r = p.new; r.id = String(r.id); r.post_id = String(r.post_id); if (!state.reactions[r.post_id]) state.reactions[r.post_id] = []; state.reactions = { ...state.reactions, [r.post_id]: [...state.reactions[r.post_id], r] }; render(); })
+                .on("postgres_changes", { event: "DELETE", schema: "public", table: "posts" }, p => { const id = String(p.old.id); state.posts = state.posts.filter(x => x.id !== id); state.hotPosts = state.hotPosts.filter(x => x.id !== id); render(); })
+                .on("postgres_changes", { event: "INSERT", schema: "public", table: "reactions" }, p => { const r = p.new; r.id = String(r.id); r.post_id = String(r.post_id); if (!state.reactions[r.post_id]) state.reactions[r.post_id] = []; const existing = state.reactions[r.post_id]; const alreadyPresent = existing.some(x => x.reactor_id === r.reactor_id && x.emoji === r.emoji && x.post_id === r.post_id); if (alreadyPresent) { state.reactions = { ...state.reactions, [r.post_id]: existing.map(x => (x.reactor_id === r.reactor_id && x.emoji === r.emoji && x.post_id === r.post_id) ? r : x) }; } else { state.reactions = { ...state.reactions, [r.post_id]: [...existing, r] }; } render(); })
                 .on("postgres_changes", { event: "DELETE", schema: "public", table: "reactions" }, p => { const r = p.old; r.id = String(r.id); r.post_id = String(r.post_id); if (!state.reactions[r.post_id]) return; state.reactions = { ...state.reactions, [r.post_id]: state.reactions[r.post_id].filter(x => x.id !== r.id) }; render(); })
                 .on("postgres_changes", { event: "INSERT", schema: "public", table: "comments" }, p => { const c = p.new; c.id = String(c.id); c.post_id = String(c.post_id); if (c.group_id !== state.currentGroupId) return; if (!state.comments[c.post_id]) state.comments[c.post_id] = []; state.comments = { ...state.comments, [c.post_id]: [...state.comments[c.post_id], c] }; render(); })
-                .on("postgres_changes", { event: "INSERT", schema: "public", table: "comment_reactions" }, p => { const r = p.new; r.id = String(r.id); r.comment_id = String(r.comment_id); if (!state.commentReactions[r.comment_id]) state.commentReactions[r.comment_id] = []; state.commentReactions = { ...state.commentReactions, [r.comment_id]: [...state.commentReactions[r.comment_id], r] }; render(); })
+                .on("postgres_changes", { event: "INSERT", schema: "public", table: "comment_reactions" }, p => { const r = p.new; r.id = String(r.id); r.comment_id = String(r.comment_id); if (!state.commentReactions[r.comment_id]) state.commentReactions[r.comment_id] = []; const existing = state.commentReactions[r.comment_id]; const alreadyPresent = existing.some(x => x.reactor_id === r.reactor_id && x.emoji === r.emoji && x.comment_id === r.comment_id); if (alreadyPresent) { state.commentReactions = { ...state.commentReactions, [r.comment_id]: existing.map(x => (x.reactor_id === r.reactor_id && x.emoji === r.emoji && x.comment_id === r.comment_id) ? r : x) }; } else { state.commentReactions = { ...state.commentReactions, [r.comment_id]: [...existing, r] }; } render(); })
                 .on("postgres_changes", { event: "DELETE", schema: "public", table: "comment_reactions" }, p => { const r = p.old; r.id = String(r.id); r.comment_id = String(r.comment_id); if (!state.commentReactions[r.comment_id]) return; state.commentReactions = { ...state.commentReactions, [r.comment_id]: state.commentReactions[r.comment_id].filter(x => x.id !== r.id) }; render(); })
                 .on("postgres_changes", { event: "INSERT", schema: "public", table: "polls" }, () => { loadPolls(); loadDuels(); })
                 .on("postgres_changes", { event: "INSERT", schema: "public", table: "poll_votes" }, p => { const v = p.new; v.poll_id = String(v.poll_id); const e = state.pollVotes[v.poll_id] || { votes: [], myVote: null }; const votes = [...e.votes]; votes[v.option_index] = (votes[v.option_index] || 0) + 1; state.pollVotes = { ...state.pollVotes, [v.poll_id]: { votes, myVote: v.voter_id === deviceId ? v.option_index : e.myVote } }; if (state.duelVotes[v.poll_id]) { const ed = state.duelVotes[v.poll_id]; const dvotes = [...ed.votes]; dvotes[v.option_index] = (dvotes[v.option_index] || 0) + 1; state.duelVotes = { ...state.duelVotes, [v.poll_id]: { votes: dvotes, myVote: v.voter_id === deviceId ? v.option_index : ed.myVote } }; } render(); })
