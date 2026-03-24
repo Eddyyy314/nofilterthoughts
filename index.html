@@ -3797,9 +3797,7 @@
 
         /* ── Event handlers / Actions ── */
         function attachEvents() {
-            const params = new URLSearchParams(window.location.search);
-            const joinId = params.get("join");
-            if (joinId && !state._joinHandled) { state._joinHandled = true; joinGroupByIdRaw(joinId); }
+            // join handling is done in boot()
         }
 
         function toggleSidebar() { state.sidebarOpen = !state.sidebarOpen; render(); }
@@ -4114,13 +4112,15 @@
                 showToast("ID o link non valido.", true);
                 return;
             }
-            // Verify the group has at least one post on Supabase
-            const { data } = await sb.from("posts").select("id,group_id").eq("group_id", id).limit(1);
-            if (!data || data.length === 0) {
-                showToast("Gruppo non trovato.", true);
-                return;
-            }
-            const g = { id, name: id, isPrivate: true, isAdmin: false };
+            // Try to get group name from a _GROUP_META_ post, otherwise use id
+            let groupName = id;
+            try {
+                const { data: metaData } = await sb.from("posts").select("text,category").eq("group_id", id).eq("category", "_GROUP_META_").limit(1);
+                if (metaData && metaData.length > 0 && metaData[0].text) {
+                    groupName = metaData[0].text;
+                }
+            } catch (_) {}
+            const g = { id, name: groupName, isPrivate: true, isAdmin: false };
             const u = [...state.myGroups, g]; saveMyGroups(u); state.myGroups = u;
             enterGroup(g);
         }
