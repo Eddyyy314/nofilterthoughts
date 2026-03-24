@@ -4085,17 +4085,15 @@
             const u = [...state.myGroups, g]; saveMyGroups(u); state.myGroups = u;
             state.newGroup = { name: "", isPrivate: true, description: "" };
             state.createOpen = false;
-            // If public, publish meta post to Supabase so others can discover it
-            if (!g.isPrivate) {
-                await sb.from("posts").insert({
-                    language: LANG,
-                    category: "_GROUP_META_",
-                    mood: "",
-                    author: userName,
-                    text: JSON.stringify({ name, description: desc, isPrivate: false }),
-                    group_id: id
-                });
-            }
+            // Always publish meta post to Supabase so members joining via link can read name/description
+            await sb.from("posts").insert({
+                language: LANG,
+                category: "_GROUP_META_",
+                mood: "",
+                author: userName,
+                text: JSON.stringify({ name, description: desc, isPrivate: !!g.isPrivate }),
+                group_id: id
+            });
             enterGroup(g);
             showToast("Gruppo creato!");
         }
@@ -4112,15 +4110,25 @@
                 showToast("ID o link non valido.", true);
                 return;
             }
-            // Try to get group name from a _GROUP_META_ post, otherwise use id
+            // Fetch group metadata from Supabase (_GROUP_META_ post)
             let groupName = id;
+            let groupDesc = "";
+            let groupIsPrivate = true;
             try {
-                const { data: metaData } = await sb.from("posts").select("text,category").eq("group_id", id).eq("category", "_GROUP_META_").limit(1);
+                const { data: metaData } = await sb.from("posts").select("text").eq("group_id", id).eq("category", "_GROUP_META_").limit(1);
                 if (metaData && metaData.length > 0 && metaData[0].text) {
-                    groupName = metaData[0].text;
+                    try {
+                        const meta = JSON.parse(metaData[0].text);
+                        if (meta.name) groupName = meta.name;
+                        if (meta.description) groupDesc = meta.description;
+                        if (typeof meta.isPrivate === "boolean") groupIsPrivate = meta.isPrivate;
+                    } catch (_) {
+                        // fallback: text is the name directly (old format)
+                        groupName = metaData[0].text;
+                    }
                 }
             } catch (_) {}
-            const g = { id, name: groupName, isPrivate: true, isAdmin: false };
+            const g = { id, name: groupName, description: groupDesc, isPrivate: groupIsPrivate, isAdmin: false };
             const u = [...state.myGroups, g]; saveMyGroups(u); state.myGroups = u;
             enterGroup(g);
         }
@@ -4276,21 +4284,24 @@
                     render();
                 });
         }
-        function updateGroupDesc(gid, desc) { const u = state.myGroups.map(g => g.id === gid ? { ...g, description: desc } : g); saveMyGroups(u); state.myGroups = u; }
+        async function updateGroupDesc(gid, desc) {
+            const u = state.myGroups.map(g => g.id === gid ? { ...g, description: desc } : g);
+            saveMyGroups(u); state.myGroups = u;
+            const g = state.myGroups.find(x => x.id === gid);
+            if (g) {
+                await sb.from("posts")
+                    .update({ text: JSON.stringify({ name: g.name, description: desc, isPrivate: !!g.isPrivate }) })
+                    .eq("group_id", gid).eq("category", "_GROUP_META_");
+            }
+        }
         async function toggleGroupPrivacy(gid) {
             const u = state.myGroups.map(g => g.id === gid ? { ...g, isPrivate: !g.isPrivate } : g);
             saveMyGroups(u); state.myGroups = u;
             const g = state.myGroups.find(x => x.id === gid);
-            if (g && !g.isPrivate) {
-                // Publish meta post so group is discoverable
-                await sb.from("posts").insert({
-                    language: LANG,
-                    category: "_GROUP_META_",
-                    mood: "",
-                    author: userName,
-                    text: JSON.stringify({ name: g.name, description: g.description || "", isPrivate: false }),
-                    group_id: gid
-                });
+            if (g) {
+                await sb.from("posts")
+                    .update({ text: JSON.stringify({ name: g.name, description: g.description || "", isPrivate: !!g.isPrivate }) })
+                    .eq("group_id", gid).eq("category", "_GROUP_META_");
             }
             showToast("Aggiornato."); render();
         }
