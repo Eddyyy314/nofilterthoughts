@@ -2451,7 +2451,7 @@
         </p>
         <p style="margin-bottom:12px;"><strong>Conservazione dati:</strong> Post, commenti e voti vengono
           eliminati
-          automaticamente entro 24 ore. Il device ID è conservato solo localmente sul tuo dispositivo e
+          conservati in forma anonima per rendere utile l’archivio della community. Il device ID è conservato solo localmente sul tuo dispositivo e
           cancellabile in
           qualsiasi momento da Impostazioni → Resetta dati.</p>
         <p style="margin-bottom:12px;"><strong>Cookie e storage:</strong> Utilizziamo esclusivamente
@@ -3074,7 +3074,7 @@
    <button class="btn-sm" onclick="openCreate('poll')">+ Nuovo</button>
   </div>
   ${s.loading ? `<div class="nf-loader"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 3464 3464"><g transform="translate(0,3464) scale(0.1,-0.1)" fill="#0a0a0a" stroke="none"><path d="M11366 22614 c-15 -14 -16 -515 -16 -5364 l0 -5350 23 -15 c21 -13 659 -15 6020 -13 4904 3 5998 5 6009 16 11 11 14 650 16 3470 1 1901 0 3484 -3 3517 -3 33 -10 67 -14 74 -11 17 -877 19 -894 2 -8 -8 -11 -579 -12 -1981 l-2 -1971 -22 -22 -22 -22 -3952 -3 c-2173 -1 -3966 0 -3984 3 -17 3 -41 13 -53 23 l-21 17 1 2255 c0 2000 2 2256 16 2270 13 13 571 15 5105 15 5038 0 5091 0 5105 -20 12 -16 14 -333 12 -2273 l-3 -2254 -24 -19 c-22 -18 -43 -19 -321 -19 -230 0 -300 -3 -308 -13 -17 -20 -19 -852 -2 -872 11 -13 105 -15 781 -15 749 0 769 0 779 19 7 14 10 1025 10 3195 0 3129 0 3175 -19 3186 -13 7 -365 10 -1069 10 -1003 0 -1050 1 -1065 18 -16 17 -17 105 -17 1066 0 703 -3 1054 -10 1067 -11 19 -89 19 -6020 19 -5449 0 -6010 -1 -6024 -16z m11109 -917 c22 -31 25 -118 23 -674 -3 -469 -5 -534 -19 -548 -14 -14 -427 -16 -4470 -16 -2810 1 -4460 -3 -4469 -9 -13 -8 -15 -373 -15 -3187 0 -1748 3 -3186 7 -3195 7 -17 228 -18 4452 -18 2759 0 4454 -4 4469 -9 14 -6 29 -20 34 -33 4 -13 7 -223 5 -468 -1 -245 -3 -507 -2 -583 0 -124 -2 -139 -20 -157 -20 -20 -33 -20 -5094 -20 -4841 0 -5075 1 -5096 18 l-22 17 2 4435 c0 3042 4 4438 11 4446 6 7 23 14 37 16 15 2 2305 3 5090 3 4912 0 5064 -1 5077 -18z"/></g></svg></div>` : ""}
-  ${!s.loading && s.polls.length === 0 ? `<div style="text-align:center;padding:60px;color:#bbb;"><div style="font-size:24px;margin-bottom:10px;">—</div><div style="font-size:13px;">Nessun poll attivo.</div></div>` : ""}
+  ${!s.loading && s.polls.length === 0 ? `<div style="text-align:center;padding:60px;color:#bbb;"><div style="font-size:24px;margin-bottom:10px;">—</div><div style="font-size:13px;">Nessun poll ancora.</div></div>` : ""}
   ${s.polls.map((p, i) => buildPollCard(p, i)).join("")}
  `;
     }
@@ -3089,7 +3089,7 @@
   <div class="card slide-up" style="animation-delay:${idx * 0.04}s;">
    <div style="display:flex;justify-content:space-between;margin-bottom:9px;">
     ${poll.category ? `<span class="chip">${escHtml(poll.category)}</span>` : "<span></span>"}
-    <span style="font-size:11px;color:#bbb;display:flex;align-items:center;gap:3px;">${I.ClockSm} ${expiresIn(null, poll.expires_at)}</span>
+    <span style="font-size:11px;color:#bbb;display:flex;align-items:center;gap:3px;">${I.ClockSm} ${timeAgo(poll.created_at)}</span>
    </div>
    <p style="font-size:14px;font-weight:500;margin-bottom:11px;line-height:1.5;">${escHtml(poll.question)}</p>
    <div style="display:flex;flex-direction:column;gap:7px;">
@@ -3140,7 +3140,7 @@
    <div style="padding:13px 16px 9px;background:#fafafa;border-bottom:1px solid #eee;">
     <div style="font-size:11px;color:#bbb;letter-spacing:1px;text-transform:uppercase;margin-bottom:3px;">Confronto</div>
     <p style="font-size:15px;font-weight:500;line-height:1.4;">${escHtml(duel.question)}</p>
-    <div style="font-size:10px;color:#bbb;margin-top:4px;display:flex;align-items:center;gap:4px;">${I.ClockSm} scade tra ${expiresIn(null, duel.expires_at)} · ${total} voti</div>
+    <div style="font-size:10px;color:#bbb;margin-top:4px;display:flex;align-items:center;gap:4px;">${I.ClockSm} ${timeAgo(duel.created_at)} · ${total} voti</div>
    </div>
    <div style="display:grid;grid-template-columns:1fr 1fr;">
     ${[0, 1].map(side => {
@@ -3745,11 +3745,11 @@
       ${post.mood ? `<span style="background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.15);color:rgba(255,255,255,0.6);padding:3px 9px;border-radius:4px;font-size:11px;">${escHtml(post.mood)}</span>` : ""}
      </div>
      <p style="font-size:${textSize}px;line-height:1.55;color:#fff;font-family:'DM Mono',monospace;margin-bottom:16px;font-weight:${post.text.length < 60 ? 500 : 400};">${escHtml(post.text)}</p>
-     <div style="font-size:10px;color:rgba(255,255,255,0.3);margin-bottom:18px;display:flex;align-items:center;gap:5px;">${I.ClockSm} ${timeAgo(post.created_at)} · scade tra ${expiresIn(post.created_at)}</div>
+     <div style="font-size:10px;color:rgba(255,255,255,0.3);margin-bottom:18px;display:flex;align-items:center;gap:5px;">${I.ClockSm} ${timeAgo(post.created_at)}</div>
      <div style="display:flex;gap:7px;flex-wrap:wrap;align-items:center;margin-bottom:13px;position:relative;">
       ${topRx.map(({ emoji, count, mine }) => `<button onclick="ttReact('${post.id}','${emoji}')" style="background:${mine ? "#fff" : "rgba(255,255,255,0.08)"};border:1px solid ${mine ? "#fff" : "rgba(255,255,255,0.15)"};color:${mine ? "#000" : "#fff"};padding:6px 12px;border-radius:18px;font-size:13px;cursor:pointer;display:flex;align-items:center;gap:4px;transition:all 0.2s;font-family:'DM Mono',monospace;">${emoji} ${count}</button>`).join("")}
       <div style="position:relative;">
-       <button onclick="toggleTtReactPicker()" style="background:${myRx ? "#fff" : "rgba(255,255,255,0.08)"};border:1px solid ${myRx ? "#fff" : "rgba(255,255,255,0.2)"};color:${myRx ? "#000" : "rgba(255,255,255,0.7)"};padding:6px 14px;border-radius:18px;font-size:12px;cursor:pointer;font-family:'DM Mono',monospace;transition:all 0.2s;">${myRx ? "✓ react" : "+ react"}</button>
+       <button onclick="toggleTtReactPicker()" style="background:${myRx ? "#fff" : "rgba(255,255,255,0.08)"};border:1px solid ${myRx ? "#fff" : "rgba(255,255,255,0.2)"};color:${myRx ? "#000" : "rgba(255,255,255,0.7)"};padding:6px 14px;border-radius:18px;font-size:12px;cursor:pointer;font-family:'DM Mono',monospace;transition:all 0.2s;">${myRx ? "reagito" : "+ reazione"}</button>
        ${s.tiktokReactPickerOpen ? `
         <div style="position:fixed;inset:0;z-index:1;" onclick="state.tiktokReactPickerOpen=false;render();"></div>
         <div style="position:absolute;bottom:calc(100% + 8px);left:0;background:#1a1a1a;border:1px solid #333;border-radius:12px;padding:8px 10px;display:flex;gap:4px;z-index:2;box-shadow:0 8px 30px rgba(0,0,0,0.5);animation:picker-in 0.18s cubic-bezier(.34,1.56,.64,1);">
@@ -3924,7 +3924,7 @@
           const posts = state.posts.filter(p => !state.reportedPosts.includes(p.id));
           if (posts.length) {
             const post = posts[state.tiktokIdx % posts.length];
-            ttReact(post.id, "❤️");
+            ttReact(post.id, "Utile");
             showDoubleTapHeart(e.changedTouches[0].clientX, e.changedTouches[0].clientY);
           }
         } else {
@@ -4328,7 +4328,7 @@
       if (opts.length < 2) { showToast("Almeno 2 opzioni.", true); return; }
       if (opts.some(o => o.length > MAX_POLL_OPT_LEN)) { showToast("Opzione troppo lunga (max " + MAX_POLL_OPT_LEN + " caratteri).", true); return; }
       state.posting = true; render();
-      const { error } = await sb.from("polls").insert({ language: LANG, category: state.newPoll.category || "Opinione", question: q.trim(), options: opts, creator_id: deviceId, expires_at: new Date(Date.now() + 24 * 3600 * 1000).toISOString() });
+      const { error } = await sb.from("polls").insert({ language: LANG, category: state.newPoll.category || "Opinione", question: q.trim(), options: opts, creator_id: deviceId, expires_at: "2099-12-31T23:59:59.999Z" });
       state.posting = false;
       if (error) { showToast("Errore: " + error.message, true); render(); return; }
       state.newPoll = { question: "", options: ["", ""], category: "" }; state.createOpen = false; showToast("Poll creato."); goView("polls");
@@ -4342,7 +4342,7 @@
       if (state.newDuel.sideA.trim().length > MAX_POLL_OPT_LEN || state.newDuel.sideB.trim().length > MAX_POLL_OPT_LEN) { showToast("Lato troppo lungo (max " + MAX_POLL_OPT_LEN + " caratteri).", true); return; }
       if (!state.newDuel.sideA.trim() || !state.newDuel.sideB.trim()) { showToast("Scrivi entrambi i lati.", true); return; }
       state.posting = true; render();
-      const { error } = await sb.from("polls").insert({ language: LANG, category: "DUEL", question: state.newDuel.topic.trim(), options: [state.newDuel.sideA.trim(), state.newDuel.sideB.trim()], creator_id: deviceId, expires_at: new Date(Date.now() + 24 * 3600 * 1000).toISOString() });
+      const { error } = await sb.from("polls").insert({ language: LANG, category: "DUEL", question: state.newDuel.topic.trim(), options: [state.newDuel.sideA.trim(), state.newDuel.sideB.trim()], creator_id: deviceId, expires_at: "2099-12-31T23:59:59.999Z" });
       state.posting = false;
       if (error) { showToast("Errore: " + error.message, true); render(); return; }
       state.newDuel = { topic: "", sideA: "", sideB: "", category: "" }; state.createOpen = false; showToast("Confronto lanciato."); goView("duels");
@@ -4352,7 +4352,7 @@
       if (!state.challengePost || !txt.trim() || txt.trim().length < 5) return;
       state.posting = true; render();
       const sideA = state.challengePost.text.length > 80 ? state.challengePost.text.slice(0, 77) + "..." : state.challengePost.text;
-      const { error } = await sb.from("polls").insert({ language: LANG, category: "DUEL", question: "Chi ha ragione?", options: [sideA, txt.trim()], creator_id: deviceId, expires_at: new Date(Date.now() + 24 * 3600 * 1000).toISOString() });
+      const { error } = await sb.from("polls").insert({ language: LANG, category: "DUEL", question: "Chi ha ragione?", options: [sideA, txt.trim()], creator_id: deviceId, expires_at: "2099-12-31T23:59:59.999Z" });
       state.posting = false;
       if (error) { showToast("Errore: " + error.message, true); render(); return; }
       state.challengePost = null; showToast("Confronto lanciato."); loadDuels(); goView("duels");
@@ -4397,8 +4397,8 @@
     }
     async function loadReactions(ids) { if (!ids.length) return; const { data } = await sb.from("reactions").select("id,post_id,emoji,reactor_id").in("post_id", ids); if (data) { const m = {}; data.forEach(r => { r.id = String(r.id); r.post_id = String(r.post_id); if (!m[r.post_id]) m[r.post_id] = []; m[r.post_id].push(r); }); state.reactions = { ...state.reactions, ...m }; } }
     async function loadComments(ids) { if (!ids.length) return; const { data } = await sb.from("comments").select("id,post_id,author,text,created_at,commenter_id").in("post_id", ids).order("created_at", { ascending: true }); if (data) { const m = {}; data.forEach(c => { c.id = String(c.id); c.post_id = String(c.post_id); if (!m[c.post_id]) m[c.post_id] = []; m[c.post_id].push(c); }); state.comments = { ...state.comments, ...m }; } const { data: crData } = await sb.from("comment_reactions").select("id,comment_id,post_id,emoji,reactor_id").in("post_id", ids); if (crData) { const crm = {}; crData.forEach(r => { r.id = String(r.id); r.comment_id = String(r.comment_id); if (!crm[r.comment_id]) crm[r.comment_id] = []; crm[r.comment_id].push(r); }); state.commentReactions = { ...state.commentReactions, ...crm }; } }
-    async function loadPolls() { const { data } = await sb.from("polls").select("id,created_at,expires_at,language,category,question,options,creator_id").eq("language", LANG).neq("category", "DUEL").gt("expires_at", new Date().toISOString()).order("created_at", { ascending: false }); if (data) { state.polls = data.map(p => ({ ...p, id: String(p.id) })); if (data.length) { const ids = state.polls.map(p => p.id); const { data: vs } = await sb.from("poll_votes").select("poll_id,option_index,voter_id").in("poll_id", ids); if (vs) { const m = {}; ids.forEach(id => { m[id] = { votes: [], myVote: null }; }); vs.forEach(v => { v.poll_id = String(v.poll_id); if (!m[v.poll_id]) return; m[v.poll_id].votes[v.option_index] = (m[v.poll_id].votes[v.option_index] || 0) + 1; if (v.voter_id === deviceId) m[v.poll_id].myVote = v.option_index; }); state.pollVotes = m; } } } }
-    async function loadDuels() { const { data } = await sb.from("polls").select("id,created_at,expires_at,language,category,question,options,creator_id").eq("language", LANG).eq("category", "DUEL").gt("expires_at", new Date().toISOString()).order("created_at", { ascending: false }); if (data) { state.duels = data.map(d => ({ ...d, id: String(d.id) })); if (data.length) { const ids = state.duels.map(d => d.id); const { data: vs } = await sb.from("poll_votes").select("poll_id,option_index,voter_id").in("poll_id", ids); if (vs) { const m = {}; ids.forEach(id => { m[id] = { votes: [0, 0], myVote: null }; }); vs.forEach(v => { v.poll_id = String(v.poll_id); if (!m[v.poll_id]) return; m[v.poll_id].votes[v.option_index] = (m[v.poll_id].votes[v.option_index] || 0) + 1; if (v.voter_id === deviceId) m[v.poll_id].myVote = v.option_index; }); state.duelVotes = m; } } } }
+    async function loadPolls() { const { data } = await sb.from("polls").select("id,created_at,expires_at,language,category,question,options,creator_id").eq("language", LANG).neq("category", "DUEL").order("created_at", { ascending: false }); if (data) { state.polls = data.map(p => ({ ...p, id: String(p.id) })); if (data.length) { const ids = state.polls.map(p => p.id); const { data: vs } = await sb.from("poll_votes").select("poll_id,option_index,voter_id").in("poll_id", ids); if (vs) { const m = {}; ids.forEach(id => { m[id] = { votes: [], myVote: null }; }); vs.forEach(v => { v.poll_id = String(v.poll_id); if (!m[v.poll_id]) return; m[v.poll_id].votes[v.option_index] = (m[v.poll_id].votes[v.option_index] || 0) + 1; if (v.voter_id === deviceId) m[v.poll_id].myVote = v.option_index; }); state.pollVotes = m; } } } }
+    async function loadDuels() { const { data } = await sb.from("polls").select("id,created_at,expires_at,language,category,question,options,creator_id").eq("language", LANG).eq("category", "DUEL").order("created_at", { ascending: false }); if (data) { state.duels = data.map(d => ({ ...d, id: String(d.id) })); if (data.length) { const ids = state.duels.map(d => d.id); const { data: vs } = await sb.from("poll_votes").select("poll_id,option_index,voter_id").in("poll_id", ids); if (vs) { const m = {}; ids.forEach(id => { m[id] = { votes: [0, 0], myVote: null }; }); vs.forEach(v => { v.poll_id = String(v.poll_id); if (!m[v.poll_id]) return; m[v.poll_id].votes[v.option_index] = (m[v.poll_id].votes[v.option_index] || 0) + 1; if (v.voter_id === deviceId) m[v.poll_id].myVote = v.option_index; }); state.duelVotes = m; } } } }
     async function loadHotPosts() { const { data: p } = await sb.from("posts").select("id,created_at,language,category,mood,author,text,group_id").eq("language", LANG).eq("group_id", "public").order("created_at", { ascending: false }).limit(500); if (!p || !p.length) { state.hotPosts = []; render(); return; } const ids = p.map(x => String(x.id)); const { data: rx } = await sb.from("reactions").select("post_id").in("post_id", ids); const counts = {}; ids.forEach(id => { counts[id] = 0; }); if (rx) rx.forEach(r => { r.post_id = String(r.post_id); counts[r.post_id] = (counts[r.post_id] || 0) + 1; }); const sorted = p.map(x => ({ ...x, id: String(x.id) })).sort((a, b) => (counts[b.id] || 0) - (counts[a.id] || 0)).slice(0, 20); sorted.forEach(post => { post._rxCount = counts[post.id] || 0; }); state.hotPosts = sorted; if (sorted.length) { const topIds = sorted.map(x => x.id); const { data: rxFull } = await sb.from("reactions").select("id,post_id,emoji,reactor_id").in("post_id", topIds); if (rxFull) { const m = {}; rxFull.forEach(r => { r.id = String(r.id); r.post_id = String(r.post_id); if (!m[r.post_id]) m[r.post_id] = []; m[r.post_id].push(r); }); state.reactions = { ...state.reactions, ...m }; } } render(); }
     async function loadTopAccounts() {
       const cutoff7 = new Date(Date.now() - 7 * 24 * 3600 * 1000).toISOString();
@@ -4480,7 +4480,7 @@
     }
 
     async function loadKingPost() { const todayStart = new Date(); todayStart.setHours(0, 0, 0, 0); const yesterdayStart = new Date(todayStart - 24 * 3600 * 1000); const stored = localStorage.getItem("nofilter_king"); if (stored) { try { const k = JSON.parse(stored); if (k.date === todayStart.toDateString()) { state.kingPost = k.post; return; } } catch (_) { } } const { data: p } = await sb.from("posts").select("id,created_at,language,category,mood,text,group_id").eq("language", LANG).eq("group_id", "public").gte("created_at", yesterdayStart.toISOString()).lt("created_at", todayStart.toISOString()); if (!p || !p.length) return; const ids = p.map(x => String(x.id)); const { data: rx } = await sb.from("reactions").select("post_id").in("post_id", ids); const counts = {}; ids.forEach(id => { counts[id] = 0; }); if (rx) rx.forEach(r => { r.post_id = String(r.post_id); counts[r.post_id] = (counts[r.post_id] || 0) + 1; }); const king = p.map(x => ({ ...x, id: String(x.id) })).sort((a, b) => (counts[b.id] || 0) - (counts[a.id] || 0))[0]; if (king) { king._rxCount = counts[king.id] || 0; state.kingPost = king; localStorage.setItem("nofilter_king", JSON.stringify({ date: todayStart.toDateString(), post: king })); } }
-    async function loadMyActivity() { const { data: mp } = await sb.from("posts").select("id,created_at,category,mood,text,group_id").eq("author", userName).order("created_at", { ascending: false }).limit(100); if (mp) state.myPosts = mp.map(x => ({ ...x, id: String(x.id) })); const { data: mpl } = await sb.from("polls").select("id,created_at,expires_at,question,options,category").eq("creator_id", deviceId).neq("category", "DUEL").gt("expires_at", new Date().toISOString()); if (mpl) state.myPolls = mpl.map(x => ({ ...x, id: String(x.id) })); const reactedIds = getMyReacted().map(String); if (reactedIds.length) { const { data: rp } = await sb.from("posts").select("id,created_at,category,mood,text,group_id,author").in("id", reactedIds.slice(-50)); if (rp) state.interactedPosts = rp.map(x => ({ ...x, id: String(x.id) })); } const { data: mc } = await sb.from("comments").select("id,post_id,text").eq("author", userName).order("created_at", { ascending: false }).limit(100); if (mc) { state.myComments = mc.map(x => ({ ...x, id: String(x.id) })); if (mc.length) { const mcIds = state.myComments.map(c => c.id); const { data: mcrData } = await sb.from("comment_reactions").select("id,comment_id,emoji,reactor_id").in("comment_id", mcIds); if (mcrData) { const crm = {}; mcrData.forEach(r => { r.id = String(r.id); r.comment_id = String(r.comment_id); if (!crm[r.comment_id]) crm[r.comment_id] = []; crm[r.comment_id].push(r); }); state.commentReactions = { ...state.commentReactions, ...crm }; } } } render(); }
+    async function loadMyActivity() { const { data: mp } = await sb.from("posts").select("id,created_at,category,mood,text,group_id").eq("author", userName).order("created_at", { ascending: false }).limit(100); if (mp) state.myPosts = mp.map(x => ({ ...x, id: String(x.id) })); const { data: mpl } = await sb.from("polls").select("id,created_at,expires_at,question,options,category").eq("creator_id", deviceId).neq("category", "DUEL"); if (mpl) state.myPolls = mpl.map(x => ({ ...x, id: String(x.id) })); const reactedIds = getMyReacted().map(String); if (reactedIds.length) { const { data: rp } = await sb.from("posts").select("id,created_at,category,mood,text,group_id,author").in("id", reactedIds.slice(-50)); if (rp) state.interactedPosts = rp.map(x => ({ ...x, id: String(x.id) })); } const { data: mc } = await sb.from("comments").select("id,post_id,text").eq("author", userName).order("created_at", { ascending: false }).limit(100); if (mc) { state.myComments = mc.map(x => ({ ...x, id: String(x.id) })); if (mc.length) { const mcIds = state.myComments.map(c => c.id); const { data: mcrData } = await sb.from("comment_reactions").select("id,comment_id,emoji,reactor_id").in("comment_id", mcIds); if (mcrData) { const crm = {}; mcrData.forEach(r => { r.id = String(r.id); r.comment_id = String(r.comment_id); if (!crm[r.comment_id]) crm[r.comment_id] = []; crm[r.comment_id].push(r); }); state.commentReactions = { ...state.commentReactions, ...crm }; } } } render(); }
 
     /* ── Realtime ── */
     function setupRealtime(groupId) {
