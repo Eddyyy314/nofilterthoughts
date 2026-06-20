@@ -2523,7 +2523,7 @@
     const COOLDOWN_COMMENT_MS = 5000; // 5s tra un commento e l'altro
     let lastPostTime = 0;
     let lastCommentTime = 0;
-    const REACTIONS = ["Utile", "Vero", "Seguo", "Dubbio", "Forte"];
+    const REACTIONS = ["🔥", "💀", "😂", "🥺", "😈", "❤️", "🤯", "😴"];
 
     const I = {
       Home: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>`,
@@ -2568,6 +2568,7 @@
       replyingTo: null, replyText: "",
       reportedPosts: getReported(), reportedComments: JSON.parse(localStorage.getItem("nofilter_reported_comments") || "[]"), reportedGroups: JSON.parse(localStorage.getItem("nofilter_reported_groups") || "[]"), groupInfoOpen: null,
       reactPickerPost: null, reactPickerComment: null,
+      suppressFeedAnimation: false,
       sortBy: "newest", filterCat: null, filterMood: null, searchQuery: "",
       filtersOpen: false, sidebarOpen: false,
       createOpen: false, createType: "post",
@@ -2729,6 +2730,12 @@
       }
 
       attachEvents();
+    }
+
+    function renderSoft() {
+      state.suppressFeedAnimation = true;
+      render();
+      state.suppressFeedAnimation = false;
     }
 
     /* ── Sidebar content ── */
@@ -2965,7 +2972,7 @@
       const shownComments = expanded ? cmtList : cmtList.slice(0, 1);
       const reactPickerOpen = s.reactPickerPost === post.id;
       return `
-  <div class="card stagger-item" style="animation-delay:${idx * 0.04}s;">
+  <div class="card${s.suppressFeedAnimation ? "" : " stagger-item"}" style="${s.suppressFeedAnimation ? "" : "animation-delay:" + (idx * 0.04) + "s;"}">
    ${reactPickerOpen ? `<div style="position:fixed;inset:0;z-index:19;" onclick="closeReactPicker()"></div>` : ""}
    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;">
     <div style="display:flex;gap:4px;flex-wrap:wrap;align-items:center;">
@@ -2979,10 +2986,10 @@
    </div>
    <p style="font-size:14px;line-height:1.7;margin-bottom:11px;">${escHtml(post.text)}</p>
    <div style="display:flex;gap:5px;flex-wrap:wrap;align-items:center;margin-bottom:${cmtList.length > 0 ? 9 : 0}px;position:relative;">
-    ${(() => { const myLike = rxList.find(r => r.emoji === "Utile" && r.reactor_id === deviceId); const likeCount = rxList.filter(r => r.emoji === "Utile").length; return `<button class="rx${myLike ? " on" : ""}" onclick="toggleReaction('${post.id}','Utile')" style="font-size:12px;">Utile${likeCount > 0 ? ` ${likeCount}` : ""}</button>`; })()}
-    ${topRx.filter(r => r.emoji !== "Utile").map(({ emoji, count, mine }) => `<button class="rx${mine ? " on" : ""}" onclick="toggleReaction('${post.id}','${emoji}')">${emoji} ${count}</button>`).join("")}
+    ${(() => { const myLike = rxList.find(r => r.emoji === "❤️" && r.reactor_id === deviceId); const likeCount = rxList.filter(r => r.emoji === "❤️").length; return `<button class="rx${myLike ? " on" : ""}" onclick="toggleReaction('${post.id}','❤️')" style="font-size:13px;">❤️${likeCount > 0 ? ` ${likeCount}` : ""}</button>`; })()}
+    ${topRx.filter(r => r.emoji !== "❤️").map(({ emoji, count, mine }) => `<button class="rx${mine ? " on" : ""}" onclick="toggleReaction('${post.id}','${emoji}')">${emoji} ${count}</button>`).join("")}
     <div style="position:relative;display:inline-block;">
-     <button class="rx${myReaction ? " on" : ""}" onclick="toggleReactPicker('${escAttr(post.id)}')" style="font-size:12px;">${myReaction ? "reagito" : "+ reazione"}</button>
+     <button class="rx${myReaction ? " on" : ""}" onclick="toggleReactPicker('${escAttr(post.id)}')" style="font-size:12px;">${myReaction ? "✓ react" : "+ react"}</button>
      ${reactPickerOpen ? `
       <div class="react-picker">
        ${REACTIONS.map(emoji => { const mine = rxList.some(r => r.emoji === emoji && r.reactor_id === deviceId); return `<button class="react-emoji${mine ? " on" : ""}" onclick="reactAndClose('${escAttr(post.id)}','${emoji}')">${emoji}</button>`; }).join("")}
@@ -3029,7 +3036,7 @@
          <div style="display:flex;align-items:center;gap:6px;margin-top:4px;flex-wrap:wrap;">
           ${crxTop.map(({ emoji, count, mine }) => `<button class="rx${mine ? " on" : ""}" onclick="toggleCommentReaction('${post.id}','${c.id}','${emoji}')" style="font-size:10px;padding:2px 6px;">${emoji} ${count}</button>`).join("")}
           <div style="position:relative;display:inline-block;">
-           <button class="rx${crxMy ? " on" : ""}" onclick="toggleCommentReactPicker('${escAttr(c.id)}')" style="font-size:10px;padding:2px 6px;border-radius:10px;">${crxMy ? "ok" : "+"}</button>
+           <button class="rx${crxMy ? " on" : ""}" onclick="toggleCommentReactPicker('${escAttr(c.id)}')" style="font-size:10px;padding:2px 6px;border-radius:10px;">${crxMy ? "✓" : "+"}</button>
            ${crPickerOpen ? `
             <div class="react-picker" style="bottom:calc(100% + 4px);left:0;transform-origin:bottom left;">
              ${REACTIONS.map(emoji => { const mine = crxList.some(r => r.emoji === emoji && r.reactor_id === deviceId); return `<button class="react-emoji${mine ? " on" : ""}" onclick="commentReactAndClose('${escAttr(post.id)}','${escAttr(c.id)}','${emoji}')" style="font-size:14px;padding:2px;">${emoji}</button>`; }).join("")}
@@ -3742,7 +3749,7 @@
      <div style="display:flex;gap:7px;flex-wrap:wrap;align-items:center;margin-bottom:13px;position:relative;">
       ${topRx.map(({ emoji, count, mine }) => `<button onclick="ttReact('${post.id}','${emoji}')" style="background:${mine ? "#fff" : "rgba(255,255,255,0.08)"};border:1px solid ${mine ? "#fff" : "rgba(255,255,255,0.15)"};color:${mine ? "#000" : "#fff"};padding:6px 12px;border-radius:18px;font-size:13px;cursor:pointer;display:flex;align-items:center;gap:4px;transition:all 0.2s;font-family:'DM Mono',monospace;">${emoji} ${count}</button>`).join("")}
       <div style="position:relative;">
-       <button onclick="toggleTtReactPicker()" style="background:${myRx ? "#fff" : "rgba(255,255,255,0.08)"};border:1px solid ${myRx ? "#fff" : "rgba(255,255,255,0.2)"};color:${myRx ? "#000" : "rgba(255,255,255,0.7)"};padding:6px 14px;border-radius:18px;font-size:12px;cursor:pointer;font-family:'DM Mono',monospace;transition:all 0.2s;">${myRx ? "reagito" : "+ reazione"}</button>
+       <button onclick="toggleTtReactPicker()" style="background:${myRx ? "#fff" : "rgba(255,255,255,0.08)"};border:1px solid ${myRx ? "#fff" : "rgba(255,255,255,0.2)"};color:${myRx ? "#000" : "rgba(255,255,255,0.7)"};padding:6px 14px;border-radius:18px;font-size:12px;cursor:pointer;font-family:'DM Mono',monospace;transition:all 0.2s;">${myRx ? "✓ react" : "+ react"}</button>
        ${s.tiktokReactPickerOpen ? `
         <div style="position:fixed;inset:0;z-index:1;" onclick="state.tiktokReactPickerOpen=false;render();"></div>
         <div style="position:absolute;bottom:calc(100% + 8px);left:0;background:#1a1a1a;border:1px solid #333;border-radius:12px;padding:8px 10px;display:flex;gap:4px;z-index:2;box-shadow:0 8px 30px rgba(0,0,0,0.5);animation:picker-in 0.18s cubic-bezier(.34,1.56,.64,1);">
@@ -3917,7 +3924,7 @@
           const posts = state.posts.filter(p => !state.reportedPosts.includes(p.id));
           if (posts.length) {
             const post = posts[state.tiktokIdx % posts.length];
-            ttReact(post.id, "Utile");
+            ttReact(post.id, "❤️");
             showDoubleTapHeart(e.changedTouches[0].clientX, e.changedTouches[0].clientY);
           }
         } else {
@@ -3973,26 +3980,26 @@
 
     function toggleReactPicker(postId) { state.reactPickerPost = state.reactPickerPost === postId ? null : postId; render(); }
     function closeReactPicker() { state.reactPickerPost = null; render(); }
-    async function reactAndClose(postId, emoji) { await toggleReactionAsync(postId, emoji); state.reactPickerPost = null; render(); setTimeout(() => maybeFloatEmoji(postId, emoji), 50); }
-    async function toggleReaction(postId, emoji) { await toggleReactionAsync(postId, emoji); render(); setTimeout(() => maybeFloatEmoji(postId, emoji), 50); }
+    async function reactAndClose(postId, emoji) { await toggleReactionAsync(postId, emoji); state.reactPickerPost = null; renderSoft(); setTimeout(() => maybeFloatEmoji(postId, emoji), 50); }
+    async function toggleReaction(postId, emoji) { await toggleReactionAsync(postId, emoji); renderSoft(); setTimeout(() => maybeFloatEmoji(postId, emoji), 50); }
     function toggleComments(postId) { const s = new Set(state.expandedComments); s.has(postId) ? s.delete(postId) : s.add(postId); state.expandedComments = s; render(); }
     function toggleCommentReactPicker(commentId) { state.reactPickerComment = state.reactPickerComment === commentId ? null : commentId; render(); }
-    async function commentReactAndClose(postId, commentId, emoji) { await toggleCommentReactionAsync(postId, commentId, emoji); state.reactPickerComment = null; render(); }
-    async function toggleCommentReaction(postId, commentId, emoji) { await toggleCommentReactionAsync(postId, commentId, emoji); render(); }
+    async function commentReactAndClose(postId, commentId, emoji) { await toggleCommentReactionAsync(postId, commentId, emoji); state.reactPickerComment = null; renderSoft(); }
+    async function toggleCommentReaction(postId, commentId, emoji) { await toggleCommentReactionAsync(postId, commentId, emoji); renderSoft(); }
     async function toggleCommentReactionAsync(postId, commentId, emoji) {
       const myRx = (state.commentReactions[commentId] || []).find(r => r.reactor_id === deviceId && r.emoji === emoji);
       if (myRx) {
         state.commentReactions = { ...state.commentReactions, [commentId]: (state.commentReactions[commentId] || []).filter(r => r.id !== myRx.id) };
-        render();
+        renderSoft();
         await sb.from("comment_reactions").delete().eq("id", myRx.id);
       } else {
         const tempId = "tmp_" + Date.now();
         state.commentReactions = { ...state.commentReactions, [commentId]: [...(state.commentReactions[commentId] || []), { id: tempId, comment_id: commentId, post_id: postId, emoji, reactor_id: deviceId }] };
-        render();
+        renderSoft();
         const { data } = await sb.from("comment_reactions").insert({ comment_id: commentId, post_id: postId, emoji, reactor_id: deviceId }).select().single();
         if (data) {
           state.commentReactions = { ...state.commentReactions, [commentId]: (state.commentReactions[commentId] || []).map(r => r.id === tempId ? { ...data, id: String(data.id), comment_id: String(data.comment_id) } : r) };
-          render();
+          renderSoft();
         }
       }
     }
@@ -4358,7 +4365,7 @@
       if (myRx) {
         // Optimistic remove
         state.reactions = { ...state.reactions, [postId]: (state.reactions[postId] || []).filter(r => r.id !== myRx.id) };
-        render();
+        renderSoft();
         await sb.from("reactions").delete().eq("id", myRx.id);
       } else {
         // Optimistic add
@@ -4366,12 +4373,12 @@
         const newRx = { id: tempId, post_id: postId, emoji, reactor_id: deviceId };
         state.reactions = { ...state.reactions, [postId]: [...(state.reactions[postId] || []), newRx] };
         addMyReacted(postId);
-        render();
+        renderSoft();
         const { data } = await sb.from("reactions").insert({ post_id: postId, emoji, reactor_id: deviceId }).select().single();
         if (data) {
           // Replace temp with real record
           state.reactions = { ...state.reactions, [postId]: (state.reactions[postId] || []).map(r => r.id === tempId ? { ...data, id: String(data.id), post_id: String(data.post_id) } : r) };
-          render();
+          renderSoft();
         }
       }
     }
@@ -4481,11 +4488,11 @@
       const ch = sb.channel("nf-rt-" + groupId)
         .on("postgres_changes", { event: "INSERT", schema: "public", table: "posts" }, p => { const post = p.new; post.id = String(post.id); if (post.language !== LANG || post.group_id !== state.currentGroupId) return; state.posts = [post, ...state.posts]; render(); })
         .on("postgres_changes", { event: "DELETE", schema: "public", table: "posts" }, p => { const id = String(p.old.id); state.posts = state.posts.filter(x => x.id !== id); state.hotPosts = state.hotPosts.filter(x => x.id !== id); render(); })
-        .on("postgres_changes", { event: "INSERT", schema: "public", table: "reactions" }, p => { const r = p.new; r.id = String(r.id); r.post_id = String(r.post_id); if (!state.reactions[r.post_id]) state.reactions[r.post_id] = []; const existing = state.reactions[r.post_id]; const alreadyPresent = existing.some(x => x.reactor_id === r.reactor_id && x.emoji === r.emoji && x.post_id === r.post_id); if (alreadyPresent) { state.reactions = { ...state.reactions, [r.post_id]: existing.map(x => (x.reactor_id === r.reactor_id && x.emoji === r.emoji && x.post_id === r.post_id) ? r : x) }; } else { state.reactions = { ...state.reactions, [r.post_id]: [...existing, r] }; } render(); })
-        .on("postgres_changes", { event: "DELETE", schema: "public", table: "reactions" }, p => { const r = p.old; r.id = String(r.id); r.post_id = String(r.post_id); if (!state.reactions[r.post_id]) return; state.reactions = { ...state.reactions, [r.post_id]: state.reactions[r.post_id].filter(x => x.id !== r.id) }; render(); })
+        .on("postgres_changes", { event: "INSERT", schema: "public", table: "reactions" }, p => { const r = p.new; r.id = String(r.id); r.post_id = String(r.post_id); if (!state.reactions[r.post_id]) state.reactions[r.post_id] = []; const existing = state.reactions[r.post_id]; const alreadyPresent = existing.some(x => x.reactor_id === r.reactor_id && x.emoji === r.emoji && x.post_id === r.post_id); if (alreadyPresent) { state.reactions = { ...state.reactions, [r.post_id]: existing.map(x => (x.reactor_id === r.reactor_id && x.emoji === r.emoji && x.post_id === r.post_id) ? r : x) }; } else { state.reactions = { ...state.reactions, [r.post_id]: [...existing, r] }; } renderSoft(); })
+        .on("postgres_changes", { event: "DELETE", schema: "public", table: "reactions" }, p => { const r = p.old; r.id = String(r.id); r.post_id = String(r.post_id); if (!state.reactions[r.post_id]) return; state.reactions = { ...state.reactions, [r.post_id]: state.reactions[r.post_id].filter(x => x.id !== r.id) }; renderSoft(); })
         .on("postgres_changes", { event: "INSERT", schema: "public", table: "comments" }, p => { const c = p.new; c.id = String(c.id); c.post_id = String(c.post_id); if (c.group_id !== state.currentGroupId) return; if (!state.comments[c.post_id]) state.comments[c.post_id] = []; state.comments = { ...state.comments, [c.post_id]: [...state.comments[c.post_id], c] }; render(); })
-        .on("postgres_changes", { event: "INSERT", schema: "public", table: "comment_reactions" }, p => { const r = p.new; r.id = String(r.id); r.comment_id = String(r.comment_id); if (!state.commentReactions[r.comment_id]) state.commentReactions[r.comment_id] = []; const existing = state.commentReactions[r.comment_id]; const alreadyPresent = existing.some(x => x.reactor_id === r.reactor_id && x.emoji === r.emoji && x.comment_id === r.comment_id); if (alreadyPresent) { state.commentReactions = { ...state.commentReactions, [r.comment_id]: existing.map(x => (x.reactor_id === r.reactor_id && x.emoji === r.emoji && x.comment_id === r.comment_id) ? r : x) }; } else { state.commentReactions = { ...state.commentReactions, [r.comment_id]: [...existing, r] }; } render(); })
-        .on("postgres_changes", { event: "DELETE", schema: "public", table: "comment_reactions" }, p => { const r = p.old; r.id = String(r.id); r.comment_id = String(r.comment_id); if (!state.commentReactions[r.comment_id]) return; state.commentReactions = { ...state.commentReactions, [r.comment_id]: state.commentReactions[r.comment_id].filter(x => x.id !== r.id) }; render(); })
+        .on("postgres_changes", { event: "INSERT", schema: "public", table: "comment_reactions" }, p => { const r = p.new; r.id = String(r.id); r.comment_id = String(r.comment_id); if (!state.commentReactions[r.comment_id]) state.commentReactions[r.comment_id] = []; const existing = state.commentReactions[r.comment_id]; const alreadyPresent = existing.some(x => x.reactor_id === r.reactor_id && x.emoji === r.emoji && x.comment_id === r.comment_id); if (alreadyPresent) { state.commentReactions = { ...state.commentReactions, [r.comment_id]: existing.map(x => (x.reactor_id === r.reactor_id && x.emoji === r.emoji && x.comment_id === r.comment_id) ? r : x) }; } else { state.commentReactions = { ...state.commentReactions, [r.comment_id]: [...existing, r] }; } renderSoft(); })
+        .on("postgres_changes", { event: "DELETE", schema: "public", table: "comment_reactions" }, p => { const r = p.old; r.id = String(r.id); r.comment_id = String(r.comment_id); if (!state.commentReactions[r.comment_id]) return; state.commentReactions = { ...state.commentReactions, [r.comment_id]: state.commentReactions[r.comment_id].filter(x => x.id !== r.id) }; renderSoft(); })
         .on("postgres_changes", { event: "INSERT", schema: "public", table: "polls" }, () => { loadPolls(); loadDuels(); })
         .on("postgres_changes", { event: "INSERT", schema: "public", table: "poll_votes" }, p => { const v = p.new; v.poll_id = String(v.poll_id); const e = state.pollVotes[v.poll_id] || { votes: [], myVote: null }; const votes = [...e.votes]; votes[v.option_index] = (votes[v.option_index] || 0) + 1; state.pollVotes = { ...state.pollVotes, [v.poll_id]: { votes, myVote: v.voter_id === deviceId ? v.option_index : e.myVote } }; if (state.duelVotes[v.poll_id]) { const ed = state.duelVotes[v.poll_id]; const dvotes = [...ed.votes]; dvotes[v.option_index] = (dvotes[v.option_index] || 0) + 1; state.duelVotes = { ...state.duelVotes, [v.poll_id]: { votes: dvotes, myVote: v.voter_id === deviceId ? v.option_index : ed.myVote } }; } render(); })
         .subscribe();
@@ -4566,10 +4573,12 @@
     function maybeFloatEmoji(postId, emoji) {
       const rxList = state.reactions[postId] || [];
       const mine = rxList.some(r => r.emoji === emoji && r.reactor_id === deviceId);
-      if (mine) {
-        const btn = document.querySelector(`[onclick*="${emoji}"]`);
-        if (btn) { const r = btn.getBoundingClientRect(); floatEmoji(emoji, r.left + r.width / 2 - 10, r.top - 10); }
-      }
+      if (!mine) return;
+      const btn = Array.from(document.querySelectorAll("button.rx, button.react-emoji")).find(el => {
+        const oc = el.getAttribute("onclick") || "";
+        return oc.includes(`'${postId}'`) && oc.includes(`'${emoji}'`);
+      });
+      if (btn) { const r = btn.getBoundingClientRect(); floatEmoji(emoji, r.left + r.width / 2 - 10, r.top - 10); }
     }
 
     /* ── Skeleton loading for feed ── */
