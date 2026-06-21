@@ -2636,6 +2636,7 @@
         function renderTiktok() { /* handled inline via buildTiktok */ }
 
         let _lastRenderedView = null;
+        let _pendingSearchFocus = null;
 
         /* ── Render ── */
         function render() {
@@ -2646,6 +2647,11 @@
                 if (el.value) _savedInputs[el.id] = el.value;
                 if (document.activeElement === el) _focusedInputId = el.id;
             });
+            const _searchEl = document.getElementById("nf-search-input");
+            const _searchWasFocused = document.activeElement === _searchEl;
+            const _searchSelection = _searchWasFocused && _searchEl
+                ? { start: _searchEl.selectionStart ?? _searchEl.value.length, end: _searchEl.selectionEnd ?? _searchEl.value.length }
+                : null;
 
             const s = state;
             const isFeed = s.view === "feed" || s.view === "group-feed";
@@ -2698,6 +2704,20 @@
                 } else {
                     app.innerHTML = html;
                 }
+            }
+
+            // Restore search focus after DOM rewrite. This prevents the search bar from losing focus on every typed letter.
+            const _searchFocus = _pendingSearchFocus || _searchSelection;
+            if ((_pendingSearchFocus || _searchWasFocused) && (s.view === "feed" || s.view === "group-feed")) {
+                const el = document.getElementById("nf-search-input");
+                if (el) {
+                    el.focus();
+                    const len = el.value.length;
+                    const start = Math.min((_searchFocus?.start ?? len), len);
+                    const end = Math.min((_searchFocus?.end ?? start), len);
+                    try { el.setSelectionRange(start, end); } catch (_) { }
+                }
+                _pendingSearchFocus = null;
             }
 
             // Restore comment/reply input values and focus after DOM rewrite
@@ -2882,7 +2902,7 @@
       </div>` : ""}
       <div class="sbar" style="margin-bottom:8px;">
         ${I.Search}
-        <input placeholder="Cerca una conversazione..." value="${escHtml(s.searchQuery)}" oninput="handleSearchInput(this.value)" onkeydown="if(event.key==='Enter')applySearch()"/>
+        <input id="nf-search-input" placeholder="Cerca una conversazione..." value="${escAttr(s.searchQuery)}" oninput="handleSearchInput(this)" onkeydown="if(event.key==='Enter')applySearch()"/>
         ${s.searchQuery ? `<button onclick="clearSearch()" style="background:none;border:none;cursor:pointer;color:#bbb;display:flex;transition:opacity 0.2s;">${I.X}</button>` : ""}
         <button onclick="toggleFilters()" style="background:none;border:none;cursor:pointer;display:flex;align-items:center;gap:4px;color:${activeFilters > 0 ? "#0a0a0a" : "#bbb"};padding:0 2px;transition:color 0.2s;">
           ${I.Filter}
@@ -3958,9 +3978,22 @@
         function toggleFilterCat(c) { state.filterCat = state.filterCat === c ? null : c; render(); }
         function toggleFilterMood(m) { state.filterMood = state.filterMood === m ? null : m; render(); }
         function clearFilters() { state.filterCat = null; state.filterMood = null; state.searchQuery = ""; render(); }
-        function handleSearchInput(v) { state.searchQuery = v; render(); }
+        function handleSearchInput(source) {
+            const isEl = source && typeof source === "object";
+            const value = isEl ? source.value : String(source || "");
+            state.searchQuery = value;
+            if (isEl) {
+                _pendingSearchFocus = {
+                    start: source.selectionStart ?? value.length,
+                    end: source.selectionEnd ?? value.length
+                };
+            } else {
+                _pendingSearchFocus = { start: value.length, end: value.length };
+            }
+            render();
+        }
         function applySearch() { render(); }
-        function clearSearch() { state.searchQuery = ""; render(); }
+        function clearSearch() { state.searchQuery = ""; _pendingSearchFocus = { start: 0, end: 0 }; render(); }
         function openGroupSettings(id) { state.groupSettingsOpen = id; render(); }
         function closeGroupSettings() { state.groupSettingsOpen = null; render(); }
         function openChallenge(postId) { state.challengePost = state.posts.find(p => p.id === postId) || state.hotPosts.find(p => p.id === postId); render(); }
