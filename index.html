@@ -2516,7 +2516,7 @@
             ["Esperienza", "Ho capito tardi che non tutte le amicizie vanno salvate."],
         ];
         const BLOCKED_PHRASES = ["odio gay", "odio i gay", "mi fanno schifo i neri", "odio i neri", "negri", "froci", "terrone di merda", "ebrei di merda"];
-        const MAX_POST_LEN = 1400;
+        const MAX_POST_LEN = 900;
         const MAX_COMMENT_LEN = 500;
         const MAX_POLL_Q_LEN = 300;
         const MAX_POLL_OPT_LEN = 100;
@@ -3639,12 +3639,6 @@
       <input id="np-title" placeholder="Titolo della conversazione..." maxlength="120" value="${escAttr(s.newPost.title || "")}" oninput="state.newPost.title=this.value"/>
       <textarea id="np-text" rows="6" placeholder="Spiega il perché. Aggiungi contesto. Fai venire voglia a qualcuno di rispondere seriamente..." style="resize:none;" maxlength="${MAX_POST_LEN}" oninput="const c=document.getElementById('np-text-counter');if(c){const rem=MAX_POST_LEN-this.value.length;c.textContent=rem+' rimasti';c.style.color=rem<160?'#cc2222':'#bbb';}state.newPost.text=this.value;">${escHtml(s.newPost.text)}</textarea>
       <div id="np-text-counter" style="text-align:right;font-size:11px;color:#bbb;margin-top:-6px;">${MAX_POST_LEN - (s.newPost.text || "").length} rimasti</div>
-      <div style="background:#fafafa;border:1px solid #eee;border-radius:10px;padding:11px;">
-        <div class="section-label" style="margin-bottom:7px;">Spunti rapidi</div>
-        <div style="display:flex;gap:6px;flex-wrap:wrap;">
-          ${DISCUSSION_STARTERS.map(([type, title]) => `<button class="fchip" onclick="applyStarter('${type}','${escAttr(title)}')">${escHtml(title)}</button>`).join("")}
-        </div>
-      </div>
       <div style="font-size:10px;color:#bbb;line-height:1.5;margin-top:2px;">Pubblicando accetti i <a onclick="closeCreate();goView('legal')" style="cursor:pointer;color:#bbb;text-decoration:underline;">Termini d'uso</a>. Vietato diffamare, minacciare, pubblicare dati altrui o contenuti d’odio.</div>
       <div style="display:flex;gap:8px;margin-top:4px;">
         <button class="btn-o" style="flex:1;" onclick="closeCreate()">Annulla</button>
@@ -4085,15 +4079,15 @@
         }
         function toggleTtComment() { state.tiktokShowComment = !state.tiktokShowComment; render(); }
         function toggleTtReactPicker() { state.tiktokReactPickerOpen = !state.tiktokReactPickerOpen; render(); }
-        async function ttReact(postId, emoji) { state.tiktokReactPickerOpen = false; await toggleReactionAsync(postId, emoji); render(); }
+        async function ttReact(postId, emoji) { state.tiktokReactPickerOpen = false; await toggleReactionAsync(postId, emoji); }
         async function ttSubmitComment(postId) { const txt = state.tiktokCommentInput.trim(); if (!txt) return; await addCommentAsync(postId, txt); state.tiktokCommentInput = ""; render(); }
         function ttReport(postId) { reportPost(postId); }
         function ttChallenge(postId) { const posts = state.posts.filter(p => !state.reportedPosts.includes(p.id)); state.challengePost = posts.find(p => p.id === postId); state.tiktokOpen = false; render(); }
 
         function toggleReactPicker(postId) { state.reactPickerPost = state.reactPickerPost === postId ? null : postId; render(); }
         function closeReactPicker() { state.reactPickerPost = null; render(); }
-        async function reactAndClose(postId, emoji) { await toggleReactionAsync(postId, emoji); state.reactPickerPost = null; render(); setTimeout(() => maybeFloatEmoji(postId, emoji), 50); }
-        async function toggleReaction(postId, emoji) { await toggleReactionAsync(postId, emoji); render(); setTimeout(() => maybeFloatEmoji(postId, emoji), 50); }
+        async function reactAndClose(postId, emoji) { state.reactPickerPost = null; await toggleReactionAsync(postId, emoji); setTimeout(() => maybeFloatEmoji(postId, emoji), 50); }
+        async function toggleReaction(postId, emoji) { await toggleReactionAsync(postId, emoji); setTimeout(() => maybeFloatEmoji(postId, emoji), 50); }
         function toggleComments(postId) { const s = new Set(state.expandedComments); s.has(postId) ? s.delete(postId) : s.add(postId); state.expandedComments = s; render(); }
         function toggleCommentReactPicker(commentId) { state.reactPickerComment = state.reactPickerComment === commentId ? null : commentId; render(); }
         async function commentReactAndClose(postId, commentId, emoji) { await toggleCommentReactionAsync(postId, commentId, emoji); state.reactPickerComment = null; render(); }
