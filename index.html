@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="it">
+<html lang="en">
 
 <head>
     <meta charset="UTF-8" />
@@ -2398,7 +2398,7 @@
     </div>
 
     <!-- FAB desktop -->
-    <button id="fab-create" onclick="openCreate()" title="Nuovo post">
+    <button id="fab-create" onclick="openCreate()" title="New post">
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
             stroke-linecap="round">
             <line x1="12" y1="5" x2="12" y2="19" />
@@ -2409,16 +2409,16 @@
     <!-- GDPR Cookie Banner -->
     <div id="gdpr-banner" style="display:none;">
         <div class="gdpr-text">
-            <strong>🔒 Privacy</strong> — Nessun dato personale raccolto. Device ID anonimo locale. Contenuti anonimi e moderati dalla community. Età minima 16 anni.
+            <strong>🔒 Privacy</strong> — No personal data collected. Anonymous local device ID. Anonymous content, community-moderated. Minimum age: 16.
             <a onclick="document.getElementById('gdpr-modal').style.display='flex'"
                 style="cursor:pointer;color:inherit;">Privacy Policy</a> ·
-            <a onclick="goView('legal')" style="cursor:pointer;color:inherit;">Termini d'uso</a>
+            <a onclick="goView('legal')" style="cursor:pointer;color:inherit;">Terms</a>
         </div>
         <div class="gdpr-actions">
-            <button class="btn-o" style="font-size:12px;padding:9px 14px;" onclick="gdprReject()">Solo
-                essenziali</button>
-            <button class="btn" style="font-size:12px;padding:9px 18px;" onclick="gdprAccept()">Accetta e
-                continua</button>
+            <button class="btn-o" style="font-size:12px;padding:9px 14px;" onclick="gdprReject()">Essential
+                only</button>
+            <button class="btn" style="font-size:12px;padding:9px 18px;" onclick="gdprAccept()">Accept and
+                continue</button>
         </div>
     </div>
 
@@ -2432,50 +2432,25 @@
                 &amp;
                 GDPR</div>
             <div style="font-size:13px;line-height:1.75;color:#444;">
-                <p style="margin-bottom:12px;"><strong>Chi siamo:</strong> NO FILTER è una piattaforma anonima di
-                    condivisione
-                    pensieri. Contatto: <strong><a href="/cdn-cgi/l/email-protection" class="__cf_email__"
+                <p style="margin-bottom:12px;"><strong>Who we are:</strong> NO FILTER is an anonymous platform for sharing raw thoughts and personal opinions. Contact: <strong><a href="/cdn-cgi/l/email-protection" class="__cf_email__"
                             data-cfemail="224b4c444d0c4c4d444b4e564750564a4d57454a565162454f434b4e0c414d4f">[email&#160;protected]</a></strong>
                 </p>
-                <p style="margin-bottom:12px;"><strong>Dati raccolti:</strong> Solo un <em>device ID anonimo</em>
-                    generato
-                    casualmente sul tuo dispositivo. Non è associato a nome, email, numero di telefono, indirizzo IP o
-                    qualsiasi
-                    altro dato identificativo. I contenuti pubblicati sono anonimi per design.</p>
-                <p style="margin-bottom:12px;"><strong>Anonimato tecnico:</strong> Il tuo anonimato è protetto a livello
-                    applicativo. Il provider infrastrutturale (Supabase) registra tecnicamente gli IP nelle proprie
-                    request log,
-                    come qualsiasi servizio cloud. NO FILTER non ha accesso a questi log e non li usa per identificarti.
-                </p>
-                <p style="margin-bottom:12px;"><strong>Conservazione dati:</strong> Post, commenti e voti restano disponibili finché non vengono eliminati dall’autore o moderati. Il device ID è conservato solo localmente sul tuo dispositivo e
-                    cancellabile in
-                    qualsiasi momento da Impostazioni → Resetta dati.</p>
-                <p style="margin-bottom:12px;"><strong>Cookie e storage:</strong> Utilizziamo esclusivamente
-                    localStorage
-                    (storage tecnico locale). Nessun cookie di terze parti, nessun tracker, nessuna pubblicità.</p>
-                <p style="margin-bottom:12px;"><strong>Base giuridica (GDPR):</strong> Interesse legittimo (art. 6.1.f)
-                    per il
-                    funzionamento tecnico. Nessun trattamento di categorie particolari di dati (art. 9 GDPR).</p>
-                <p style="margin-bottom:12px;"><strong>I tuoi diritti:</strong> Accesso, rettifica, cancellazione,
-                    portabilità e
-                    opposizione (artt. 15-22 GDPR). Per richieste: <strong><a href="/cdn-cgi/l/email-protection"
+                <p style="margin-bottom:12px;"><strong>Data collected:</strong> Only an <em>anonymous device ID</em> randomly generated on your device. It is not linked to your name, email, phone number, IP address or any other identifying data. Published content is anonymous by design.</p>
+                <p style="margin-bottom:12px;"><strong>Technical anonymity:</strong> Your anonymity is protected at the application level. The infrastructure provider (Supabase) may technically record IP addresses in its request logs, as any cloud service does. NO FILTER does not access these logs and does not use them to identify you.</p>
+                <p style="margin-bottom:12px;"><strong>Data retention:</strong> Posts, comments and votes remain available until deleted by the author or moderated. The device ID is stored only locally on your device and can be deleted at any time from Settings → Reset data.</p>
+                <p style="margin-bottom:12px;"><strong>Cookies and storage:</strong> We only use localStorage for technical local storage. No third-party cookies, no trackers, no advertising.</p>
+                <p style="margin-bottom:12px;"><strong>Legal basis (GDPR):</strong> Legitimate interest (art. 6.1.f) for technical operation. We do not process special categories of personal data (art. 9 GDPR).</p>
+                <p style="margin-bottom:12px;"><strong>Your rights:</strong> Access, rectification, erasure, portability and objection (arts. 15-22 GDPR). For requests: <strong><a href="/cdn-cgi/l/email-protection"
                             class="__cf_email__"
-                            data-cfemail="2f464149400141404946435b4a5d5b47405a48475b5c6f48424e4643014c4042">[email&#160;protected]</a></strong>.
-                    Puoi presentare reclamo al Garante Privacy (www.garanteprivacy.it).</p>
-                <p style="margin-bottom:12px;"><strong>Trasferimento dati:</strong> Infrastruttura Supabase, conforme
-                    GDPR,
-                    server in area UE/EEA.</p>
-                <p style="margin-top:12px;padding-top:12px;border-top:1px solid #eee;"><strong>⚠️ Età minima:</strong>
-                    Servizio
-                    destinato a persone di età ≥ <strong>16 anni</strong> (art. 8 GDPR). Utilizzando NO FILTER dichiari
-                    di avere
-                    almeno 16 anni.</p>
+                            data-cfemail="2f464149400141404946435b4a5d5b47405a48475b5c6f48424e4643014c4042">[email&#160;protected]</a></strong>. You may lodge a complaint with the Italian Data Protection Authority (www.garanteprivacy.it).</p>
+                <p style="margin-bottom:12px;"><strong>Data transfers:</strong> Supabase infrastructure, GDPR-compliant, with servers in the EU/EEA area.</p>
+                <p style="margin-top:12px;padding-top:12px;border-top:1px solid #eee;"><strong>⚠️ Minimum age:</strong> This service is intended for people aged <strong>16 or older</strong> (art. 8 GDPR). By using NO FILTER, you confirm that you are at least 16 years old.</p>
             </div>
             <div style="margin-top:20px;display:flex;gap:8px;">
                 <button class="btn-o" style="flex:1;font-size:12px;"
-                    onclick="document.getElementById('gdpr-modal').style.display='none'">Chiudi</button>
+                    onclick="document.getElementById('gdpr-modal').style.display='none'">Close</button>
                 <button class="btn" style="flex:1;font-size:12px;"
-                    onclick="gdprAccept();document.getElementById('gdpr-modal').style.display='none'">Accetta</button>
+                    onclick="gdprAccept();document.getElementById('gdpr-modal').style.display='none'">Accept</button>
             </div>
         </div>
     </div>
@@ -2487,7 +2462,7 @@
         const SUPABASE_URL = "https://wgzyqzilzxqlpuamxxrr.supabase.co";
         const SUPABASE_ANON_KEY = "sb_publishable_-WlIpnkALrWZFGCUfn2y5w_Gk_vh30i";
         const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-        const LANG = "it";
+        const LANG = "en";
 
         /* ── Utils ── */
         const getDeviceId = () => { let id = localStorage.getItem("nofilter_deviceId"); if (!id) { id = crypto?.randomUUID?.() || ("dev_" + Math.random().toString(16).slice(2) + Date.now()); localStorage.setItem("nofilter_deviceId", id); } return id; };
@@ -2506,14 +2481,15 @@
 
         const deviceId = getDeviceId();
         const userName = getUserName();
-        const CATEGORIES = ["Riflessione", "Opinione", "Esperienza", "Dilemma", "Cambia la mia idea"];
-        const MOODS = ["Vita", "Relazioni", "Lavoro", "Studio", "Soldi", "Tecnologia", "Società", "Cultura", "Futuro"];
+        const CATEGORIES = ["Nobody Talks About", "Things I Never Said", "Uncomfortable Truths", "Growing Hurts", "The Dark Side Of", "Say It Raw"];
+        const MOODS = ["Love & Attachment", "Friendship", "Family Pressure", "Ambition", "Money Shame", "Social Media", "Loneliness", "Identity", "Growing Up"];
         const DISCUSSION_STARTERS = [
-            ["Riflessione", "Perché oggi sembriamo sempre occupati, ma raramente soddisfatti?"],
-            ["Opinione", "La carriera viene trattata come se fosse l’unica misura del valore di una persona."],
-            ["Dilemma", "Meglio una vita stabile ma prevedibile o una vita più rischiosa ma più tua?"],
-            ["Cambia la mia idea", "L’università certifica più di quanto formi davvero."],
-            ["Esperienza", "Ho capito tardi che non tutte le amicizie vanno salvate."],
+            ["Nobody Talks About", "Nobody talks about how exhausting it is to be the understanding one."],
+            ["Things I Never Said", "I did not leave because I stopped caring. I left because staying was humiliating."],
+            ["Uncomfortable Truths", "Some people only miss you when they lose access to you."],
+            ["Growing Hurts", "Growing up is realizing some versions of you were built only to survive."],
+            ["The Dark Side Of", "The dark side of being ambitious is feeling guilty every time you rest."],
+            ["Say It Raw", "I am tired of pretending I am fine just because I can explain my pain well."],
         ];
         const BLOCKED_PHRASES = ["odio gay", "odio i gay", "mi fanno schifo i neri", "odio i neri", "negri", "froci", "terrone di merda", "ebrei di merda"];
         const MAX_POST_LEN = 900;
@@ -2608,10 +2584,10 @@
         function looksLowEffort(title, body) {
             const all = `${title} ${body}`.trim();
             const uniqueWords = new Set(all.toLowerCase().replace(/[^a-zà-ù0-9\s]/gi, " ").split(/\s+/).filter(w => w.length > 2));
-            if (hasBlockedLanguage(all)) return "Qui non entrano insulti o odio. Prova a trasformarlo in una riflessione discutibile.";
-            if (/(.)\1{6,}/.test(all)) return "Sembra rumore più che una conversazione.";
-            if (wordCount(body) < 18) return "Aggiungi un po’ di contesto: vogliamo post che aprano una discussione, non frasi lanciate a caso.";
-            if (uniqueWords.size < 12) return "Serve un pensiero più costruito: prova a spiegare meglio il perché.";
+            if (hasBlockedLanguage(all)) return "No insults or hate here. Turn it into something people can actually discuss.";
+            if (/(.)\1{6,}/.test(all)) return "This sounds like noise, not a thought.";
+            if (wordCount(body) < 18) return "Add more context. NoFilter is for thoughts that open a real conversation, not empty one-liners.";
+            if (uniqueWords.size < 12) return "Make the thought more complete: explain the reason behind it.";
             return "";
         }
         function applyStarter(type, title) {
@@ -2663,7 +2639,7 @@
             if (ttitle) {
                 if (s.view === "group-feed") {
                     ttitle.innerHTML = `<div style="display:flex;flex-direction:column;gap:1px;align-items:center;">
-                        <span style="font-size:9px;letter-spacing:2px;color:#aaa;font-family:'DM Mono',monospace;text-transform:uppercase;">Gruppo</span>
+                        <span style="font-size:9px;letter-spacing:2px;color:#aaa;font-family:'DM Mono',monospace;text-transform:uppercase;">Room</span>
                         <span id="topbar-logo" style="font-family:'Bebas Neue',cursive;font-size:24px;letter-spacing:4px;">${escHtml(s.currentGroupName.toUpperCase())}</span>
                     </div>`;
                 } else {
@@ -2799,13 +2775,13 @@
             const s = state;
             const isFeed = s.view === "feed" || s.view === "group-feed";
             return `
-    <button class="lucky-btn" style="margin-top:4px;" onclick="openCreate();if(!isDesktop())toggleSidebar();">${I.Plus} APRI UNA DISCUSSIONE</button>
-    <button class="btn-o" style="width:100%;font-size:12px;margin-bottom:8px;" onclick="openTiktok();if(!isDesktop())toggleSidebar();">${I.Dice} Leggi a caso</button>
+    <button class="lucky-btn" style="margin-top:4px;" onclick="openCreate();if(!isDesktop())toggleSidebar();">${I.Plus} DROP A TRUTH</button>
+    <button class="btn-o" style="width:100%;font-size:12px;margin-bottom:8px;" onclick="openTiktok();if(!isDesktop())toggleSidebar();">${I.Dice} Random read</button>
     <div class="section-label" style="margin-top:10px;padding:0 2px;">NO FILTER</div>
-    <button class="si${isFeed ? " on" : ""}" onclick="goView('feed');if(!isDesktop())toggleSidebar();">${I.Home} Conversazioni</button>
-    <button class="si${s.view === "polls" ? " on" : ""}" onclick="goView('polls');if(!isDesktop())toggleSidebar();">${I.Poll} Sondaggi</button>
-    <button class="si${s.view === "groups" ? " on" : ""}" onclick="goView('groups');if(!isDesktop())toggleSidebar();">${I.Group} Gruppi</button>
-    <div class="section-label" style="margin-top:10px;padding:0 2px;">Le tue stanze</div>
+    <button class="si${isFeed ? " on" : ""}" onclick="goView('feed');if(!isDesktop())toggleSidebar();">${I.Home} Feed</button>
+    <button class="si${s.view === "polls" ? " on" : ""}" onclick="goView('polls');if(!isDesktop())toggleSidebar();">${I.Poll} Polls</button>
+    <button class="si${s.view === "groups" ? " on" : ""}" onclick="goView('groups');if(!isDesktop())toggleSidebar();">${I.Group} Groups</button>
+    <div class="section-label" style="margin-top:10px;padding:0 2px;">Your rooms</div>
     ${s.myGroups.map(g => `
       <button class="si${s.view === "group-feed" && s.currentGroupId === g.id ? " on" : ""}" onclick="enterGroupById('${g.id}');if(!isDesktop())toggleSidebar();">
         <span style="display:flex;align-items:center;gap:5px;flex:1;">${g.isPrivate ? I.Lock : I.Globe}<span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12px;">${escHtml(g.name)}</span></span>
@@ -2813,12 +2789,12 @@
       </button>
     `).join("")}
     <div class="section-label" style="margin-top:10px;padding:0 2px;">Account</div>
-    <button class="si${s.view === "my-activity" ? " on" : ""}" onclick="goView('my-activity');loadMyActivity();if(!isDesktop())toggleSidebar();">${I.User} La mia attività</button>
-    <button class="si${s.view === "settings" ? " on" : ""}" onclick="goView('settings');if(!isDesktop())toggleSidebar();">${I.Settings} Impostazioni</button>
+    <button class="si${s.view === "my-activity" ? " on" : ""}" onclick="goView('my-activity');loadMyActivity();if(!isDesktop())toggleSidebar();">${I.User} My archive</button>
+    <button class="si${s.view === "settings" ? " on" : ""}" onclick="goView('settings');if(!isDesktop())toggleSidebar();">${I.Settings} Settings</button>
 
     <div style="margin-top:auto;padding-top:16px;padding:16px 2px 0;font-size:11px;color:#ccc;border-top:1px solid #f0f0f0;margin-top:12px;line-height:1.6;">
-      Identità: <strong style="color:#888;">${escHtml(userName)}</strong><br>
-      Anonimo non significa casuale.
+      Identity: <strong style="color:#888;">${escHtml(userName)}</strong><br>
+      Anonymous does not mean empty.
     </div>
   `;
         }
@@ -2834,11 +2810,11 @@
             if (!s.kingPost) return "";
             return `
     <div class="right-widget">
-      <div class="section-label" style="margin-bottom:8px;">Spunto forte</div>
+      <div class="section-label" style="margin-bottom:8px;">Raw signal</div>
       <div class="king-card" style="margin-bottom:0;">
         <div style="display:flex;align-items:center;gap:7px;margin-bottom:8px;">
           <span style="font-size:18px;" class="king-shimmer">✦</span>
-          <div style="font-size:10px;color:rgba(255,215,0,0.6);letter-spacing:1px;">${s.kingPost._rxCount} REAZIONI</div>
+          <div style="font-size:10px;color:rgba(255,215,0,0.6);letter-spacing:1px;">${s.kingPost._rxCount} REACTIONS</div>
         </div>
         ${s.kingPost.category ? `<span class="chip" style="margin-bottom:7px;display:inline-flex;background:#1a1a1a;border-color:#333;color:#666;">${escHtml(s.kingPost.category)}</span>` : ""}
         <p style="font-size:13px;line-height:1.6;color:#fff;">${escHtml(s.kingPost.text)}</p>
@@ -2847,7 +2823,7 @@
     <div class="right-widget" style="cursor:pointer;" onclick="openCreate()">
       <div style="text-align:center;padding:8px 0;">
         <div style="width:40px;height:40px;border-radius:50%;background:#0a0a0a;color:#fff;display:flex;align-items:center;justify-content:center;margin:0 auto 8px;">${I.Plus}</div>
-        <div style="font-size:12px;color:#888;">Apri una conversazione che valga la pena leggere</div>
+        <div style="font-size:12px;color:#888;">Post something worth reading</div>
       </div>
     </div>
   `;
@@ -2862,7 +2838,7 @@
     <button class="tab" style="flex:1;" onclick="openCreate()">
       <div style="width:36px;height:36px;border-radius:50%;background:#0a0a0a;color:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 3px 12px rgba(0,0,0,0.18);">${I.Plus}</div>
     </button>
-    <button class="tab${s.view === "groups" ? " on" : ""}" onclick="goView('groups')">${I.Group}GRUPPI</button>
+    <button class="tab${s.view === "groups" ? " on" : ""}" onclick="goView('groups')">${I.Group}GROUPS</button>
     <button class="tab${s.view === "my-activity" ? " on" : ""}" onclick="goView('my-activity');loadMyActivity();">${I.User}ME</button>
   `;
         }
@@ -2892,9 +2868,9 @@
       <div class="card" style="cursor:default;margin-bottom:12px;background:#0a0a0a;color:#fff;border-color:#111;overflow:hidden;position:relative;">
         <div style="position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.06),transparent 55%);pointer-events:none;"></div>
         <div style="position:relative;">
-          <div style="font-size:10px;color:#777;letter-spacing:2px;text-transform:uppercase;margin-bottom:6px;">NO FILTER</div>
-          <div style="font-family:'Bebas Neue',cursive;font-size:26px;letter-spacing:2px;line-height:1.05;margin-bottom:8px;">Conversazioni che vale la pena leggere.</div>
-          <div style="font-size:12px;color:#aaa;line-height:1.7;margin-bottom:13px;">Anonimo, ma non casuale. Qui non si posta “qualcosa”: si apre una discussione, si porta una prospettiva, si racconta un’esperienza.</div>
+          <div style="font-size:10px;color:#777;letter-spacing:2px;text-transform:uppercase;margin-bottom:6px;">NOFILTER / RAW FORMATS</div>
+          <div style="font-family:'Bebas Neue',cursive;font-size:26px;letter-spacing:2px;line-height:1.05;margin-bottom:8px;">The things people do not say out loud.</div>
+          <div style="font-size:12px;color:#aaa;line-height:1.7;margin-bottom:13px;">Anonymous, but not empty. Pick a format, write the truth, and give people something they can actually feel, save or argue with.</div>
           <div style="display:flex;gap:7px;flex-wrap:wrap;">
             ${CATEGORIES.map(c => `<button class="fchip${s.filterCat === c ? " on" : ""}" style="background:${s.filterCat === c ? "#fff" : "rgba(255,255,255,.04)"};color:${s.filterCat === c ? "#0a0a0a" : "#aaa"};border-color:${s.filterCat === c ? "#fff" : "#222"};" onclick="toggleFilterCat('${c}')">${c}</button>`).join("")}
           </div>
@@ -2902,7 +2878,7 @@
       </div>` : ""}
       <div class="sbar" style="margin-bottom:8px;">
         ${I.Search}
-        <input id="nf-search-input" placeholder="Cerca una conversazione..." value="${escAttr(s.searchQuery)}" oninput="handleSearchInput(this)" onkeydown="if(event.key==='Enter')applySearch()"/>
+        <input id="nf-search-input" placeholder="Search a raw thought..." value="${escAttr(s.searchQuery)}" oninput="handleSearchInput(this)" onkeydown="if(event.key==='Enter')applySearch()"/>
         ${s.searchQuery ? `<button onclick="clearSearch()" style="background:none;border:none;cursor:pointer;color:#bbb;display:flex;transition:opacity 0.2s;">${I.X}</button>` : ""}
         <button onclick="toggleFilters()" style="background:none;border:none;cursor:pointer;display:flex;align-items:center;gap:4px;color:${activeFilters > 0 ? "#0a0a0a" : "#bbb"};padding:0 2px;transition:color 0.2s;">
           ${I.Filter}
@@ -2911,26 +2887,26 @@
       </div>
       ${s.filtersOpen ? `
         <div style="background:#fff;border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:10px;animation:su 0.22s cubic-bezier(.22,1,.36,1);">
-          <div class="section-label">Ordina</div>
+          <div class="section-label">Sort</div>
           <div style="display:flex;gap:5px;margin-bottom:12px;flex-wrap:wrap;">
-            ${[["newest", "Recenti"], ["hot", "Più reagite"], ["comments", "Più discusse"]].map(([v, l]) => `<button class="fchip${s.sortBy === v ? " on" : ""}" onclick="setSortBy('${v}')">${l}</button>`).join("")}
+            ${[["newest", "Newest"], ["hot", "Most reacted"], ["comments", "Most discussed"]].map(([v, l]) => `<button class="fchip${s.sortBy === v ? " on" : ""}" onclick="setSortBy('${v}')">${l}</button>`).join("")}
           </div>
-          <div class="section-label">Formato</div>
+          <div class="section-label">NoFilter format</div>
           <div style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:12px;">
             ${CATEGORIES.map(c => `<button class="fchip${s.filterCat === c ? " on" : ""}" onclick="toggleFilterCat('${c}')">${c}</button>`).join("")}
           </div>
-          <div class="section-label">Tema</div>
+          <div class="section-label">Territory</div>
           <div style="display:flex;gap:4px;flex-wrap:wrap;">
             ${MOODS.map(m => `<button class="fchip${s.filterMood === m ? " on" : ""}" onclick="toggleFilterMood('${m}')">${m}</button>`).join("")}
           </div>
-          ${(s.filterCat || s.filterMood || s.searchQuery) ? `<button class="btn-o" style="margin-top:10px;width:100%;font-size:12px;" onclick="clearFilters()">Rimuovi filtri</button>` : ""}
+          ${(s.filterCat || s.filterMood || s.searchQuery) ? `<button class="btn-o" style="margin-top:10px;width:100%;font-size:12px;" onclick="clearFilters()">Clear filters</button>` : ""}
         </div>
       `: ""}
       <div style="font-size:11px;color:#bbb;display:flex;align-items:center;gap:5px;">
         <span class="live-dot"></span>
-        ${fp.length} conversazioni · anonimo · archivio vivo
+        anonymous · live archive · no names
         ${s.searchQuery ? `<span style="color:#888;">· "${escHtml(s.searchQuery)}"</span>` : ""}
-        <button onclick="openTiktok()" style="margin-left:auto;background:none;border:none;cursor:pointer;display:flex;align-items:center;gap:4px;font-size:11px;color:#888;font-family:'DM Mono',monospace;padding:3px 7px;border-radius:5px;transition:all 0.2s;border:1px solid #eee;background:#fff;" title="Leggi a caso">${I.Dice} <span style="font-size:10px;">random</span></button>
+        <button onclick="openTiktok()" style="margin-left:auto;background:none;border:none;cursor:pointer;display:flex;align-items:center;gap:4px;font-size:11px;color:#888;font-family:'DM Mono',monospace;padding:3px 7px;border-radius:5px;transition:all 0.2s;border:1px solid #eee;background:#fff;" title="Random read">${I.Dice} <span style="font-size:10px;">random</span></button>
       </div>
     </div>
   `;
@@ -2943,55 +2919,55 @@
             const g = s.myGroups.find(x => x.id === s.currentGroupId) || { id: s.currentGroupId, name: s.currentGroupName, isPrivate: true };
             const groupPostInputId = "group-post-input-" + s.currentGroupId;
             return `
-    <!-- Group banner con nome e azioni -->
+    <!-- Group banner with name and actions -->
     <div style="background:#0a0a0a;border-radius:12px;padding:13px 16px;margin-bottom:14px;">
       <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;">
         <div style="display:flex;flex-direction:column;gap:2px;min-width:0;">
-          <span style="font-size:9px;letter-spacing:2px;color:#666;text-transform:uppercase;font-family:'DM Mono',monospace;">${g.isPrivate ? "Gruppo privato" : "Gruppo pubblico"}</span>
+          <span style="font-size:9px;letter-spacing:2px;color:#666;text-transform:uppercase;font-family:'DM Mono',monospace;">${g.isPrivate ? "Private room" : "Public room"}</span>
           <span style="font-family:'Bebas Neue',cursive;font-size:18px;letter-spacing:2px;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${escHtml(g.name)}</span>
           ${g.description ? `<span style="font-size:11px;color:#888;margin-top:2px;line-height:1.4;">${escHtml(g.description)}</span>` : ""}
         </div>
-        <!-- Azioni gruppo -->
+        <!-- Room actions -->
         <div style="display:flex;align-items:center;gap:6px;flex-shrink:0;">
           <!-- Info -->
-          <button onclick="showGroupInfo('${escAttr(g.id)}')" title="Informazioni" style="background:#1a1a1a;border:1px solid #333;color:#aaa;border-radius:8px;padding:7px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background 0.2s;" onmouseover="this.style.background='#222'" onmouseout="this.style.background='#1a1a1a'">
+          <button onclick="showGroupInfo('${escAttr(g.id)}')" title="Info" style="background:#1a1a1a;border:1px solid #333;color:#aaa;border-radius:8px;padding:7px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background 0.2s;" onmouseover="this.style.background='#222'" onmouseout="this.style.background='#1a1a1a'">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="8" stroke-width="3" stroke-linecap="round"/><line x1="12" y1="12" x2="12" y2="16"/></svg>
           </button>
-          <!-- Condividi -->
-          <button onclick="shareGroup('${escAttr(g.id)}','${escAttr(g.name)}')" title="Condividi" style="background:#1a1a1a;border:1px solid #333;color:#aaa;border-radius:8px;padding:7px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background 0.2s;" onmouseover="this.style.background='#222'" onmouseout="this.style.background='#1a1a1a'">
+          <!-- Share -->
+          <button onclick="shareGroup('${escAttr(g.id)}','${escAttr(g.name)}')" title="Share" style="background:#1a1a1a;border:1px solid #333;color:#aaa;border-radius:8px;padding:7px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background 0.2s;" onmouseover="this.style.background='#222'" onmouseout="this.style.background='#1a1a1a'">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
           </button>
-          <!-- Segnala -->
-          <button onclick="reportGroup('${escAttr(g.id)}')" title="Segnala gruppo" style="background:#1a1a1a;border:1px solid #333;color:#aaa;border-radius:8px;padding:7px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background 0.2s;" onmouseover="this.style.background='#222'" onmouseout="this.style.background='#1a1a1a'">
+          <!-- Report -->
+          <button onclick="reportGroup('${escAttr(g.id)}')" title="Report room" style="background:#1a1a1a;border:1px solid #333;color:#aaa;border-radius:8px;padding:7px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background 0.2s;" onmouseover="this.style.background='#222'" onmouseout="this.style.background='#1a1a1a'">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>
           </button>
-          <!-- Esci -->
-          <button onclick="leaveGroup('${escAttr(g.id)}')" title="Esci dal gruppo" style="background:#1a1a1a;border:1px solid #333;color:#e05050;border-radius:8px;padding:7px 13px;font-family:'DM Mono',monospace;font-size:11px;cursor:pointer;display:flex;align-items:center;gap:6px;white-space:nowrap;transition:background 0.2s;" onmouseover="this.style.background='#222'" onmouseout="this.style.background='#1a1a1a'">
+          <!-- Leave -->
+          <button onclick="leaveGroup('${escAttr(g.id)}')" title="Leave room" style="background:#1a1a1a;border:1px solid #333;color:#e05050;border-radius:8px;padding:7px 13px;font-family:'DM Mono',monospace;font-size:11px;cursor:pointer;display:flex;align-items:center;gap:6px;white-space:nowrap;transition:background 0.2s;" onmouseover="this.style.background='#222'" onmouseout="this.style.background='#1a1a1a'">
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-            Esci
+            Leave
           </button>
         </div>
       </div>
     </div>
     ${g.isAdmin && !g.description ? `
     <div style="margin-bottom:12px;">
-      <button style="background:none;border:none;cursor:pointer;font-size:11px;color:#ccc;font-family:'DM Mono',monospace;padding:0;" onclick="openGroupSettings('${g.id}')">+ aggiungi descrizione</button>
+      <button style="background:none;border:none;cursor:pointer;font-size:11px;color:#ccc;font-family:'DM Mono',monospace;padding:0;" onclick="openGroupSettings('${g.id}')">+ add description</button>
     </div>
     ` : ""}
     <!-- Group post bar at top -->
     <div style="background:#fff;border:1px solid var(--border);border-radius:12px;padding:12px 14px;margin-bottom:12px;display:flex;gap:8px;align-items:flex-end;">
       <div style="width:34px;height:34px;border-radius:50%;background:#0a0a0a;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',cursive;font-size:13px;letter-spacing:1px;color:#fff;flex-shrink:0;">${userName.slice(0, 2).toUpperCase()}</div>
       <div style="flex:1;">
-        <textarea id="${groupPostInputId}" rows="2" placeholder="Apri una conversazione nel gruppo..." style="resize:none;font-size:13px;width:100%;border:none;background:transparent;outline:none;font-family:'DM Mono',monospace;padding:0;color:#0a0a0a;" oninput="this.style.height='auto';this.style.height=this.scrollHeight+'px';" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();submitGroupPost('${s.currentGroupId}','${groupPostInputId}');}"></textarea>
+        <textarea id="${groupPostInputId}" rows="2" placeholder="Drop something in this room..." style="resize:none;font-size:13px;width:100%;border:none;background:transparent;outline:none;font-family:'DM Mono',monospace;padding:0;color:#0a0a0a;" oninput="this.style.height='auto';this.style.height=this.scrollHeight+'px';" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();submitGroupPost('${s.currentGroupId}','${groupPostInputId}');}"></textarea>
       </div>
-      <button class="btn-sm" onclick="submitGroupPost('${s.currentGroupId}','${groupPostInputId}')" style="flex-shrink:0;align-self:flex-end;">Pubblica</button>
+      <button class="btn-sm" onclick="submitGroupPost('${s.currentGroupId}','${groupPostInputId}')" style="flex-shrink:0;align-self:flex-end;">Post</button>
     </div>
     ${s.loading ? buildSkeletons(3) : ""}
     ${!s.loading && fp.length === 0 ? `
       <div style="text-align:center;padding:60px;color:#bbb;">
         <div style="font-size:24px;margin-bottom:10px;">—</div>
-        <div style="font-size:13px;margin-bottom:6px;">Nessuna conversazione ancora.</div>
-        <div style="font-size:11px;color:#ccc;">Apri tu il primo spunto.</div>
+        <div style="font-size:13px;margin-bottom:6px;">Nothing here yet.</div>
+        <div style="font-size:11px;color:#ccc;">Say the first thing people are avoiding.</div>
       </div>
     ` : ""}
     ${fp.map((post, i) => buildPostCard(post, i)).join("")}
@@ -3001,21 +2977,21 @@
         async function submitGroupPost(groupId, inputId) {
             const el = document.getElementById(inputId);
             const txt = el ? el.value.trim() : "";
-            if (!txt || txt.length < 20) { showToast("Scrivi almeno una frase completa.", true); return; }
-            if (txt.length > MAX_POST_LEN) { showToast("Post troppo lungo (max " + MAX_POST_LEN + " caratteri).", true); return; }
+            if (!txt || txt.length < 20) { showToast("Write at least one full sentence.", true); return; }
+            if (txt.length > MAX_POST_LEN) { showToast("Post too long (max " + MAX_POST_LEN + " characters).", true); return; }
             const prevGroupId = state.currentGroupId;
             // Ensure we're posting in the right group
             const { error } = await sb.from("posts").insert({
                 language: LANG,
-                category: "Gruppo",
+                category: "Room",
                 mood: "",
                 author: userName,
                 text: txt,
                 group_id: groupId
             });
-            if (error) { showToast("Errore: " + error.message, true); return; }
+            if (error) { showToast("Error: " + error.message, true); return; }
             if (el) { el.value = ""; el.style.height = "auto"; }
-            showToast("Pubblicato nel gruppo.");
+            showToast("Posted in the room.");
             // Reload posts for this group
             await loadPosts(groupId);
             render();
@@ -3030,8 +3006,8 @@
         <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
           <span style="font-size:22px;" class="king-shimmer">👑</span>
           <div>
-            <div style="font-size:10px;color:rgba(255,215,0,0.7);letter-spacing:2px;text-transform:uppercase;">Spunto del giorno</div>
-            <div style="font-size:10px;color:#555;margin-top:1px;">${s.kingPost._rxCount} reazioni ricevute</div>
+            <div style="font-size:10px;color:rgba(255,215,0,0.7);letter-spacing:2px;text-transform:uppercase;">RAW SIGNAL OF THE DAY</div>
+            <div style="font-size:10px;color:#555;margin-top:1px;">${s.kingPost._rxCount} reactions received</div>
           </div>
         </div>
         ${s.kingPost.category ? `<span class="chip" style="margin-bottom:8px;display:inline-flex;background:#1a1a1a;border-color:#333;color:#666;">${escHtml(s.kingPost.category)}</span>` : ""}
@@ -3039,7 +3015,7 @@
       </div>
     `: ""}
     ${s.loading ? buildSkeletons(4) : ""}
-    ${!s.loading && fp.length === 0 ? `<div style="text-align:center;padding:60px;color:#bbb;"><div style="font-size:24px;margin-bottom:10px;">—</div><div style="font-size:13px;">Nessuna conversazione.</div></div>` : ""}
+    ${!s.loading && fp.length === 0 ? `<div style="text-align:center;padding:60px;color:#bbb;"><div style="font-size:24px;margin-bottom:10px;">—</div><div style="font-size:13px;">No raw thoughts yet.</div></div>` : ""}
     ${fp.map((post, i) => buildPostCard(post, i)).join("")}
   `;
         }
@@ -3080,14 +3056,14 @@
             </div>
           `: ""}
         </div>
-        <button class="rx rx-report" onclick="reportPost('${escAttr(post.id)}')" title="Segnala" style="color:#bbb;">${I.Flag}</button>
+        <button class="rx rx-report" onclick="reportPost('${escAttr(post.id)}')" title="Report" style="color:#bbb;">${I.Flag}</button>
         ${post.author === userName ? (s.deleteConfirmPostId === post.id
                     ? `<span style="display:flex;align-items:center;gap:4px;margin-left:2px;">
-               <span style="font-size:11px;color:#cc2222;">Sicuro?</span>
-               <button onclick="confirmDeletePost('${escAttr(post.id)}')" style="background:#cc2222;color:#fff;border:none;border-radius:5px;padding:3px 8px;font-size:11px;cursor:pointer;font-family:'DM Mono',monospace;">Sì</button>
+               <span style="font-size:11px;color:#cc2222;">Sure?</span>
+               <button onclick="confirmDeletePost('${escAttr(post.id)}')" style="background:#cc2222;color:#fff;border:none;border-radius:5px;padding:3px 8px;font-size:11px;cursor:pointer;font-family:'DM Mono',monospace;">Yes</button>
                <button onclick="cancelDeletePost()" style="background:none;border:1px solid #ddd;border-radius:5px;padding:3px 8px;font-size:11px;cursor:pointer;font-family:'DM Mono',monospace;">No</button>
              </span>`
-                    : `<button class="rx" onclick="askDeletePost('${escAttr(post.id)}')" title="Elimina" style="color:#cc2222;gap:4px;font-size:11px;">${I.Trash}</button>`
+                    : `<button class="rx" onclick="askDeletePost('${escAttr(post.id)}')" title="Delete" style="color:#cc2222;gap:4px;font-size:11px;">${I.Trash}</button>`
                 ) : ""}
         ${cmtList.length > 0 ? `<button style="background:none;border:none;cursor:pointer;display:flex;align-items:center;gap:4px;font-size:11px;color:#bbb;margin-left:auto;transition:color 0.2s;font-family:'DM Mono',monospace;" onclick="toggleComments('${post.id}')">${I.Msg} ${cmtList.length} ${expanded ? "▲" : "▼"}</button>` : ""}
       </div>
@@ -3098,19 +3074,19 @@
               <div style="display:flex;justify-content:space-between;align-items:flex-start;">
                 <span style="font-size:11px;font-weight:500;color:#444;">${escHtml(c.author)} <span style="font-weight:400;color:#bbb;font-size:10px;">· ${timeAgo(c.created_at)}</span></span>
                 <div style="display:flex;align-items:center;gap:6px;">
-                  <button style="background:none;border:none;cursor:pointer;display:flex;align-items:center;gap:3px;font-size:11px;color:#bbb;flex-shrink:0;font-family:'DM Mono',monospace;" onclick="reportComment('${c.id}')" title="Segnala">${I.Flag}</button>
-                  <button style="background:none;border:none;cursor:pointer;display:flex;align-items:center;gap:3px;font-size:11px;color:#bbb;flex-shrink:0;font-family:'DM Mono',monospace;" onclick="setReplyingTo('${post.id}','${c.id}','${escHtml(c.author)}')">${I.Reply} Rispondi</button>
+                  <button style="background:none;border:none;cursor:pointer;display:flex;align-items:center;gap:3px;font-size:11px;color:#bbb;flex-shrink:0;font-family:'DM Mono',monospace;" onclick="reportComment('${c.id}')" title="Report">${I.Flag}</button>
+                  <button style="background:none;border:none;cursor:pointer;display:flex;align-items:center;gap:3px;font-size:11px;color:#bbb;flex-shrink:0;font-family:'DM Mono',monospace;" onclick="setReplyingTo('${post.id}','${c.id}','${escHtml(c.author)}')">${I.Reply} Reply</button>
                   ${c.author === userName ? (s.deleteConfirmCommentId === c.id
                         ? `<span style="display:flex;align-items:center;gap:4px;">
-                         <span style="font-size:11px;color:#cc2222;">Sicuro?</span>
-                         <button onclick="confirmDeleteComment('${escAttr(post.id)}','${escAttr(c.id)}')" style="background:#cc2222;color:#fff;border:none;border-radius:5px;padding:2px 7px;font-size:11px;cursor:pointer;font-family:'DM Mono',monospace;">Sì</button>
+                         <span style="font-size:11px;color:#cc2222;">Sure?</span>
+                         <button onclick="confirmDeleteComment('${escAttr(post.id)}','${escAttr(c.id)}')" style="background:#cc2222;color:#fff;border:none;border-radius:5px;padding:2px 7px;font-size:11px;cursor:pointer;font-family:'DM Mono',monospace;">Yes</button>
                          <button onclick="cancelDeleteComment()" style="background:none;border:1px solid #ddd;border-radius:5px;padding:2px 7px;font-size:11px;cursor:pointer;font-family:'DM Mono',monospace;">No</button>
                        </span>`
-                        : `<button style="background:none;border:none;cursor:pointer;display:flex;align-items:center;gap:3px;font-size:11px;color:#cc2222;flex-shrink:0;font-family:'DM Mono',monospace;" onclick="askDeleteComment('${escAttr(c.id)}')" title="Elimina">${I.Trash}</button>`
+                        : `<button style="background:none;border:none;cursor:pointer;display:flex;align-items:center;gap:3px;font-size:11px;color:#cc2222;flex-shrink:0;font-family:'DM Mono',monospace;" onclick="askDeleteComment('${escAttr(c.id)}')" title="Delete">${I.Trash}</button>`
                     ) : ""}
                 </div>
               </div>
-              ${s.reportedComments.includes(c.id) ? `<p style="font-size:13px;margin-top:3px;line-height:1.5;color:#bbb;font-style:italic;">[Commento segnalato]</p>` : `<p style="font-size:13px;margin-top:3px;line-height:1.5;color:${c.text.startsWith("@") ? "#555" : "#0a0a0a"};">${escHtml(c.text)}</p>`}
+              ${s.reportedComments.includes(c.id) ? `<p style="font-size:13px;margin-top:3px;line-height:1.5;color:#bbb;font-style:italic;">[Reported comment]</p>` : `<p style="font-size:13px;margin-top:3px;line-height:1.5;color:${c.text.startsWith("@") ? "#555" : "#0a0a0a"};">${escHtml(c.text)}</p>`}
               ${(() => {
                         const crxList = s.commentReactions[c.id] || [];
                         const crxMy = REACTIONS.find(e => crxList.some(r => r.emoji === e && r.reactor_id === deviceId));
@@ -3132,7 +3108,7 @@
                     })()}
               ${s.replyingTo?.postId === post.id && s.replyingTo?.commentId === c.id ? `
                 <div style="display:flex;gap:6px;margin-top:7px;animation:su 0.2s ease;">
-                  <input id="reply-${c.id}" placeholder="Rispondi a ${escHtml(c.author)}..." value="${escHtml(s.replyText)}" oninput="state.replyText=this.value" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();submitReply('${post.id}','${c.id}');}" style="font-size:12px;padding:7px 10px;" autofocus/>
+                  <input id="reply-${c.id}" placeholder="Reply to ${escHtml(c.author)}..." value="${escHtml(s.replyText)}" oninput="state.replyText=this.value" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();submitReply('${post.id}','${c.id}');}" style="font-size:12px;padding:7px 10px;" autofocus/>
                   <button class="btn-sm" onclick="submitReply('${post.id}','${c.id}')" style="flex-shrink:0;">→</button>
                 </div>
               `: ""}
@@ -3141,10 +3117,10 @@
         </div>
       `: ""}
       <div style="display:flex;gap:6px;margin-top:${expanded && cmtList.length > 0 ? 8 : cmtList.length === 0 ? 10 : 4}px;">
-        <input id="comment-${post.id}" placeholder="Aggiungi un punto di vista..." onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();submitCommentBtn('${post.id}');}" style="font-size:12px;padding:7px 10px;"/>
+        <input id="comment-${post.id}" placeholder="Add a point of view..." onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();submitCommentBtn('${post.id}');}" style="font-size:12px;padding:7px 10px;"/>
         <button class="btn-sm" onclick="submitCommentBtn('${post.id}')" style="flex-shrink:0;">→</button>
       </div>
-      ${cmtList.length > 1 && !expanded ? `<button style="background:none;border:none;cursor:pointer;font-size:11px;color:#bbb;margin-top:5px;display:flex;align-items:center;gap:4px;transition:color 0.2s;font-family:'DM Mono',monospace;" onclick="toggleComments('${post.id}')">${I.Msg} Vedi tutti i ${cmtList.length} commenti</button>` : ""}
+      ${cmtList.length > 1 && !expanded ? `<button style="background:none;border:none;cursor:pointer;font-size:11px;color:#bbb;margin-top:5px;display:flex;align-items:center;gap:4px;transition:color 0.2s;font-family:'DM Mono',monospace;" onclick="toggleComments('${post.id}')">${I.Msg} View all ${cmtList.length} comments</button>` : ""}
     </div>
   `;
         }
@@ -3154,11 +3130,11 @@
             const s = state;
             return `
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
-      <span style="font-family:'Bebas Neue',cursive;font-size:20px;letter-spacing:2px;">SONDAGGI</span>
-      <button class="btn-sm" onclick="openCreate('poll')">+ Nuovo</button>
+      <span style="font-family:'Bebas Neue',cursive;font-size:20px;letter-spacing:2px;">POLLS</span>
+      <button class="btn-sm" onclick="openCreate('poll')">+ New</button>
     </div>
     ${s.loading ? `<div class="nf-loader"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 3464 3464"><g transform="translate(0,3464) scale(0.1,-0.1)" fill="#0a0a0a" stroke="none"><path d="M11366 22614 c-15 -14 -16 -515 -16 -5364 l0 -5350 23 -15 c21 -13 659 -15 6020 -13 4904 3 5998 5 6009 16 11 11 14 650 16 3470 1 1901 0 3484 -3 3517 -3 33 -10 67 -14 74 -11 17 -877 19 -894 2 -8 -8 -11 -579 -12 -1981 l-2 -1971 -22 -22 -22 -22 -3952 -3 c-2173 -1 -3966 0 -3984 3 -17 3 -41 13 -53 23 l-21 17 1 2255 c0 2000 2 2256 16 2270 13 13 571 15 5105 15 5038 0 5091 0 5105 -20 12 -16 14 -333 12 -2273 l-3 -2254 -24 -19 c-22 -18 -43 -19 -321 -19 -230 0 -300 -3 -308 -13 -17 -20 -19 -852 -2 -872 11 -13 105 -15 781 -15 749 0 769 0 779 19 7 14 10 1025 10 3195 0 3129 0 3175 -19 3186 -13 7 -365 10 -1069 10 -1003 0 -1050 1 -1065 18 -16 17 -17 105 -17 1066 0 703 -3 1054 -10 1067 -11 19 -89 19 -6020 19 -5449 0 -6010 -1 -6024 -16z m11109 -917 c22 -31 25 -118 23 -674 -3 -469 -5 -534 -19 -548 -14 -14 -427 -16 -4470 -16 -2810 1 -4460 -3 -4469 -9 -13 -8 -15 -373 -15 -3187 0 -1748 3 -3186 7 -3195 7 -17 228 -18 4452 -18 2759 0 4454 -4 4469 -9 14 -6 29 -20 34 -33 4 -13 7 -223 5 -468 -1 -245 -3 -507 -2 -583 0 -124 -2 -139 -20 -157 -20 -20 -33 -20 -5094 -20 -4841 0 -5075 1 -5096 18 l-22 17 2 4435 c0 3042 4 4438 11 4446 6 7 23 14 37 16 15 2 2305 3 5090 3 4912 0 5064 -1 5077 -18z"/></g></svg></div>` : ""}
-    ${!s.loading && s.polls.length === 0 ? `<div style="text-align:center;padding:60px;color:#bbb;"><div style="font-size:24px;margin-bottom:10px;">—</div><div style="font-size:13px;">Nessun sondaggio.</div></div>` : ""}
+    ${!s.loading && s.polls.length === 0 ? `<div style="text-align:center;padding:60px;color:#bbb;"><div style="font-size:24px;margin-bottom:10px;">—</div><div style="font-size:13px;">No polls yet.</div></div>` : ""}
     ${s.polls.map((p, i) => buildPollCard(p, i)).join("")}
   `;
         }
@@ -3203,10 +3179,10 @@
             return `
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
       <span style="font-family:'Bebas Neue',cursive;font-size:20px;letter-spacing:2px;">⚔️ DUELLI</span>
-      <button class="btn-sm" onclick="openCreate('duel')">+ Lancia</button>
+      <button class="btn-sm" onclick="openCreate('duel')">+ Launch</button>
     </div>
-    <div style="font-size:11px;color:#bbb;margin-bottom:14px;">Vota il lato che senti tuo. </div>
-    ${s.duels.length === 0 ? `<div style="text-align:center;padding:60px;color:#bbb;"><div style="font-size:24px;margin-bottom:10px;">—</div><div style="font-size:13px;">Nessun duello attivo. Lanciane uno.</div></div>` : ""}
+    <div style="font-size:11px;color:#bbb;margin-bottom:14px;">Vote for the side that feels true. </div>
+    ${s.duels.length === 0 ? `<div style="text-align:center;padding:60px;color:#bbb;"><div style="font-size:24px;margin-bottom:10px;">—</div><div style="font-size:13px;">No active duels. Launch one.</div></div>` : ""}
     ${s.duels.map((d, i) => buildDuelCard(d, i)).join("")}
   `;
         }
@@ -3234,7 +3210,7 @@
             <div class="duel-side" onclick="${!hasVoted ? `voteDuel('${duel.id}',${side})` : "void(0)"}" style="background:${isVoted ? "#0a0a0a" : side === 0 ? "#fff" : "#f8f8f8"};border-right:${side === 0 ? "1px solid #eee" : "none"};cursor:${hasVoted ? "default" : "pointer"};">
               ${hasVoted ? `<div style="position:absolute;bottom:0;left:0;right:0;height:3px;background:${isVoted ? "#fff" : "#e0e0e0"};"></div>` : ""}
               <div style="font-size:14px;font-weight:600;color:${isVoted ? "#fff" : side === 0 ? "#0a0a0a" : "#333"};margin-bottom:${hasVoted ? 4 : 0}px;">${escHtml(duel.options[side] || "")}</div>
-              ${hasVoted ? `<div style="font-size:20px;font-weight:700;font-family:'Bebas Neue',cursive;letter-spacing:1px;color:${isVoted ? "#fff" : "#888"};">${pct}%</div>` : `<div style="font-size:10px;color:#bbb;margin-top:4px;">Clicca per votare</div>`}
+              ${hasVoted ? `<div style="font-size:20px;font-weight:700;font-family:'Bebas Neue',cursive;letter-spacing:1px;color:${isVoted ? "#fff" : "#888"};">${pct}%</div>` : `<div style="font-size:10px;color:#bbb;margin-top:4px;">Tap to vote</div>`}
             </div>
           `;
             }).join("")}
@@ -3251,31 +3227,31 @@
             return `
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
       <span style="font-family:'Bebas Neue',cursive;font-size:20px;letter-spacing:2px;">CLASSIFICHE</span>
-      <button class="btn-sm" onclick="${tab === "posts" ? "loadHotPosts()" : "loadTopAccounts()"}">Aggiorna</button>
+      <button class="btn-sm" onclick="${tab === "posts" ? "loadHotPosts()" : "loadTopAccounts()"}">Refresh</button>
     </div>
 
     <!-- Tabs -->
     <div style="display:flex;gap:6px;margin-bottom:14px;">
       <button class="fchip${tab === "posts" ? " on" : ""}" onclick="state.hotTab='posts';render();" style="flex:1;text-align:center;padding:8px 0;">Top Post 24h</button>
-      <button class="fchip${tab === "accounts" ? " on" : ""}" onclick="state.hotTab='accounts';loadTopAccounts();render();" style="flex:1;text-align:center;padding:8px 0;">Top Account 7gg</button>
+      <button class="fchip${tab === "accounts" ? " on" : ""}" onclick="state.hotTab='accounts';loadTopAccounts();render();" style="flex:1;text-align:center;padding:8px 0;">Top Accounts 7d</button>
     </div>
 
     ${tab === "posts" ? `
       ${s.kingPost ? `
         <div style="margin-bottom:18px;">
-          <div class="section-label" style="margin-bottom:7px;">👑 RE DI IERI</div>
+          <div class="section-label" style="margin-bottom:7px;">👑 YESTERDAY'S KING</div>
           <div class="king-card">
             <div style="display:flex;align-items:center;gap:7px;margin-bottom:9px;">
               <span style="font-size:20px;" class="king-shimmer">👑</span>
-              <div style="font-size:10px;color:rgba(255,215,0,0.6);letter-spacing:1px;">${s.kingPost._rxCount} REAZIONI · POST PIÙ AMATO</div>
+              <div style="font-size:10px;color:rgba(255,215,0,0.6);letter-spacing:1px;">${s.kingPost._rxCount} REACTIONS · MOST LOVED POST</div>
             </div>
             ${s.kingPost.category ? `<span class="chip" style="margin-bottom:7px;display:inline-flex;background:#1a1a1a;border-color:#333;color:#666;">${escHtml(s.kingPost.category)}</span>` : ""}
             <p style="font-size:14px;line-height:1.6;color:#fff;">${escHtml(s.kingPost.text)}</p>
           </div>
         </div>
       `: ""}
-      <div style="font-size:11px;color:#bbb;margin-bottom:12px;">Classifica globale ultime 24 ore.</div>
-      ${s.hotPosts.length === 0 ? `<div style="text-align:center;padding:60px;color:#bbb;"><div style="font-size:24px;margin-bottom:10px;">—</div><div style="font-size:13px;">Nessun post ancora.</div></div>` : ""}
+      <div style="font-size:11px;color:#bbb;margin-bottom:12px;">Global ranking · last 24 hours.</div>
+      ${s.hotPosts.length === 0 ? `<div style="text-align:center;padding:60px;color:#bbb;"><div style="font-size:24px;margin-bottom:10px;">—</div><div style="font-size:13px;">No posts yet.</div></div>` : ""}
       <div style="background:#fff;border:1px solid var(--border);border-radius:14px;overflow:hidden;">
         ${s.hotPosts.map((post, i) => `
           <div class="rank-row" style="animation-delay:${i * 0.035}s;border-bottom:${i < s.hotPosts.length - 1 ? "1px solid #f5f5f5" : "none"};border-radius:0;">
@@ -3295,11 +3271,11 @@
       </div>
     ` : `
       <!-- Top Account 7gg -->
-      <div style="font-size:11px;color:#bbb;margin-bottom:12px;">Classifica Unfiltered Score · ultimi 7 giorni.</div>
+      <div style="font-size:11px;color:#bbb;margin-bottom:12px;">Unfiltered Score ranking · last 7 days.</div>
       ${!s.topAccounts || s.topAccounts.length === 0 ? `
         <div style="text-align:center;padding:60px;color:#bbb;">
           <div style="font-size:24px;margin-bottom:10px;">—</div>
-          <div style="font-size:13px;">Classifica in caricamento...</div>
+          <div style="font-size:13px;">Ranking loading...</div>
         </div>
       ` : `
         <!-- Top 1 special card -->
@@ -3313,8 +3289,8 @@
               <div style="font-family:'Bebas Neue',cursive;font-size:28px;letter-spacing:1px;color:rgba(255,215,0,0.8);width:36px;text-align:center;flex-shrink:0;">①</div>
               <div style="width:42px;height:42px;border-radius:50%;background:#1a1a1a;border:2px solid rgba(255,215,0,0.3);display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',cursive;font-size:16px;color:#fff;flex-shrink:0;">${initials}</div>
               <div style="flex:1;min-width:0;">
-                <div style="font-family:'Bebas Neue',cursive;font-size:17px;letter-spacing:1.5px;color:#fff;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escHtml((top.author || "Anonimo").toUpperCase())}</div>
-                <div style="font-size:10px;color:#555;margin-top:2px;">${top.postCount} post · ${top.rxReceived} reazioni rice. · ${top.commentRxReceived || 0} rx commenti</div>
+                <div style="font-family:'Bebas Neue',cursive;font-size:17px;letter-spacing:1.5px;color:#fff;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escHtml((top.author || "Anonymous").toUpperCase())}</div>
+                <div style="font-size:10px;color:#555;margin-top:2px;">${top.postCount} posts · ${top.rxReceived} reactions received · ${top.commentRxReceived || 0} comment rx</div>
               </div>
               <div style="text-align:right;flex-shrink:0;">
                 <div style="font-family:'Bebas Neue',cursive;font-size:24px;letter-spacing:1px;color:rgba(255,215,0,0.8);">${top.score}</div>
@@ -3336,8 +3312,8 @@
               </div>
               <div style="width:32px;height:32px;border-radius:50%;background:#f5f5f5;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',cursive;font-size:12px;color:#555;flex-shrink:0;">${initials}</div>
               <div style="flex:1;min-width:0;">
-                <div style="font-size:13px;font-weight:500;color:#0a0a0a;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escHtml(acc.author || "Anonimo")}</div>
-                <div style="font-size:10px;color:#bbb;margin-top:2px;">${acc.postCount} post · ${acc.rxReceived} rx · ${acc.commentRxReceived || 0} rx cmt</div>
+                <div style="font-size:13px;font-weight:500;color:#0a0a0a;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escHtml(acc.author || "Anonymous")}</div>
+                <div style="font-size:10px;color:#bbb;margin-top:2px;">${acc.postCount} posts · ${acc.rxReceived} rx · ${acc.commentRxReceived || 0} comment rx</div>
               </div>
               <div style="flex-shrink:0;text-align:right;">
                 <div style="font-family:'Bebas Neue',cursive;font-size:18px;letter-spacing:.5px;color:#0a0a0a;">${acc.score}</div>
@@ -3359,18 +3335,18 @@
             const discoverGroups = (s.publicGroups || []).filter(g => !myGroupIds.has(g.id));
             return `
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
-      <span style="font-family:'Bebas Neue',cursive;font-size:20px;letter-spacing:2px;">GRUPPI</span>
-      <button class="btn-sm" onclick="openCreate('group')">+ Crea</button>
+      <span style="font-family:'Bebas Neue',cursive;font-size:20px;letter-spacing:2px;">ROOMS</span>
+      <button class="btn-sm" onclick="openCreate('group')">+ Create</button>
     </div>
 
     ${s.myGroups.length > 0 ? `
-      <div class="section-label" style="margin-bottom:8px;">I miei gruppi</div>
+      <div class="section-label" style="margin-bottom:8px;">My rooms</div>
       ${s.myGroups.map(g => `
         <div class="group-card" onclick="enterGroupById('${g.id}')">
           <div>
             <div style="display:flex;align-items:center;gap:7px;margin-bottom:3px;">
               <span style="font-size:14px;font-weight:500;">${escHtml(g.name)}</span>
-              <span class="badge">${g.isPrivate ? I.Lock + " Privato" : I.Globe + " Pubblico"}</span>
+              <span class="badge">${g.isPrivate ? I.Lock + " Private" : I.Globe + " Public"}</span>
               ${g.isAdmin ? `<span class="badge">admin</span>` : ""}
             </div>
             ${g.description ? `<div style="font-size:11px;color:#aaa;margin-top:2px;">${escHtml(g.description)}</div>` : ""}
@@ -3384,42 +3360,42 @@
     ` : `
       <div style="text-align:center;padding:40px;color:#bbb;">
         <div style="font-size:24px;margin-bottom:10px;">—</div>
-        <div style="font-size:13px;margin-bottom:14px;">Non sei ancora in nessun gruppo.</div>
-        <button class="btn" onclick="openCreate('group')">Crea il primo gruppo</button>
+        <div style="font-size:13px;margin-bottom:14px;">You are not in any room yet.</div>
+        <button class="btn" onclick="openCreate('group')">Create the first room</button>
       </div>
     `}
 
-    <!-- Entra con link / ID -->
+    <!-- Join with link / ID -->
     <div style="margin-top:16px;padding:14px;background:#fff;border-radius:12px;border:1px solid var(--border);">
-      <div class="section-label" style="margin-bottom:8px;">Entra con un link o ID</div>
+      <div class="section-label" style="margin-bottom:8px;">Join with a link or ID</div>
       <div style="display:flex;gap:7px;">
-        <input id="join-input" placeholder="Incolla link o ID gruppo..." onkeydown="if(event.key==='Enter')joinByLink()" style="font-size:12px;padding:8px 11px;"/>
-        <button class="btn-sm" onclick="joinByLink()" style="flex-shrink:0;">Entra</button>
+        <input id="join-input" placeholder="Paste room link or ID..." onkeydown="if(event.key==='Enter')joinByLink()" style="font-size:12px;padding:8px 11px;"/>
+        <button class="btn-sm" onclick="joinByLink()" style="flex-shrink:0;">Join</button>
       </div>
-      <div style="font-size:11px;color:#ccc;margin-top:7px;">I gruppi privati sono accessibili solo con link o ID.</div>
+      <div style="font-size:11px;color:#ccc;margin-top:7px;">Private rooms can only be accessed with a link or ID.</div>
     </div>
 
-    <!-- Scopri gruppi pubblici -->
+    <!-- Discover public rooms -->
     ${discoverGroups.length > 0 ? `
       <div style="margin-top:20px;">
-        <div class="section-label" style="margin-bottom:8px;">Scopri · gruppi pubblici</div>
+        <div class="section-label" style="margin-bottom:8px;">Discover · public rooms</div>
         ${discoverGroups.map(g => `
           <div class="group-card" onclick="joinPublicGroupById('${escAttr(g.id)}')">
             <div style="flex:1;min-width:0;">
               <div style="display:flex;align-items:center;gap:7px;margin-bottom:3px;">
                 <span style="font-size:14px;font-weight:500;">${escHtml(g.name)}</span>
-                <span class="badge">${I.Globe} Pubblico</span>
+                <span class="badge">${I.Globe} Public</span>
               </div>
               ${g.description ? `<div style="font-size:11px;color:#aaa;margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escHtml(g.description)}</div>` : ""}
             </div>
-            <button class="btn-sm" style="flex-shrink:0;" onclick="event.stopPropagation();joinPublicGroupById('${escAttr(g.id)}')">Entra</button>
+            <button class="btn-sm" style="flex-shrink:0;" onclick="event.stopPropagation();joinPublicGroupById('${escAttr(g.id)}')">Join</button>
           </div>
         `).join("")}
       </div>
     ` : s.publicGroups.length === 0 ? `
       <div style="margin-top:20px;">
-        <div class="section-label" style="margin-bottom:8px;">Scopri · gruppi pubblici</div>
-        <div style="text-align:center;padding:30px;color:#ccc;font-size:12px;">Nessun gruppo pubblico disponibile.</div>
+        <div class="section-label" style="margin-bottom:8px;">Discover · public rooms</div>
+        <div style="text-align:center;padding:30px;color:#ccc;font-size:12px;">No public rooms available.</div>
       </div>
     ` : ""}
   `;
@@ -3428,7 +3404,7 @@
         /* ── My Activity ── */
         function calcMyUnfilteredScore() {
             const s = state;
-            // +2 per ogni reazione ricevuta sui miei post, +1 per ogni post pubblicato nel tuo archivio, +1.5 per ogni reazione ricevuta sui miei commenti
+            // +2 for each reaction received on my posts, +1 for each post published in your archive, +1.5 for each reaction received on my comments
             let rxReceived = 0;
             s.myPosts.forEach(p => {
                 const rxList = s.reactions[p.id] || [];
@@ -3450,10 +3426,10 @@
             const myGroups = s.myGroups.length;
             const joinDate = localStorage.getItem("nofilter_joinDate") || (() => { const d = new Date().toISOString(); localStorage.setItem("nofilter_joinDate", d); return d; })();
             const joinDaysAgo = Math.floor((Date.now() - new Date(joinDate)) / (1000 * 60 * 60 * 24));
-            const joinLabel = joinDaysAgo === 0 ? "oggi" : joinDaysAgo === 1 ? "ieri" : `${joinDaysAgo}gg fa`;
+            const joinLabel = joinDaysAgo === 0 ? "today" : joinDaysAgo === 1 ? "yesterday" : `${joinDaysAgo}d ago`;
 
             return `
-    <div style="font-family:'Bebas Neue',cursive;font-size:20px;letter-spacing:2px;margin-bottom:14px;">LA MIA ATTIVITÀ</div>
+    <div style="font-family:'Bebas Neue',cursive;font-size:20px;letter-spacing:2px;margin-bottom:14px;">MY ARCHIVE</div>
 
     <!-- Profile Card -->
     <div style="background:#0a0a0a;border-radius:16px;padding:20px;margin-bottom:10px;position:relative;overflow:hidden;">
@@ -3462,8 +3438,8 @@
         <div style="width:56px;height:56px;border-radius:50%;background:#222;border:2px solid #333;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',cursive;font-size:20px;letter-spacing:1px;color:#fff;flex-shrink:0;">${initials}</div>
         <div style="min-width:0;">
           <div style="font-family:'Bebas Neue',cursive;font-size:22px;letter-spacing:2px;color:#fff;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escHtml(userName.toUpperCase())}</div>
-          <div style="font-size:11px;color:#555;font-family:'DM Mono',monospace;margin-top:1px;">Membro da ${joinLabel}</div>
-          <div style="font-size:12px;color:#666;font-family:'DM Mono',monospace;margin-top:4px;">ANONIMO</div>
+          <div style="font-size:11px;color:#555;font-family:'DM Mono',monospace;margin-top:1px;">Member since ${joinLabel}</div>
+          <div style="font-size:12px;color:#666;font-family:'DM Mono',monospace;margin-top:4px;">ANONYMOUS</div>
         </div>
       </div>
     </div>
@@ -3484,7 +3460,7 @@
         <div style="height:100%;background:#0a0a0a;border-radius:2px;width:${Math.min(100, (myScore / Math.max(1, myScore + 20)) * 100)}%;transition:width 0.6s cubic-bezier(.22,1,.36,1);"></div>
       </div>
       <div style="font-size:11px;color:#bbb;line-height:1.7;">
-        +2 per ogni reazione ricevuta · +1 per ogni post · +1.5 per reazioni ai commenti
+        +2 per each reaction received · +1 per post · +1.5 per comment reaction
       </div>
     </div>
 
@@ -3496,16 +3472,16 @@
       </div>
       <div style="background:#fff;border:1px solid var(--border);border-radius:12px;padding:14px 10px;text-align:center;">
         <div style="font-family:'Bebas Neue',cursive;font-size:26px;letter-spacing:1px;">${myRxReceived}</div>
-        <div style="font-size:10px;color:#bbb;font-family:'DM Mono',monospace;margin-top:2px;">reazioni rice.</div>
+        <div style="font-size:10px;color:#bbb;font-family:'DM Mono',monospace;margin-top:2px;">reactions received</div>
       </div>
       <div style="background:#fff;border:1px solid var(--border);border-radius:12px;padding:14px 10px;text-align:center;">
         <div style="font-family:'Bebas Neue',cursive;font-size:26px;letter-spacing:1px;">${myGroups}</div>
-        <div style="font-size:10px;color:#bbb;font-family:'DM Mono',monospace;margin-top:2px;">gruppi</div>
+        <div style="font-size:10px;color:#bbb;font-family:'DM Mono',monospace;margin-top:2px;">rooms</div>
       </div>
     </div>
 
     ${s.myPosts.length > 0 ? `
-      <div class="section-label" style="margin-bottom:8px;">Le mie conversazioni</div>
+      <div class="section-label" style="margin-bottom:8px;">My raw thoughts</div>
       ${s.myPosts.map(p => `
         <div class="card click" onclick="openTiktok()">
           <div style="display:flex;justify-content:space-between;margin-bottom:5px;">
@@ -3514,7 +3490,7 @@
           </div>
           <p style="font-size:13px;line-height:1.55;">${escHtml(p.text)}</p>
           <div style="font-size:10px;color:#bbb;margin-top:6px;display:flex;align-items:center;gap:4px;">
-            🔥 ${(s.reactions[p.id] || []).length} reazioni
+            🔥 ${(s.reactions[p.id] || []).length} reactions
           </div>
         </div>
       `).join("")}
@@ -3532,8 +3508,8 @@
     ${s.myPosts.length === 0 && s.myPolls.length === 0 && s.interactedPosts.length === 0 ? `
       <div style="text-align:center;padding:40px;color:#bbb;">
         <div style="font-size:24px;margin-bottom:10px;">—</div>
-        <div style="font-size:13px;">Nessuna attività nel tuo archivio.</div>
-        <button class="btn" style="margin-top:16px;" onclick="openCreate()">Pubblica qualcosa</button>
+        <div style="font-size:13px;">No activity in your archive yet.</div>
+        <button class="btn" style="margin-top:16px;" onclick="openCreate()">Post something</button>
       </div>
     ` : ""}
   `;
@@ -3545,49 +3521,49 @@
             return `
     <div style="font-family:'Bebas Neue',cursive;font-size:20px;letter-spacing:2px;margin-bottom:18px;">IMPOSTAZIONI</div>
     <div class="card" style="cursor:default;margin-bottom:10px;">
-      <div class="section-label">Nickname anonimo</div>
+      <div class="section-label">Anonymous nickname</div>
       <div style="font-size:14px;margin-bottom:3px;">${escHtml(userName)}</div>
-      <div style="font-size:11px;color:#bbb;">Generato automaticamente. Salvato solo su questo dispositivo.</div>
+      <div style="font-size:11px;color:#bbb;">Generated automatically. Saved only on this device.</div>
     </div>
     <div class="card" style="cursor:default;margin-bottom:10px;">
-      <div class="section-label">Visualizzazione</div>
+      <div class="section-label">Display</div>
       <div style="display:flex;justify-content:space-between;align-items:center;">
-        <span style="font-size:13px;">Modalità compatta</span>
+        <span style="font-size:13px;">Compact mode</span>
         <button class="toggle${s.settings.compactMode ? " on" : ""}" onclick="toggleCompact()"></button>
       </div>
     </div>
     <div class="card" style="cursor:default;margin-bottom:10px;">
-      <div class="section-label">Privacy & Dati</div>
+      <div class="section-label">Privacy & Data</div>
       <div style="font-size:12px;color:#555;line-height:1.7;margin-bottom:10px;">
-        I contenuti sono anonimi e restano disponibili finché non vengono eliminati dall’autore o moderati.<br>
-        Il tuo device ID è generato casualmente — non è associato a nessun dato personale.<br>
-        Il provider infrastrutturale registra gli IP nelle proprie request log.<br>
-        Noi non li vediamo né li usiamo.<br>
-        Età minima: <strong>16 anni</strong>.
+        Posts are anonymous and remain available until deleted by the author or moderated.<br>
+        Your device ID is randomly generated and is not linked to personal data.<br>
+        The infrastructure provider may log IPs in request logs.<br>
+        We do not see or use them.<br>
+        Minimum age: <strong>16</strong>.
       </div>
       <div style="display:flex;gap:8px;flex-wrap:wrap;">
         <button class="btn-o" style="flex:1;font-size:11px;min-width:120px;" onclick="document.getElementById('gdpr-modal').style.display='flex'">Privacy Policy</button>
-        <button class="btn-o" style="flex:1;font-size:11px;min-width:120px;" onclick="goView('legal')">Termini d'uso</button>
+        <button class="btn-o" style="flex:1;font-size:11px;min-width:120px;" onclick="goView('legal')">Terms</button>
       </div>
     </div>
     <div class="card" style="cursor:default;margin-top:10px;border-color:#f0d0d0;background:#fff8f8;">
       <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
         <span style="font-size:18px;">⚠️</span>
-        <div style="font-size:11px;font-weight:700;color:#cc2222;letter-spacing:1px;">QUALCUNO HA SCOPERTO CHI SEI?</div>
+        <div style="font-size:11px;font-weight:700;color:#cc2222;letter-spacing:1px;">DID SOMEONE FIND OUT WHO YOU ARE?</div>
       </div>
-      <div style="font-size:12px;color:#888;line-height:1.6;margin-bottom:12px;">Se pensi che la tua identità sia stata scoperta, puoi resettare tutti i dati: nickname, gruppi, preferenze. Ricomincerai da zero.</div>
-      <button class="btn-o" style="width:100%;color:#cc2222;border-color:#f0d0d0;font-size:12px;" onclick="state.resetConfirmOpen=true;render()">Resetta tutti i dati</button>
+      <div style="font-size:12px;color:#888;line-height:1.6;margin-bottom:12px;">If you think your identity was exposed, reset all local data: nickname, rooms and preferences. You will start from zero.</div>
+      <button class="btn-o" style="width:100%;color:#cc2222;border-color:#f0d0d0;font-size:12px;" onclick="state.resetConfirmOpen=true;render()">Reset all data</button>
     </div>
     ${s.resetConfirmOpen ? `
     <div class="overlay" onclick="event.target===this&&(state.resetConfirmOpen=false,render())">
       <div class="sheet" style="max-width:340px;margin:auto;">
         <div style="text-align:center;padding:8px 0 16px;">
           <div style="font-size:36px;margin-bottom:10px;">—</div>
-          <div style="font-family:'Bebas Neue',cursive;font-size:22px;letter-spacing:2px;margin-bottom:8px;">SEI SICURO?</div>
-          <div style="font-size:13px;color:#555;line-height:1.6;margin-bottom:20px;">Perderai il tuo nickname, tutti i gruppi e tutte le preferenze. Questa azione è <strong>irreversibile</strong>.</div>
+          <div style="font-family:'Bebas Neue',cursive;font-size:22px;letter-spacing:2px;margin-bottom:8px;">ARE YOU SURE?</div>
+          <div style="font-size:13px;color:#555;line-height:1.6;margin-bottom:20px;">You will lose your nickname, rooms and preferences. This action is <strong>irreversible</strong>.</div>
           <div style="display:flex;gap:10px;">
-            <button class="btn-o" style="flex:1;" onclick="state.resetConfirmOpen=false;render()">Annulla</button>
-            <button class="btn" style="flex:1;background:#cc2222;border-color:#cc2222;" onclick="resetData()">Sì, resetta</button>
+            <button class="btn-o" style="flex:1;" onclick="state.resetConfirmOpen=false;render()">Cancel</button>
+            <button class="btn" style="flex:1;background:#cc2222;border-color:#cc2222;" onclick="resetData()">Yes, reset</button>
           </div>
         </div>
       </div>
@@ -3599,7 +3575,7 @@
         /* ── Create Sheet ── */
         function buildCreateSheet() {
             const s = state;
-            const types = [["post", "Discussione"], ["poll", "Sondaggio"], ["group", "Gruppo"]];
+            const types = [["post", "Post"], ["poll", "Poll"], ["group", "Room"]];
             const isDesk = isDesktop();
             return `
     <div class="overlay" onclick="event.target===this&&closeCreate()">
@@ -3618,84 +3594,84 @@
             const s = state;
             if (s.createType === "post") return `
     <div style="display:flex;flex-direction:column;gap:10px;">
-      <div style="font-size:10px;color:#bbb;letter-spacing:1px;">ANONIMO* · ${escHtml(userName)} · CONVERSAZIONE${s.currentGroupId !== "public" ? ` · ${escHtml(s.currentGroupName)}` : ""}</div>
+      <div style="font-size:10px;color:#bbb;letter-spacing:1px;">ANONYMOUS* · ${escHtml(userName)} · RAW POST${s.currentGroupId !== "public" ? ` · ${escHtml(s.currentGroupName)}` : ""}</div>
       <div style="background:#0a0a0a;color:#fff;border-radius:12px;padding:13px 14px;margin-bottom:2px;">
-        <div style="font-family:'Bebas Neue',cursive;font-size:20px;letter-spacing:1.5px;margin-bottom:5px;">Non postare. Apri una conversazione.</div>
-        <div style="font-size:11px;color:#aaa;line-height:1.6;">NO FILTER ora favorisce contenuti con una tesi, una domanda vera o un’esperienza raccontata bene. Frasi vuote, insulti e provocazioni senza argomento non passano.</div>
+        <div style="font-family:'Bebas Neue',cursive;font-size:20px;letter-spacing:1.5px;margin-bottom:5px;">Do not perform. Say it raw.</div>
+        <div style="font-size:11px;color:#aaa;line-height:1.6;">NoFilter is built for uncomfortable truths, unsent thoughts and honest arguments. Empty rage, insults and lazy provocation do not belong here.</div>
       </div>
       <div>
-        <div class="section-label" style="margin-bottom:7px;">Formato</div>
+        <div class="section-label" style="margin-bottom:7px;">NoFilter format</div>
         <div style="display:flex;gap:6px;flex-wrap:wrap;">
           ${CATEGORIES.map(c => `<button class="fchip${s.newPost.category === c ? " on" : ""}" data-post-format="${escAttr(c)}" onclick="setPostCategory(this.dataset.postFormat)">${c}</button>`).join("")}
         </div>
       </div>
       <div>
-        <div class="section-label" style="margin-bottom:7px;">Tema</div>
+        <div class="section-label" style="margin-bottom:7px;">Territory</div>
         <select id="np-mood" onchange="state.newPost.mood=this.value">
-          <option value="">Scegli un tema...</option>
+          <option value="">Choose a territory...</option>
           ${MOODS.map(m => `<option value="${m}"${s.newPost.mood === m ? " selected" : ""}>${m}</option>`).join("")}
         </select>
       </div>
-      <input id="np-title" placeholder="Titolo della conversazione..." maxlength="120" value="${escAttr(s.newPost.title || "")}" oninput="state.newPost.title=this.value"/>
-      <textarea id="np-text" rows="6" placeholder="Spiega il perché. Aggiungi contesto. Fai venire voglia a qualcuno di rispondere seriamente..." style="resize:none;" maxlength="${MAX_POST_LEN}" oninput="const c=document.getElementById('np-text-counter');if(c){const rem=MAX_POST_LEN-this.value.length;c.textContent=rem+' rimasti';c.style.color=rem<160?'#cc2222':'#bbb';}state.newPost.text=this.value;">${escHtml(s.newPost.text)}</textarea>
-      <div id="np-text-counter" style="text-align:right;font-size:11px;color:#bbb;margin-top:-6px;">${MAX_POST_LEN - (s.newPost.text || "").length} rimasti</div>
-      <div style="font-size:10px;color:#bbb;line-height:1.5;margin-top:2px;">Pubblicando accetti i <a onclick="closeCreate();goView('legal')" style="cursor:pointer;color:#bbb;text-decoration:underline;">Termini d'uso</a>. Vietato diffamare, minacciare, pubblicare dati altrui o contenuti d’odio.</div>
+      <input id="np-title" placeholder="Hook / title..." maxlength="120" value="${escAttr(s.newPost.title || "")}" oninput="state.newPost.title=this.value"/>
+      <textarea id="np-text" rows="6" placeholder="Write the part people usually keep to themselves. Add context. Make someone stop scrolling." style="resize:none;" maxlength="${MAX_POST_LEN}" oninput="const c=document.getElementById('np-text-counter');if(c){const rem=MAX_POST_LEN-this.value.length;c.textContent=rem+' left';c.style.color=rem<160?'#cc2222':'#bbb';}state.newPost.text=this.value;">${escHtml(s.newPost.text)}</textarea>
+      <div id="np-text-counter" style="text-align:right;font-size:11px;color:#bbb;margin-top:-6px;">${MAX_POST_LEN - (s.newPost.text || "").length} left</div>
+      <div style="font-size:10px;color:#bbb;line-height:1.5;margin-top:2px;">By posting, you accept the <a onclick="closeCreate();goView('legal')" style="cursor:pointer;color:#bbb;text-decoration:underline;">Terms</a>. No doxxing, threats, hate, defamation or private information.</div>
       <div style="display:flex;gap:8px;margin-top:4px;">
-        <button class="btn-o" style="flex:1;" onclick="closeCreate()">Annulla</button>
-        <button class="btn" style="flex:2;" onclick="submitPost()" ${s.posting ? "disabled" : ""}>Apri discussione</button>
+        <button class="btn-o" style="flex:1;" onclick="closeCreate()">Cancel</button>
+        <button class="btn" style="flex:2;" onclick="submitPost()" ${s.posting ? "disabled" : ""}>Post it raw</button>
       </div>
     </div>
   `;
             if (s.createType === "poll") return `
     <div style="display:flex;flex-direction:column;gap:10px;">
-      <input id="npl-q" placeholder="La domanda da mettere ai voti..." value="${escHtml(s.newPoll.question)}" oninput="state.newPoll.question=this.value"/>
+      <input id="npl-q" placeholder="The question people will vote on..." value="${escHtml(s.newPoll.question)}" oninput="state.newPoll.question=this.value"/>
       ${s.newPoll.options.map((opt, i) => `
         <div style="display:flex;gap:6px;">
-          <input placeholder="Opzione ${i + 1}" value="${escHtml(opt)}" oninput="state.newPoll.options[${i}]=this.value" data-poll-opt="${i}"/>
+          <input placeholder="Option ${i + 1}" value="${escHtml(opt)}" oninput="state.newPoll.options[${i}]=this.value" data-poll-opt="${i}"/>
           ${s.newPoll.options.length > 2 ? `<button class="btn-o" style="padding:0 11px;flex-shrink:0;" onclick="removePollOption(${i})">—</button>` : ""}
         </div>
       `).join("")}
-      ${s.newPoll.options.length < 5 ? `<button class="btn-o" style="font-size:12px;" onclick="addPollOption()">+ Opzione</button>` : ""}
+      ${s.newPoll.options.length < 5 ? `<button class="btn-o" style="font-size:12px;" onclick="addPollOption()">+ Option</button>` : ""}
       <div style="display:flex;gap:8px;">
-        <button class="btn-o" style="flex:1;" onclick="closeCreate()">Annulla</button>
-        <button class="btn" style="flex:2;" onclick="submitPoll()" ${s.posting ? "disabled" : ""}>Crea sondaggio</button>
+        <button class="btn-o" style="flex:1;" onclick="closeCreate()">Cancel</button>
+        <button class="btn" style="flex:2;" onclick="submitPoll()" ${s.posting ? "disabled" : ""}>Create poll</button>
       </div>
     </div>
   `;
             if (s.createType === "duel") return `
     <div style="display:flex;flex-direction:column;gap:10px;">
-      <div style="font-size:10px;color:#bbb;letter-spacing:1px;">DUELLO ANONIMO*</div>
-      <input id="nd-topic" placeholder="Tema del duello... (es. Studio vs Lavoro)" value="${escHtml(s.newDuel.topic)}" oninput="state.newDuel.topic=this.value"/>
+      <div style="font-size:10px;color:#bbb;letter-spacing:1px;">ANONYMOUS DUEL*</div>
+      <input id="nd-topic" placeholder="Duel topic... (ex. Ambition vs Peace)" value="${escHtml(s.newDuel.topic)}" oninput="state.newDuel.topic=this.value"/>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
         <div>
-          <div style="font-size:10px;color:#bbb;margin-bottom:5px;letter-spacing:1px;">LATO A</div>
-          <input placeholder="es. Studio" value="${escHtml(s.newDuel.sideA)}" oninput="state.newDuel.sideA=this.value" style="text-align:center;"/>
+          <div style="font-size:10px;color:#bbb;margin-bottom:5px;letter-spacing:1px;">SIDE A</div>
+          <input placeholder="ex. Ambition" value="${escHtml(s.newDuel.sideA)}" oninput="state.newDuel.sideA=this.value" style="text-align:center;"/>
         </div>
         <div>
-          <div style="font-size:10px;color:#bbb;margin-bottom:5px;letter-spacing:1px;">LATO B</div>
-          <input placeholder="es. Lavoro" value="${escHtml(s.newDuel.sideB)}" oninput="state.newDuel.sideB=this.value" style="text-align:center;"/>
+          <div style="font-size:10px;color:#bbb;margin-bottom:5px;letter-spacing:1px;">SIDE B</div>
+          <input placeholder="ex. Peace" value="${escHtml(s.newDuel.sideB)}" oninput="state.newDuel.sideB=this.value" style="text-align:center;"/>
         </div>
       </div>
       <div style="display:flex;gap:8px;margin-top:4px;">
-        <button class="btn-o" style="flex:1;" onclick="closeCreate()">Annulla</button>
-        <button class="btn" style="flex:2;" onclick="submitDuel()" ${s.posting ? "disabled" : ""}>Lancia duello</button>
+        <button class="btn-o" style="flex:1;" onclick="closeCreate()">Cancel</button>
+        <button class="btn" style="flex:2;" onclick="submitDuel()" ${s.posting ? "disabled" : ""}>Launch duel</button>
       </div>
     </div>
   `;
             if (s.createType === "group") return `
     <div style="display:flex;flex-direction:column;gap:10px;">
-      <input id="ng-name" placeholder="Nome del gruppo..." value="${escHtml(s.newGroup.name)}" oninput="state.newGroup.name=this.value"/>
-      <textarea id="ng-desc" placeholder="Descrizione (opzionale)..." rows="2" oninput="state.newGroup.description=this.value" style="resize:none;font-size:13px;">${escHtml(s.newGroup.description || "")}</textarea>
+      <input id="ng-name" placeholder="Room name..." value="${escHtml(s.newGroup.name)}" oninput="state.newGroup.name=this.value"/>
+      <textarea id="ng-desc" placeholder="Description (optional)..." rows="2" oninput="state.newGroup.description=this.value" style="resize:none;font-size:13px;">${escHtml(s.newGroup.description || "")}</textarea>
       <div>
-        <div class="section-label" style="margin-bottom:8px;">Visibilità</div>
+        <div class="section-label" style="margin-bottom:8px;">Visibility</div>
         <div style="display:flex;gap:8px;">
-          <button class="fchip${!s.newGroup.isPrivate ? " on" : ""}" style="flex:1;text-align:center;" onclick="state.newGroup.isPrivate=false;render();">${I.Globe} Pubblico</button>
-          <button class="fchip${s.newGroup.isPrivate ? " on" : ""}" style="flex:1;text-align:center;" onclick="state.newGroup.isPrivate=true;render();">${I.Lock} Privato</button>
+          <button class="fchip${!s.newGroup.isPrivate ? " on" : ""}" style="flex:1;text-align:center;" onclick="state.newGroup.isPrivate=false;render();">${I.Globe} Public</button>
+          <button class="fchip${s.newGroup.isPrivate ? " on" : ""}" style="flex:1;text-align:center;" onclick="state.newGroup.isPrivate=true;render();">${I.Lock} Private</button>
         </div>
       </div>
       <div style="display:flex;gap:8px;">
-        <button class="btn-o" style="flex:1;" onclick="closeCreate()">Annulla</button>
-        <button class="btn" style="flex:2;" onclick="createGroup()">Crea</button>
+        <button class="btn-o" style="flex:1;" onclick="closeCreate()">Cancel</button>
+        <button class="btn" style="flex:2;" onclick="createGroup()">Create</button>
       </div>
     </div>
   `;
@@ -3718,19 +3694,19 @@
           <button style="background:none;border:none;cursor:pointer;color:#bbb;display:flex;" onclick="closeGroupSettings()">${I.X}</button>
         </div>
 
-        <!-- Info visibile a tutti -->
+        <!-- Info visible to everyone -->
         <div style="margin-bottom:13px;">
           <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;">
-            <span class="badge">${g.isPrivate ? I.Lock + " Privato" : I.Globe + " Pubblico"}</span>
+            <span class="badge">${g.isPrivate ? I.Lock + " Private" : I.Globe + " Public"}</span>
             ${isAdmin ? `<span class="badge">admin</span>` : ""}
           </div>
           ${g.description ? `<div style="font-size:12px;color:#888;margin-top:6px;line-height:1.6;">${escHtml(g.description)}</div>` : ""}
         </div>
         <div class="divider"></div>
 
-        <!-- Copia link — tutti -->
+        <!-- Copy link — everyone -->
         <div style="margin-bottom:13px;">
-          <div class="section-label" style="margin-bottom:8px;">Condividi link</div>
+          <div class="section-label" style="margin-bottom:8px;">Share link</div>
           <div style="display:flex;gap:7px;">
             <input value="https://nofilterthoughts.it/?join=${g.id}" readonly style="font-size:11px;background:#f8f8f8;color:#888;"/>
             <button class="btn-sm" onclick="copyGroupLink('${g.id}')" style="flex-shrink:0;">${I.Copy}</button>
@@ -3739,28 +3715,28 @@
         <div class="divider"></div>
 
         ${isAdmin ? `
-        <!-- Descrizione — solo admin -->
+        <!-- Description — admin only -->
         <div style="margin-bottom:13px;">
-          <div class="section-label" style="margin-bottom:6px;">Descrizione</div>
-          <textarea id="gs-desc-${g.id}" rows="2" placeholder="Aggiungi una descrizione..." style="resize:none;font-size:13px;width:100%;box-sizing:border-box;" oninput="updateGroupDesc('${g.id}',this.value)">${escHtml(g.description || "")}</textarea>
+          <div class="section-label" style="margin-bottom:6px;">Description</div>
+          <textarea id="gs-desc-${g.id}" rows="2" placeholder="Add a description..." style="resize:none;font-size:13px;width:100%;box-sizing:border-box;" oninput="updateGroupDesc('${g.id}',this.value)">${escHtml(g.description || "")}</textarea>
         </div>
         <div class="divider"></div>
 
-        <!-- Visibilità — solo admin -->
+        <!-- Visibility — admin only -->
         <div style="margin-bottom:13px;">
-          <div class="section-label" style="margin-bottom:6px;">Visibilità</div>
+          <div class="section-label" style="margin-bottom:6px;">Visibility</div>
           <div style="display:flex;gap:8px;">
-            <button class="fchip${!g.isPrivate ? " on" : ""}" style="flex:1;text-align:center;" onclick="toggleGroupPrivacy('${g.id}')">${I.Globe} Pubblico</button>
-            <button class="fchip${g.isPrivate ? " on" : ""}" style="flex:1;text-align:center;" onclick="toggleGroupPrivacy('${g.id}')">${I.Lock} Privato</button>
+            <button class="fchip${!g.isPrivate ? " on" : ""}" style="flex:1;text-align:center;" onclick="toggleGroupPrivacy('${g.id}')">${I.Globe} Public</button>
+            <button class="fchip${g.isPrivate ? " on" : ""}" style="flex:1;text-align:center;" onclick="toggleGroupPrivacy('${g.id}')">${I.Lock} Private</button>
           </div>
-          <div style="font-size:11px;color:#bbb;margin-top:6px;">${g.isPrivate ? "Solo chi ha il link può entrare." : "Visibile a tutti nella pagina gruppi."}</div>
+          <div style="font-size:11px;color:#bbb;margin-top:6px;">${g.isPrivate ? "Only people with the link can join." : "Visible to everyone on the rooms page."}</div>
         </div>
         <div class="divider"></div>
         ` : ""}
 
-        <!-- Esci dal gruppo — tutti -->
-        <button class="btn-o" style="width:100%;font-size:12px;margin-bottom:8px;" onclick="leaveGroup('${g.id}')">Esci dal gruppo</button>
-        ${isAdmin ? `<button class="btn-o" style="width:100%;color:#cc2222;border-color:#f0d0d0;font-size:12px;" onclick="deleteGroup('${g.id}')">Elimina gruppo</button>` : ""}
+        <!-- Leave room — everyone -->
+        <button class="btn-o" style="width:100%;font-size:12px;margin-bottom:8px;" onclick="leaveGroup('${g.id}')">Leave room</button>
+        ${isAdmin ? `<button class="btn-o" style="width:100%;color:#cc2222;border-color:#f0d0d0;font-size:12px;" onclick="deleteGroup('${g.id}')">Delete room</button>` : ""}
       </div>
     </div>
   `;
@@ -3773,11 +3749,11 @@
     <div class="overlay" onclick="event.target===this&&cancelReportPost()">
       <div class="sheet ${isDesk ? "sheet-desktop" : "sheet-mobile"}" onclick="event.stopPropagation()" style="max-width:380px;text-align:center;">
         <div style="width:48px;height:48px;border-radius:50%;background:#f5f5f5;border:1px solid #e8e8e8;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;color:#555;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"></path><line x1="4" y1="22" x2="4" y2="15"></line></svg></div>
-        <div style="font-family:'Bebas Neue',cursive;font-size:18px;letter-spacing:1.5px;margin-bottom:8px;">SEGNALA POST</div>
-        <p style="font-size:13px;color:#555;line-height:1.6;margin-bottom:20px;">Sei sicuro di voler segnalare questo post? Non lo vedrai più.</p>
+        <div style="font-family:'Bebas Neue',cursive;font-size:18px;letter-spacing:1.5px;margin-bottom:8px;">REPORT POST</div>
+        <p style="font-size:13px;color:#555;line-height:1.6;margin-bottom:20px;">Are you sure you want to report this post? You will not see it again.</p>
         <div style="display:flex;gap:8px;">
-          <button class="btn-o" style="flex:1;" onclick="cancelReportPost()">Annulla</button>
-          <button class="btn" style="flex:2;background:#cc2222;" onclick="confirmReportPost('${postId}')">${I.Flag} Segnala</button>
+          <button class="btn-o" style="flex:1;" onclick="cancelReportPost()">Cancel</button>
+          <button class="btn" style="flex:2;background:#cc2222;" onclick="confirmReportPost('${postId}')">${I.Flag} Report</button>
         </div>
       </div>
     </div>
@@ -3793,18 +3769,18 @@
     <div class="overlay" onclick="event.target===this&&closeChallenge()">
       <div class="sheet ${isDesk ? "sheet-desktop" : "sheet-mobile"}" onclick="event.stopPropagation()">
         <div style="display:flex;justify-content:space-between;margin-bottom:14px;">
-          <span style="font-family:'Bebas Neue',cursive;font-size:17px;letter-spacing:1px;">⚔️ SFIDA POST</span>
+          <span style="font-family:'Bebas Neue',cursive;font-size:17px;letter-spacing:1px;">⚔️ CHALLENGE POST</span>
           <button style="background:none;border:none;cursor:pointer;color:#bbb;display:flex;" onclick="closeChallenge()">${I.X}</button>
         </div>
         <div style="background:#f8f8f8;border-radius:8px;padding:11px;margin-bottom:13px;border-left:3px solid #e0e0e0;">
-          <div style="font-size:11px;color:#bbb;margin-bottom:4px;">POST ORIGINALE</div>
+          <div style="font-size:11px;color:#bbb;margin-bottom:4px;">ORIGINAL POST</div>
           <p style="font-size:13px;line-height:1.5;color:#555;">${escHtml(s.challengePost.text.length > 120 ? s.challengePost.text.slice(0, 117) + "..." : s.challengePost.text)}</p>
         </div>
-        <div style="font-size:10px;color:#bbb;margin-bottom:8px;letter-spacing:1px;">LA TUA RISPOSTA</div>
-        <textarea id="challenge-text" rows="3" placeholder="Contesta questo pensiero..." style="resize:none;margin-bottom:11px;"></textarea>
+        <div style="font-size:10px;color:#bbb;margin-bottom:8px;letter-spacing:1px;">YOUR REPLY</div>
+        <textarea id="challenge-text" rows="3" placeholder="Challenge this thought..." style="resize:none;margin-bottom:11px;"></textarea>
         <div style="display:flex;gap:8px;">
-          <button class="btn-o" style="flex:1;" onclick="closeChallenge()">Annulla</button>
-          <button class="btn" style="flex:2;" onclick="submitChallenge()" ${s.posting ? "disabled" : ""}>Lancia duello</button>
+          <button class="btn-o" style="flex:1;" onclick="closeChallenge()">Cancel</button>
+          <button class="btn" style="flex:2;" onclick="submitChallenge()" ${s.posting ? "disabled" : ""}>Launch duel</button>
         </div>
       </div>
     </div>
@@ -3828,7 +3804,7 @@
         <div style="position:absolute;top:0;left:0;right:0;height:100%;background:linear-gradient(to bottom,rgba(0,0,0,0.2) 0%,transparent 30%,transparent 50%,rgba(0,0,0,0.7) 100%);"></div>
         <div style="position:absolute;top:0;left:0;right:0;padding:18px 20px;display:flex;align-items:center;justify-content:space-between;z-index:2;">
           <div style="font-family:'Bebas Neue',cursive;font-size:17px;letter-spacing:3px;color:#fff;">NO FILTER</div>
-          <button onclick="closeTiktok()" style="background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.2);border-radius:8px;color:rgba(255,255,255,0.8);font-family:'DM Mono',monospace;font-size:12px;padding:6px 12px;cursor:pointer;backdrop-filter:blur(4px);transition:all 0.2s;">${I.X} chiudi</button>
+          <button onclick="closeTiktok()" style="background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.2);border-radius:8px;color:rgba(255,255,255,0.8);font-family:'DM Mono',monospace;font-size:12px;padding:6px 12px;cursor:pointer;backdrop-filter:blur(4px);transition:all 0.2s;">${I.X} close</button>
         </div>
         <div style="position:absolute;top:50%;right:20px;transform:translateY(-50%);display:flex;flex-direction:column;align-items:center;gap:4px;z-index:2;">
           <div style="font-size:11px;color:rgba(255,255,255,0.3);font-family:'DM Mono',monospace;">${(s.tiktokIdx % posts.length) + 1}/${posts.length}</div>
@@ -3853,7 +3829,7 @@
             </div>
           </div>
           <div style="display:flex;gap:8px;margin-bottom:${s.tiktokShowComment ? 14 : 0}px;">
-            <button onclick="toggleTtComment()" style="background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);color:rgba(255,255,255,0.7);padding:8px 16px;border-radius:9px;font-size:12px;cursor:pointer;font-family:'DM Mono',monospace;display:flex;align-items:center;gap:6px;transition:all 0.2s;">${I.Msg} ${postComments.length > 0 ? postComments.length + " commenti" : "Commenta"}</button>
+            <button onclick="toggleTtComment()" style="background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);color:rgba(255,255,255,0.7);padding:8px 16px;border-radius:9px;font-size:12px;cursor:pointer;font-family:'DM Mono',monospace;display:flex;align-items:center;gap:6px;transition:all 0.2s;">${I.Msg} ${postComments.length > 0 ? postComments.length + " comments" : "Comment"}</button>
             <button onclick="ttReport('${post.id}')" style="background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);color:rgba(255,255,255,0.4);padding:8px 12px;border-radius:9px;font-size:12px;cursor:pointer;font-family:'DM Mono',monospace;display:flex;align-items:center;gap:5px;transition:all 0.2s;">${I.Flag}</button>
           </div>
           ${s.tiktokShowComment ? `
@@ -3863,10 +3839,10 @@
                   <div style="font-size:10px;color:rgba(255,255,255,0.35);margin-bottom:2px;">${escHtml(c.author)} · ${timeAgo(c.created_at)}</div>
                   <div style="font-size:13px;color:rgba(255,255,255,0.82);line-height:1.45;">${escHtml(c.text)}</div>
                 </div>
-              `).join("") : `<div style="font-size:12px;color:rgba(255,255,255,0.3);text-align:center;padding:6px 0;">Nessun commento ancora.</div>`}
+              `).join("") : `<div style="font-size:12px;color:rgba(255,255,255,0.3);text-align:center;padding:6px 0;">No comments yet.</div>`}
             </div>
             <div style="display:flex;gap:6px;animation:su 0.2s ease;">
-              <input id="tt-comment" placeholder="Scrivi un commento..." value="${escHtml(s.tiktokCommentInput)}" oninput="state.tiktokCommentInput=this.value" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();ttSubmitComment('${post.id}');}" autofocus style="background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.15);color:#fff;font-size:12px;padding:9px 12px;border-radius:8px;"/>
+              <input id="tt-comment" placeholder="Write a comment..." value="${escHtml(s.tiktokCommentInput)}" oninput="state.tiktokCommentInput=this.value" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();ttSubmitComment('${post.id}');}" autofocus style="background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.15);color:#fff;font-size:12px;padding:9px 12px;border-radius:8px;"/>
               <button class="btn-sm" onclick="ttSubmitComment('${post.id}')" style="flex-shrink:0;background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.2);">→</button>
             </div>
           `: ""}
@@ -3888,66 +3864,64 @@
         /* ── Legal / TOS View ── */
         function buildLegal() {
             return `
-    <div style="font-family:'Bebas Neue',cursive;font-size:20px;letter-spacing:2px;margin-bottom:18px;">TERMINI D'USO & LEGAL</div>
+    <div style="font-family:'Bebas Neue',cursive;font-size:20px;letter-spacing:2px;margin-bottom:18px;">TERMS OF USE & LEGAL</div>
 
     <div class="card" style="cursor:default;margin-bottom:10px;">
-      <div class="section-label">⚠️ Disclaimer generale</div>
+      <div class="section-label">⚠️ General disclaimer</div>
       <div style="font-size:12px;color:#555;line-height:1.7;">
-        NO FILTER è una piattaforma anonima di conversazioni e opinioni personali. I contenuti pubblicati rappresentano esclusivamente le opinioni personali degli utenti e <strong>non riflettono in alcun modo le posizioni dei gestori del servizio</strong>. NO FILTER non è responsabile per i contenuti generati dagli utenti, in conformità con il D.Lgs. 70/2003 (art. 16) e il Digital Services Act (UE 2022/2065), in qualità di hosting provider passivo.
+        NO FILTER is an anonymous platform for conversations and personal opinions. Content published by users represents only the personal opinions of those users and <strong>does not reflect the views of the service operators</strong>. NO FILTER is not responsible for user-generated content, in accordance with Legislative Decree 70/2003 (art. 16) and the Digital Services Act (EU 2022/2065), as a passive hosting provider.
       </div>
     </div>
 
     <div class="card" style="cursor:default;margin-bottom:10px;">
-      <div class="section-label">🚫 Contenuti vietati</div>
+      <div class="section-label">🚫 Prohibited content</div>
       <div style="font-size:12px;color:#555;line-height:1.7;">
-        È <strong>severamente vietato</strong> pubblicare su NO FILTER:<br><br>
-        • Contenuti diffamatori, calunniosi o lesivi dell'onore di persone fisiche o giuridiche identificabili<br>
-        • Contenuti che incitano all'odio, alla violenza o alla discriminazione (hate speech) per razza, genere, orientamento sessuale, religione, etnia o disabilità<br>
-        • Materiale sessualmente esplicito, pornografico o che coinvolge minori in qualsiasi forma<br>
-        • Dati personali di terzi (nomi, indirizzi, numeri di telefono, foto) senza consenso (doxing)<br>
-        • Minacce dirette o indirette a persone fisiche<br>
-        • Contenuti che violano diritti d'autore o proprietà intellettuale<br>
-        • Spam, contenuti commerciali non autorizzati, o contenuti generati da bot<br>
-        • Qualsiasi contenuto che costituisca reato ai sensi della legge italiana o dell'UE<br><br>
-        La violazione di questi divieti può comportare la rimozione del contenuto e la segnalazione alle autorità competenti se richiesto dalla legge.
+        It is <strong>strictly forbidden</strong> to publish on NO FILTER:<br><br>
+        • Defamatory, slanderous or reputation-damaging content about identifiable natural or legal persons<br>
+        • Content that incites hatred, violence or discrimination (hate speech) based on race, gender, sexual orientation, religion, ethnicity or disability<br>
+        • Sexually explicit or pornographic material, or any material involving minors in any form<br>
+        • Third-party personal data (names, addresses, phone numbers, photos) without consent (doxing)<br>
+        • Direct or indirect threats against any person<br>
+        • Content that violates copyright or intellectual property rights<br>
+        • Spam, unauthorized commercial content or bot-generated content<br>
+        • Any content that constitutes a criminal offence under Italian or EU law<br><br>
+        Violating these rules may lead to content removal and, where required by law, reporting to the competent authorities.
       </div>
     </div>
 
     <div class="card" style="cursor:default;margin-bottom:10px;">
-      <div class="section-label">Responsabilità degli utenti</div>
+      <div class="section-label">User responsibility</div>
       <div style="font-size:12px;color:#555;line-height:1.7;">
-        Utilizzando NO FILTER, l'utente si assume <strong>piena e personale responsabilità</strong> per i contenuti pubblicati. L'anonimato tecnico offerto dalla piattaforma non costituisce protezione legale: le autorità competenti possono richiedere, nei modi previsti dalla legge, informazioni tecniche disponibili per identificare autori di contenuti illeciti. <strong>L'anonimato non è sinonimo di impunità.</strong>
+        By using NO FILTER, each user accepts <strong>full personal responsibility</strong> for the content they publish. The technical anonymity offered by the platform is not legal immunity: competent authorities may request available technical information through the procedures required by law to identify authors of unlawful content. <strong>Anonymous does not mean untouchable.</strong>
       </div>
     </div>
 
     <div class="card" style="cursor:default;margin-bottom:10px;">
-      <div class="section-label">Limitazione di responsabilità dei gestori</div>
+      <div class="section-label">Limitation of liability</div>
       <div style="font-size:12px;color:#555;line-height:1.7;">
-        I gestori di NO FILTER non sono responsabili per danni diretti, indiretti, incidentali o consequenziali derivanti dall'uso della piattaforma. Il servizio è fornito "così com'è" senza garanzie di continuità, disponibilità o idoneità a scopi specifici. Ci riserviamo il diritto di sospendere o terminare il servizio in qualsiasi momento.
+        The operators of NO FILTER are not liable for direct, indirect, incidental or consequential damages arising from the use of the platform. The service is provided "as is", without guarantees of continuity, availability or suitability for specific purposes. We reserve the right to suspend or terminate the service at any time.
       </div>
     </div>
 
     <div class="card" style="cursor:default;margin-bottom:10px;">
-      <div class="section-label">Segnalazioni e rimozione contenuti</div>
+      <div class="section-label">Reports and content removal</div>
       <div style="font-size:12px;color:#555;line-height:1.7;">
-        Per segnalare contenuti illeciti o richiedere la rimozione urgente di contenuti che ti riguardano, utilizza il pulsante "Segnala" su ogni post, oppure contatta direttamente:<br><br>
+        To report unlawful content or request urgent removal of content that concerns you, use the “Report” button on each post, or contact us directly:<br><br>
         <strong>info.nofilterthoughts@gmail.com</strong><br><br>
-        Ci impegniamo a valutare le segnalazioni tempestivamente e a rimuovere i contenuti illeciti. Questo impegno è condizione necessaria per le protezioni previste dal D.Lgs. 70/2003 e dal Digital Services Act.
+        We are committed to reviewing reports promptly and removing unlawful content. This commitment is necessary for the protections provided by Legislative Decree 70/2003 and the Digital Services Act.
       </div>
     </div>
 
     <div class="card" style="cursor:default;margin-bottom:10px;">
-      <div class="section-label">Legge applicabile e foro competente</div>
+      <div class="section-label">Applicable law</div>
       <div style="font-size:12px;color:#555;line-height:1.7;">
-        Il presente servizio è regolato dalla legge italiana. Per qualsiasi controversia relativa all'utilizzo di NO FILTER è competente il foro del luogo di residenza del consumatore, come previsto dal Codice del Consumo (D.Lgs. 206/2005).
+        This service is governed by Italian law. For any dispute related to the use of NO FILTER, jurisdiction lies with the court of the consumer's place of residence, as provided by the Italian Consumer Code (Legislative Decree 206/2005).
       </div>
     </div>
 
-    <div class="card" style="cursor:default;margin-bottom:10px;border-color:#e0e0e0;background:#fafafa;">
-      <div style="font-size:11px;color:#aaa;line-height:1.6;">
-        Ultimo aggiornamento: marzo 2025. Questi termini possono essere modificati in qualsiasi momento. L'uso continuato della piattaforma dopo le modifiche costituisce accettazione dei nuovi termini.<br><br>
-        Per qualsiasi questione: <strong>info.nofilterthoughts@gmail.com</strong>
-      </div>
+    <div style="font-size:10px;color:#aaa;line-height:1.6;margin-top:16px;padding:0 4px;">
+        Last updated: March 2025. These terms may be changed at any time. Continued use of the platform after changes constitutes acceptance of the new terms.<br><br>
+        For any issue: <strong>info.nofilterthoughts@gmail.com</strong>
     </div>
   `;
         }
@@ -3995,7 +3969,7 @@
 
         function openTiktok() {
             const posts = state.posts.filter(p => !state.reportedPosts.includes(p.id));
-            if (!posts.length) { showToast("Nessun post disponibile."); return; }
+            if (!posts.length) { showToast("No post available."); return; }
             state.tiktokIdx = Math.floor(Math.random() * posts.length);
             state.tiktokDir = null; state.tiktokShowComment = false; state.tiktokCommentInput = ""; state.tiktokReactPickerOpen = false;
             state.tiktokOpen = true; render();
@@ -4135,14 +4109,14 @@
             state.reportedPosts = u;
             localStorage.setItem("nofilter_reported", JSON.stringify(u.slice(-500)));
             try {
-                // Upsert: stesso device non può segnalare lo stesso post due volte
+                // Upsert: same device cannot report the same post twice
                 const { error: repErr } = await sb.from("post_reports")
                     .upsert({ post_id: postId, reporter_id: deviceId }, { onConflict: "post_id,reporter_id", ignoreDuplicates: true });
                 if (!repErr) {
                     const { count } = await sb.from("post_reports")
                         .select("id", { count: "exact", head: true })
                         .eq("post_id", postId);
-                    // A 2 segnalazioni → Edge Function manda email ai gestori
+                    // At 2 reports → Edge Function sends email to operators
                     if (count >= 2) {
                         try {
                             await sb.functions.invoke("notify-report", {
@@ -4150,17 +4124,17 @@
                             });
                         } catch (e) { /* Edge Function non ancora deployata */ }
                     }
-                    // A 10 segnalazioni → cancellazione automatica
+                    // At 10 reports → automatic deletion
                     if (count >= 10) {
                         await sb.from("posts").delete().eq("id", postId);
                     }
                 }
             } catch (e) { /* tabella post_reports non ancora configurata */ }
-            showToast("Post segnalato.");
+            showToast("Post reported.");
             render();
         }
         function cancelReportPost() { state.reportConfirmPostId = null; render(); }
-        function reportComment(commentId) { const u = [...state.reportedComments, commentId]; state.reportedComments = u; localStorage.setItem("nofilter_reported_comments", JSON.stringify(u.slice(-500))); showToast("Commento segnalato."); render(); }
+        function reportComment(commentId) { const u = [...state.reportedComments, commentId]; state.reportedComments = u; localStorage.setItem("nofilter_reported_comments", JSON.stringify(u.slice(-500))); showToast("Comment reported."); render(); }
         function toggleCompact() { const s = { ...state.settings, compactMode: !state.settings.compactMode }; state.settings = s; saveSettings(s); render(); }
         function resetData() { localStorage.clear(); window.location.reload(); }
         function addPollOption() { if (state.newPoll.options.length < 5) { state.newPoll.options.push(""); render(); } }
@@ -4173,8 +4147,8 @@
         async function createGroup() {
             const nameEl = document.getElementById("ng-name");
             const name = ((nameEl ? nameEl.value : "") || state.newGroup.name).trim();
-            if (!name) { showToast("Dai un nome.", true); return; }
-            if (name.length > MAX_GROUP_NAME_LEN) { showToast("Nome troppo lungo (max " + MAX_GROUP_NAME_LEN + " caratteri).", true); return; }
+            if (!name) { showToast("Give it a name.", true); return; }
+            if (name.length > MAX_GROUP_NAME_LEN) { showToast("Name too long (max " + MAX_GROUP_NAME_LEN + " characters).", true); return; }
             const id = genGroupId();
             const descEl = document.getElementById("ng-desc");
             const desc = (descEl ? descEl.value : "") || state.newGroup.description || "";
@@ -4192,19 +4166,19 @@
                 group_id: id
             });
             enterGroup(g);
-            showToast("Gruppo creato!");
+            showToast("Room created!");
         }
         function joinByLink() { const v = document.getElementById("join-input")?.value || ""; joinGroupByIdRaw(v); }
         async function joinGroupByIdRaw(raw) {
             let id = raw.trim();
             try { const u = new URL(id); id = u.searchParams.get("join") || id; } catch (_) { }
-            if (!id) { showToast("Inserisci un link o un ID.", true); return; }
+            if (!id) { showToast("Enter a link or ID.", true); return; }
             // Check if already in group
             const already = state.myGroups.find(g => g.id === id);
             if (already) { enterGroup(already); return; }
             // Validate: must match room-XXXXXX format
             if (!id.match(/^room-[a-z0-9]{6}$/)) {
-                showToast("ID o link non valido.", true);
+                showToast("Invalid ID or link.", true);
                 return;
             }
             // Fetch group metadata from Supabase (_GROUP_META_ post)
@@ -4237,10 +4211,10 @@
             const already = state.myGroups.find(x => x.id === g.id);
             if (already) { enterGroup(already); return; }
             const u = [...state.myGroups, g]; saveMyGroups(u); state.myGroups = u;
-            showToast(`Entrato in ${escHtml(g.name)}!`);
+            showToast(`Joined ${escHtml(g.name)}!`);
             enterGroup(g);
         }
-        /* ── Info gruppo ── */
+        /* ── Info room ── */
         function showGroupInfo(groupId) {
             state.groupInfoOpen = groupId;
             render();
@@ -4252,7 +4226,7 @@
             <div class="overlay" onclick="if(event.target===this){state.groupInfoOpen=null;render();}">
               <div class="sheet" style="max-width:480px;width:100%;">
                 <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;">
-                  <span style="font-family:'Bebas Neue',cursive;font-size:20px;letter-spacing:2px;">INFO GRUPPO</span>
+                  <span style="font-family:'Bebas Neue',cursive;font-size:20px;letter-spacing:2px;">ROOM INFO</span>
                   <button onclick="state.groupInfoOpen=null;render();" style="background:none;border:none;cursor:pointer;color:#aaa;font-size:20px;line-height:1;">✕</button>
                 </div>
                 <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;">
@@ -4261,42 +4235,42 @@
                   </div>
                   <div>
                     <div style="font-family:'Bebas Neue',cursive;font-size:22px;letter-spacing:2px;">${escHtml(g.name)}</div>
-                    <div style="font-size:11px;color:#aaa;font-family:'DM Mono',monospace;">${g.isPrivate ? "🔒 Privato" : "🌐 Pubblico"} · ${postCount} post</div>
+                    <div style="font-size:11px;color:#aaa;font-family:'DM Mono',monospace;">${g.isPrivate ? "🔒 Private" : "🌐 Public"} · ${postCount} post</div>
                   </div>
                 </div>
                 ${g.description ? `<div style="font-size:13px;color:#555;line-height:1.6;margin-bottom:14px;padding:10px 12px;background:#f8f8f8;border-radius:8px;">${escHtml(g.description)}</div>` : ""}
-                <div style="font-size:10px;color:#aaa;font-family:'DM Mono',monospace;letter-spacing:1px;margin-bottom:5px;">ID GRUPPO</div>
+                <div style="font-size:10px;color:#aaa;font-family:'DM Mono',monospace;letter-spacing:1px;margin-bottom:5px;">ROOM ID</div>
                 <div style="font-size:12px;color:#555;font-family:'DM Mono',monospace;background:#f8f8f8;padding:9px 12px;border-radius:8px;margin-bottom:16px;word-break:break-all;">${escHtml(g.id)}</div>
                 <button class="btn" style="width:100%;margin-bottom:8px;" onclick="shareGroup('${escAttr(g.id)}','${escAttr(g.name)}')">
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="margin-right:6px;"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
-                  Condividi link
+                  Share link
                 </button>
               </div>
             </div>`;
         }
 
-        /* ── Condividi gruppo ── */
+        /* ── Share room ── */
         async function shareGroup(groupId, groupName) {
             const link = `https://nofilterthoughts.it/?join=${groupId}`;
             if (navigator.share) {
                 try {
-                    await navigator.share({ title: `Unisciti a "${groupName}" su NO FILTER`, url: link });
+                    await navigator.share({ title: `Join "${groupName}" on NO FILTER`, url: link });
                     return;
                 } catch (_) {}
             }
-            // Fallback: copia negli appunti
+            // Fallback: copy to clipboard
             try {
                 await navigator.clipboard.writeText(link);
-                showToast("Link copiato negli appunti! 🔗");
+                showToast("Link copied to clipboard! 🔗");
             } catch (_) {
                 showToast("Link: " + link);
             }
         }
 
-        /* ── Segnala gruppo ── */
+        /* ── Report room ── */
         function reportGroup(groupId) {
             if ((state.reportedGroups || []).includes(groupId)) {
-                showToast("Gruppo già segnalato.", true); return;
+                showToast("Room already reported.", true); return;
             }
             state.reportGroupConfirmId = groupId;
             render();
@@ -4315,7 +4289,7 @@
                 reported_by: userName,
                 reported_at: new Date().toISOString()
             }).catch(() => {});
-            showToast("Gruppo segnalato. Grazie.");
+            showToast("Room reported. Thanks.");
         }
         function buildReportGroupConfirmSheet(groupId) {
             const g = state.myGroups.find(x => x.id === groupId) || { id: groupId, name: groupId };
@@ -4326,15 +4300,15 @@
         <div style="width:48px;height:48px;border-radius:50%;background:#f5f5f5;border:1px solid #e8e8e8;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;color:#555;">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>
         </div>
-        <div style="font-family:'Bebas Neue',cursive;font-size:18px;letter-spacing:1.5px;margin-bottom:6px;">SEGNALA GRUPPO</div>
-        <p style="font-size:13px;color:#555;line-height:1.6;margin-bottom:4px;">Stai per segnalare il gruppo</p>
+        <div style="font-family:'Bebas Neue',cursive;font-size:18px;letter-spacing:1.5px;margin-bottom:6px;">REPORT ROOM</div>
+        <p style="font-size:13px;color:#555;line-height:1.6;margin-bottom:4px;">You are about to report this room</p>
         <p style="font-family:'Bebas Neue',cursive;font-size:16px;letter-spacing:1px;margin-bottom:16px;">${escHtml(g.name)}</p>
-        <p style="font-size:12px;color:#aaa;line-height:1.5;margin-bottom:20px;">La segnalazione verrà inviata ai moderatori per una revisione.</p>
+        <p style="font-size:12px;color:#aaa;line-height:1.5;margin-bottom:20px;">The report will be sent to moderators for review.</p>
         <div style="display:flex;gap:8px;">
-          <button class="btn-o" style="flex:1;" onclick="cancelReportGroup()">Annulla</button>
+          <button class="btn-o" style="flex:1;" onclick="cancelReportGroup()">Cancel</button>
           <button class="btn" style="flex:2;background:#cc2222;" onclick="confirmReportGroup('${escAttr(groupId)}')">
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="margin-right:5px;"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>
-            Segnala
+            Report
           </button>
         </div>
       </div>
@@ -4346,7 +4320,7 @@
             saveMyGroups(u); state.myGroups = u;
             if (state.currentGroupId === gid) goFeed();
             state.groupSettingsOpen = null;
-            showToast("Sei uscito dal gruppo.");
+            showToast("You left the room.");
             render();
         }
         function loadPublicGroups() {
@@ -4400,10 +4374,10 @@
                     .update({ text: JSON.stringify({ name: g.name, description: g.description || "", isPrivate: !!g.isPrivate }) })
                     .eq("group_id", gid).eq("category", "_GROUP_META_");
             }
-            showToast("Aggiornato."); render();
+            showToast("Updated."); render();
         }
-        function deleteGroup(gid) { const u = state.myGroups.filter(g => g.id !== gid); saveMyGroups(u); state.myGroups = u; if (state.currentGroupId === gid) goFeed(); state.groupSettingsOpen = null; showToast("Rimosso."); render(); }
-        function copyGroupLink(gid) { const url = `https://nofilterthoughts.it/?join=${gid}`; navigator.clipboard.writeText(url).then(() => showToast("Link copiato!")).catch(() => showToast("Copia: " + url)); }
+        function deleteGroup(gid) { const u = state.myGroups.filter(g => g.id !== gid); saveMyGroups(u); state.myGroups = u; if (state.currentGroupId === gid) goFeed(); state.groupSettingsOpen = null; showToast("Removed."); render(); }
+        function copyGroupLink(gid) { const url = `https://nofilterthoughts.it/?join=${gid}`; navigator.clipboard.writeText(url).then(() => showToast("Link copied!")).catch(() => showToast("Copy: " + url)); }
 
         async function submitPost() {
             const titleEl = document.getElementById("np-title");
@@ -4413,24 +4387,24 @@
             const txt = ((txtEl ? txtEl.value : "") || state.newPost.text || "").trim();
             const cat = state.newPost.category || "";
             const mood = (moodEl ? moodEl.value : "") || state.newPost.mood;
-            if (!cat) { showToast("Scegli il formato della conversazione.", true); return; }
-            if (!mood) { showToast("Scegli il tema.", true); return; }
-            if (!title || title.length < 12) { showToast("Il titolo deve far capire la discussione.", true); return; }
-            if (title.length > 120) { showToast("Titolo troppo lungo.", true); return; }
-            if (!txt || txt.length > MAX_POST_LEN) { showToast("Testo mancante o troppo lungo.", true); return; }
+            if (!cat) { showToast("Choose a NoFilter format.", true); return; }
+            if (!mood) { showToast("Choose a territory.", true); return; }
+            if (!title || title.length < 12) { showToast("The hook needs to make the post clear.", true); return; }
+            if (title.length > 120) { showToast("Hook too long.", true); return; }
+            if (!txt || txt.length > MAX_POST_LEN) { showToast("Text missing or too long.", true); return; }
             const qualityError = looksLowEffort(title, txt);
             if (qualityError) { showToast(qualityError, true); return; }
             const now = Date.now();
-            if (now - lastPostTime < COOLDOWN_POST_MS) { showToast("Aspetta " + Math.ceil((COOLDOWN_POST_MS - (now - lastPostTime)) / 1000) + "s prima di postare ancora.", true); return; }
+            if (now - lastPostTime < COOLDOWN_POST_MS) { showToast("Wait " + Math.ceil((COOLDOWN_POST_MS - (now - lastPostTime)) / 1000) + "s before posting again.", true); return; }
             state.posting = true; render();
             const storedText = `${title}
 
 ${txt}`;
             const { error } = await sb.from("posts").insert({ language: LANG, category: cat, mood: mood, author: userName, text: storedText, group_id: state.currentGroupId });
             state.posting = false;
-            if (error) { showToast("Errore: " + error.message, true); render(); return; }
+            if (error) { showToast("Error: " + error.message, true); render(); return; }
             lastPostTime = Date.now();
-            state.newPost = { title: "", text: "", mood: "", category: "" }; state.createOpen = false; showToast("Discussione aperta."); render();
+            state.newPost = { title: "", text: "", mood: "", category: "" }; state.createOpen = false; showToast("Posted raw."); render();
         }
         async function submitPoll() {
             const qEl = document.getElementById("npl-q");
@@ -4438,30 +4412,30 @@ ${txt}`;
             // sync options from DOM
             document.querySelectorAll("[data-poll-opt]").forEach(el => { state.newPoll.options[+el.dataset.pollOpt] = el.value; });
             const opts = state.newPoll.options.filter(o => o && o.trim());
-            if (!q || !q.trim()) { showToast("Scrivi la domanda.", true); return; }
-            if (q.trim().length > MAX_POLL_Q_LEN) { showToast("Domanda troppo lunga (max " + MAX_POLL_Q_LEN + " caratteri).", true); return; }
+            if (!q || !q.trim()) { showToast("Write the question.", true); return; }
+            if (q.trim().length > MAX_POLL_Q_LEN) { showToast("Question too long (max " + MAX_POLL_Q_LEN + " characters).", true); return; }
             if (opts.length < 2) { showToast("Almeno 2 opzioni.", true); return; }
-            if (opts.some(o => o.length > MAX_POLL_OPT_LEN)) { showToast("Opzione troppo lunga (max " + MAX_POLL_OPT_LEN + " caratteri).", true); return; }
+            if (opts.some(o => o.length > MAX_POLL_OPT_LEN)) { showToast("Option too long (max " + MAX_POLL_OPT_LEN + " characters).", true); return; }
             state.posting = true; render();
-            const { error } = await sb.from("polls").insert({ language: LANG, category: state.newPoll.category || "Opinione", question: q.trim(), options: opts, creator_id: deviceId, expires_at: new Date("2099-12-31T23:59:59Z").toISOString() });
+            const { error } = await sb.from("polls").insert({ language: LANG, category: state.newPoll.category || "Uncomfortable Truths", question: q.trim(), options: opts, creator_id: deviceId, expires_at: new Date("2099-12-31T23:59:59Z").toISOString() });
             state.posting = false;
-            if (error) { showToast("Errore: " + error.message, true); render(); return; }
-            state.newPoll = { question: "", options: ["", ""], category: "" }; state.createOpen = false; showToast("Poll creato."); goView("polls");
+            if (error) { showToast("Error: " + error.message, true); render(); return; }
+            state.newPoll = { question: "", options: ["", ""], category: "" }; state.createOpen = false; showToast("Poll created."); goView("polls");
         }
         async function submitDuel() {
             const topicEl = document.getElementById("nd-topic");
             const topic = (topicEl ? topicEl.value : "") || state.newDuel.topic;
             state.newDuel.topic = topic;
-            if (!topic || !topic.trim()) { showToast("Scrivi il tema del duello.", true); return; }
-            if (topic.trim().length > MAX_POLL_Q_LEN) { showToast("Tema troppo lungo (max " + MAX_POLL_Q_LEN + " caratteri).", true); return; }
-            if (state.newDuel.sideA.trim().length > MAX_POLL_OPT_LEN || state.newDuel.sideB.trim().length > MAX_POLL_OPT_LEN) { showToast("Lato troppo lungo (max " + MAX_POLL_OPT_LEN + " caratteri).", true); return; }
-            if (!state.newDuel.sideA.trim() || !state.newDuel.sideB.trim()) { showToast("Scrivi entrambi i lati.", true); return; }
+            if (!topic || !topic.trim()) { showToast("Write the duel topic.", true); return; }
+            if (topic.trim().length > MAX_POLL_Q_LEN) { showToast("Territory too long (max " + MAX_POLL_Q_LEN + " characters).", true); return; }
+            if (state.newDuel.sideA.trim().length > MAX_POLL_OPT_LEN || state.newDuel.sideB.trim().length > MAX_POLL_OPT_LEN) { showToast("Side too long (max " + MAX_POLL_OPT_LEN + " characters).", true); return; }
+            if (!state.newDuel.sideA.trim() || !state.newDuel.sideB.trim()) { showToast("Write both sides.", true); return; }
             state.posting = true; render();
             const groupCtx = state.currentGroupId || "public";
             const { error } = await sb.from("polls").insert({ language: LANG, category: "DUEL", question: state.newDuel.topic.trim(), options: [state.newDuel.sideA.trim(), state.newDuel.sideB.trim()], creator_id: deviceId, expires_at: new Date("2099-12-31T23:59:59Z").toISOString(), group_id: groupCtx });
             state.posting = false;
-            if (error) { showToast("Errore: " + error.message, true); render(); return; }
-            state.newDuel = { topic: "", sideA: "", sideB: "", category: "" }; state.createOpen = false; showToast("Duello lanciato."); goView("duels");
+            if (error) { showToast("Error: " + error.message, true); render(); return; }
+            state.newDuel = { topic: "", sideA: "", sideB: "", category: "" }; state.createOpen = false; showToast("Duel launched."); goView("duels");
         }
         async function submitChallenge() {
             const txt = document.getElementById("challenge-text")?.value || "";
@@ -4469,13 +4443,13 @@ ${txt}`;
             state.posting = true; render();
             const sideA = state.challengePost.text.length > 80 ? state.challengePost.text.slice(0, 77) + "..." : state.challengePost.text;
             const groupCtxC = state.currentGroupId || "public";
-            const { error } = await sb.from("polls").insert({ language: LANG, category: "DUEL", question: "Chi ha ragione?", options: [sideA, txt.trim()], creator_id: deviceId, expires_at: new Date("2099-12-31T23:59:59Z").toISOString(), group_id: groupCtxC });
+            const { error } = await sb.from("polls").insert({ language: LANG, category: "DUEL", question: "Who is right?", options: [sideA, txt.trim()], creator_id: deviceId, expires_at: new Date("2099-12-31T23:59:59Z").toISOString(), group_id: groupCtxC });
             state.posting = false;
-            if (error) { showToast("Errore: " + error.message, true); render(); return; }
-            state.challengePost = null; showToast("Duello lanciato."); loadDuels(); goView("duels");
+            if (error) { showToast("Error: " + error.message, true); render(); return; }
+            state.challengePost = null; showToast("Duel launched."); loadDuels(); goView("duels");
         }
-        async function votePoll(pollId, optIdx) { const pv = state.pollVotes[pollId]; if (pv?.myVote !== null && pv?.myVote !== undefined) return; const { error } = await sb.from("poll_votes").insert({ poll_id: pollId, option_index: optIdx, voter_id: deviceId }); if (error) showToast("Errore voto.", true); }
-        async function voteDuel(duelId, side) { const dv = state.duelVotes[duelId]; if (dv?.myVote !== null && dv?.myVote !== undefined) return; const { error } = await sb.from("poll_votes").insert({ poll_id: duelId, option_index: side, voter_id: deviceId }); if (error) showToast("Errore.", true); }
+        async function votePoll(pollId, optIdx) { const pv = state.pollVotes[pollId]; if (pv?.myVote !== null && pv?.myVote !== undefined) return; const { error } = await sb.from("poll_votes").insert({ poll_id: pollId, option_index: optIdx, voter_id: deviceId }); if (error) showToast("Vote error.", true); }
+        async function voteDuel(duelId, side) { const dv = state.duelVotes[duelId]; if (dv?.myVote !== null && dv?.myVote !== undefined) return; const { error } = await sb.from("poll_votes").insert({ poll_id: duelId, option_index: side, voter_id: deviceId }); if (error) showToast("Error.", true); }
 
         async function toggleReactionAsync(postId, emoji) {
             const myRx = (state.reactions[postId] || []).find(r => r.reactor_id === deviceId && r.emoji === emoji);
@@ -4499,7 +4473,7 @@ ${txt}`;
                 }
             }
         }
-        async function addCommentAsync(postId, text) { if (!text.trim() || text.trim().length < 2) return false; if (text.trim().length > MAX_COMMENT_LEN) { showToast("Commento troppo lungo (max " + MAX_COMMENT_LEN + " caratteri).", true); return false; } const nowC = Date.now(); if (nowC - lastCommentTime < COOLDOWN_COMMENT_MS) { showToast("Aspetta un attimo prima di commentare ancora.", true); return false; } lastCommentTime = Date.now(); const post = state.posts.find(p => p.id === postId) || state.hotPosts.find(p => p.id === postId); if (!post) return false; const { error } = await sb.from("comments").insert({ post_id: postId, group_id: state.currentGroupId, language: post.language || LANG, category: post.category, mood: post.mood, author: userName, text: text.trim(), commenter_id: deviceId }); if (error) { showToast("Errore commento.", true); return false; } return true; }
+        async function addCommentAsync(postId, text) { if (!text.trim() || text.trim().length < 2) return false; if (text.trim().length > MAX_COMMENT_LEN) { showToast("Comment too long (max " + MAX_COMMENT_LEN + " characters).", true); return false; } const nowC = Date.now(); if (nowC - lastCommentTime < COOLDOWN_COMMENT_MS) { showToast("Wait a moment before commenting again.", true); return false; } lastCommentTime = Date.now(); const post = state.posts.find(p => p.id === postId) || state.hotPosts.find(p => p.id === postId); if (!post) return false; const { error } = await sb.from("comments").insert({ post_id: postId, group_id: state.currentGroupId, language: post.language || LANG, category: post.category, mood: post.mood, author: userName, text: text.trim(), commenter_id: deviceId }); if (error) { showToast("Comment error.", true); return false; } return true; }
 
         function showToast(msg, err = false) { state.toast = { msg, err }; render(); setTimeout(() => { state.toast = null; render(); }, 2600); }
 
@@ -4909,7 +4883,7 @@ ${txt}`;
             await sb.from("reactions").delete().eq("post_id", postId);
             await sb.from("comments").delete().eq("post_id", postId);
             await sb.from("posts").delete().eq("id", postId).eq("author", userName);
-            showToast("Post eliminato.");
+            showToast("Post deleted.");
         }
 
         function askDeleteComment(commentId) {
@@ -4931,12 +4905,12 @@ ${txt}`;
             // Delete from Supabase: comment + its reactions
             await sb.from("comment_reactions").delete().eq("comment_id", commentId);
             await sb.from("comments").delete().eq("id", commentId).eq("author", userName);
-            showToast("Commento eliminato.");
+            showToast("Comment deleted.");
         }
 
         /* ── APP BOOT ── */
         (async function boot() {
-            // Controlla se c'è un link di invito gruppo nell'URL
+            // Check whether there is a room invite link in the URL
             const params = new URLSearchParams(window.location.search);
             const joinId = params.get("join");
 
@@ -4959,7 +4933,7 @@ ${txt}`;
             initGDPR();
             attachEvents();
 
-            // Se c'è un link di invito, entra nel gruppo
+            // If there is an invite link, join the room
             if (joinId) {
                 joinGroupByIdRaw(joinId);
             }
