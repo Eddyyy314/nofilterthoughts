@@ -2139,6 +2139,63 @@
         .create-actions { display:flex; gap:8px; margin-top:2px; }
         .create-actions .btn-o { flex:1; }
         .create-actions .btn { flex:2; }
+
+        /* ── MOBILE CREATE FIX ──
+           Keep the post sheet readable on small screens and make validation messages visible. */
+        @media (max-width: 520px) {
+            .toast {
+                max-width: calc(100vw - 28px) !important;
+                white-space: normal !important;
+                text-align: center !important;
+                font-size: 11.5px !important;
+                line-height: 1.45 !important;
+                padding: 9px 12px !important;
+            }
+            .nf-create-sheet {
+                padding: 14px !important;
+                max-height: 88vh !important;
+            }
+            .create-hero {
+                padding: 12px 13px !important;
+                border-radius: 12px !important;
+            }
+            .create-title {
+                font-size: 17px !important;
+                letter-spacing: 1px !important;
+                line-height: 1.08 !important;
+            }
+            .create-subtitle {
+                font-size: 10.5px !important;
+                line-height: 1.45 !important;
+                margin-top: 6px !important;
+            }
+            .create-tabs {
+                gap: 6px !important;
+                margin-bottom: 10px !important;
+            }
+            .create-tab {
+                font-size: 10.5px !important;
+                padding: 8px 7px !important;
+            }
+            .quick-types .fchip {
+                font-size: 10px !important;
+                padding: 5px 8px !important;
+            }
+            .create-input-main,
+            .create-textarea,
+            #np-mood {
+                font-size: 12px !important;
+            }
+            .create-textarea {
+                min-height: 92px !important;
+            }
+            .create-actions .btn,
+            .create-actions .btn-o {
+                font-size: 11px !important;
+                padding: 10px 9px !important;
+                white-space: nowrap !important;
+            }
+        }
     </style>
 </head>
 
@@ -2655,8 +2712,8 @@
             const uniqueWords = new Set(all.toLowerCase().replace(/[^a-zà-ù0-9\s]/gi, " ").split(/\s+/).filter(w => w.length > 2));
             if (hasBlockedLanguage(all)) return "No insults or hate here. Turn it into something people can actually discuss.";
             if (/(.)\1{6,}/.test(all)) return "This sounds like noise, not a thought.";
-            if (wordCount(body) < 18) return "Add more context. NoFilter is for thoughts that open a real conversation, not empty one-liners.";
-            if (uniqueWords.size < 12) return "Make the thought more complete: explain the reason behind it.";
+            if (wordCount(body) < 8) return "Add a little more context.";
+            if (uniqueWords.size < 7) return "Make it a bit clearer.";
             return "";
         }
         function applyStarter(type, title) {
@@ -3063,7 +3120,7 @@
         async function submitGroupPost(groupId, inputId) {
             const el = document.getElementById(inputId);
             const txt = el ? el.value.trim() : "";
-            if (!txt || txt.length < 20) { showToast("Give people at least one real sentence.", true); return; }
+            if (!txt || txt.trim().length < 8) { showToast("Write at least one short thought.", true); return; }
             if (txt.length > MAX_POST_LEN) { showToast("Conversation too long (max " + MAX_POST_LEN + " characters).", true); return; }
             const prevGroupId = state.currentGroupId;
             // Ensure we're posting in the right group
@@ -4475,8 +4532,8 @@
             const cat = state.newPost.category || "";
             const mood = (moodEl ? moodEl.value : "") || state.newPost.mood;
             if (!cat) { showToast("Choose a conversation type.", true); return; }
-            if (!mood) { showToast("Choose a territory.", true); return; }
-            if (!title || title.length < 12) { showToast("Make the thought clear in one line.", true); return; }
+            if (!mood) { showToast("Choose a topic.", true); return; }
+            if (!title || title.length < 6) { showToast("Add a clear title.", true); return; }
             if (title.length > 120) { showToast("Hook too long.", true); return; }
             if (!txt || txt.length > MAX_POST_LEN) { showToast("Text missing or too long.", true); return; }
             const qualityError = looksLowEffort(title, txt);
